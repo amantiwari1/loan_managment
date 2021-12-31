@@ -1,14 +1,25 @@
-import { Head, BlitzLayout } from "blitz"
+import { Head, BlitzLayout, useRouter } from "blitz"
 
-const Layout: BlitzLayout<{title?: string}> = ({ title, children }) => {
+import dynamic from "next/dynamic"
+const DashboardLayout = dynamic(() => import("app/core/layouts/DashboardLayout"), {
+  ssr: false,
+})
+
+const AuthLayoutPath = ["/login"]
+
+const Layout: BlitzLayout<{ title?: string }> = ({ title, children }) => {
+  const router = useRouter()
   return (
     <>
       <Head>
-        <title>{title || "kred_partner"}</title>
+        <title>{title || "Kred Partner"}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      {children}
+      {AuthLayoutPath.includes(router.pathname) ? (
+        <> {children} </>
+      ) : (
+        <DashboardLayout>{children}</DashboardLayout>
+      )}
     </>
   )
 }
