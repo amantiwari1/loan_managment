@@ -1,7 +1,8 @@
-import { Menu, Layout } from "antd"
+import { Menu, Layout, Divider } from "antd"
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
+  LogoutOutlined,
   PieChartOutlined,
   DashboardOutlined,
   UserOutlined,
@@ -12,7 +13,8 @@ import Link from "next/link"
 import { useRouter } from "next/router"
 import SubMenu from "antd/lib/menu/SubMenu"
 import logo from "public/logo.png"
-import { Image } from "blitz"
+import { Image, useMutation } from "blitz"
+import logout from "app/auth/mutations/logout"
 
 const { Header, Sider, Content } = Layout
 
@@ -31,27 +33,27 @@ const sidebar_data_2 = [
       {
         name: "Add a New Enquiry",
         icon: PieChartOutlined,
-        link: "/enquiry/new",
+        link: "/enquiries/new",
       },
       {
         name: "New Enquiries",
         icon: PieChartOutlined,
-        link: "/enquiry",
+        link: "/enquiries",
       },
       {
         name: "Approved Enquiries",
         icon: PieChartOutlined,
-        link: "/enquiry/approved",
+        link: "/enquiries/approved",
       },
       {
         name: "Rejected Enquiries",
         icon: PieChartOutlined,
-        link: "/enquiry/rejected",
+        link: "/enquiries/rejected",
       },
       {
         name: "Sanctioned Enquiries",
         icon: PieChartOutlined,
-        link: "/enquiry/sanctioned",
+        link: "/enquiries/sanctioned",
       },
     ],
   },
@@ -63,27 +65,27 @@ const sidebar_data_2 = [
       {
         name: "Add a new user",
         icon: PieChartOutlined,
-        link: "/user/new",
+        link: "/users/new",
       },
       {
         name: "Admin",
         icon: PieChartOutlined,
-        link: "/user/admin",
+        link: "/users/list/admin",
       },
       {
         name: "Staff",
         icon: PieChartOutlined,
-        link: "/user/staff",
+        link: "/users/list/staff",
       },
       {
         name: "Channel Partner",
         icon: PieChartOutlined,
-        link: "/user/partner",
+        link: "/users/list/partner",
       },
       {
         name: "Customer",
         icon: PieChartOutlined,
-        link: "/user/customer",
+        link: "/users/list/user",
       },
     ],
   },
@@ -109,6 +111,7 @@ const sidebar_data_2 = [
 const Sidebar = ({ children }) => {
   const [collapsed, setcollapsed] = useState(false)
   const router = useRouter()
+  const [logoutMutation] = useMutation(logout)
 
   const toggle = () => {
     console.log(router.pathname)
@@ -136,6 +139,19 @@ const Sidebar = ({ children }) => {
               ))}
             </SubMenu>
           ))}
+
+          <Divider />
+          <p className="text-center text-xs text-gray-500">ACCOUNT RELATED</p>
+          <Menu.Item key="Account" icon={<LogoutOutlined />}>
+            Account Setting
+          </Menu.Item>
+          <Menu.Item
+            onClick={async () => await logoutMutation()}
+            key="logout"
+            icon={<LogoutOutlined />}
+          >
+            Logout
+          </Menu.Item>
         </Menu>
       </Sider>
       <Layout className="min-h-screen">

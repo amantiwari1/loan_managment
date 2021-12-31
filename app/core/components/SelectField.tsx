@@ -1,20 +1,22 @@
 import { forwardRef, ComponentPropsWithoutRef, PropsWithoutRef } from "react"
 import { useField, UseFieldConfig } from "react-final-form"
+import Select, { GroupBase, OptionsOrGroups } from "react-select"
 
-export interface LabeledTextFieldProps extends PropsWithoutRef<JSX.IntrinsicElements["input"]> {
+export interface SelectFieldProps extends PropsWithoutRef<JSX.IntrinsicElements["input"]> {
   /** Field name. */
   name: string
   /** Field label. */
   label: string
   /** Field type. Doesn't include radio buttons and checkboxes */
-  type?: "text" | "password" | "email" | "number"
+  options: OptionsOrGroups<any, GroupBase<any>>
+
   outerProps?: PropsWithoutRef<JSX.IntrinsicElements["div"]>
   labelProps?: ComponentPropsWithoutRef<"label">
   fieldProps?: UseFieldConfig<string>
 }
 
-export const LabeledTextField = forwardRef<HTMLInputElement, LabeledTextFieldProps>(
-  ({ name, label, outerProps, fieldProps, labelProps, ...props }, ref) => {
+export const SelectField = forwardRef<HTMLInputElement, SelectFieldProps>(
+  ({ name, label, outerProps, fieldProps, labelProps, options, ...props }, ref) => {
     const {
       input,
       meta: { touched, error, submitError, submitting },
@@ -33,13 +35,7 @@ export const LabeledTextField = forwardRef<HTMLInputElement, LabeledTextFieldPro
       <div {...outerProps}>
         <label {...labelProps}>
           {label}
-          <input
-            className="w-full mt-1 py-3 px-2  border-2 border-blue-300  rounded-md focus:ring-2 focus:ring-blue-500/50 focus:outline-none"
-            {...input}
-            disabled={submitting}
-            {...props}
-            ref={ref}
-          />
+          <Select options={options} {...input} />
         </label>
 
         <div role="alert" className="text-red-500 min-h-[20px]">
@@ -50,4 +46,4 @@ export const LabeledTextField = forwardRef<HTMLInputElement, LabeledTextFieldPro
   }
 )
 
-export default LabeledTextField
+export default SelectField

@@ -57,4 +57,11 @@ model Token {
 
 enum TokenType {
   RESET_PASSWORD
+  INVITE_PASSWORD
+}
+
+model Enquiry {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

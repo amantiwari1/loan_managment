@@ -111,7 +111,6 @@ const Home: BlitzPage = () => {
 }
 
 Home.getLayout = (page) => <Layout title="Home">{page}</Layout>
-
-// Home.authenticate = { redirectTo: Routes.LoginPage() }
+Home.authenticate = { redirectTo: Routes.LoginPage() }
 
 export default Home
