@@ -64,7 +64,7 @@ const EditUserPage: BlitzPage = () => {
       </Suspense>
 
       <p>
-        <Link href={Routes.UsersPage()}>
+        <Link href={Routes.UsersPage({ userId: "ADMIN" })}>
           <a>Users</a>
         </Link>
       </p>
