@@ -73,6 +73,6 @@ const EditEnquiryPage: BlitzPage = () => {
 }
 
 EditEnquiryPage.authenticate = true
-EditEnquiryPage.getLayout = (page) => <Layout>{page}</Layout>
+EditEnquiryPage.getLayout = (page) => <Layout layout="DashboardLayout">{page}</Layout>
 
 export default EditEnquiryPage
