@@ -4,9 +4,23 @@ import Layout from "app/core/layouts/Layout"
 import getUser from "app/users/queries/getUser"
 import updateUser from "app/users/mutations/updateUser"
 import { UserForm, FORM_ERROR } from "app/users/components/UserForm"
+import { notification } from "antd"
+import { Button } from "app/core/components/Button"
+import deleteUser from "app/users/mutations/deleteUser"
+
+import dynamic from "next/dynamic"
+const Popconfirm = dynamic(() => import("antd/lib/popconfirm"), {
+  ssr: false,
+})
+
+const options = {
+  USER: "Customer",
+  PARTNER: "Partner",
+  STAFF: "Staff",
+  ADMIN: "Admin",
+}
 
 export const EditUser = () => {
-  const router = useRouter()
   const userId = useParam("userId", "number")
   const [user, { setQueryData }] = useQuery(
     getUser,
@@ -17,6 +31,8 @@ export const EditUser = () => {
     }
   )
   const [updateUserMutation] = useMutation(updateUser)
+  const [deleteUserMutation] = useMutation(deleteUser)
+  const router = useRouter()
 
   return (
     <>
@@ -25,16 +41,13 @@ export const EditUser = () => {
       </Head>
 
       <div>
-        <h1>Edit User {user.id}</h1>
-        <pre>{JSON.stringify(user, null, 2)}</pre>
-
         <UserForm
           submitText="Update User"
           // TODO use a zod schema for form validation
           //  - Tip: extract mutation's schema into a shared `validations.ts` file and
           //         then import and use it here
           // schema={UpdateUser}
-          initialValues={user}
+          initialValues={{ ...user, role: { value: user.role, label: options[user.role] } }}
           onSubmit={async (values) => {
             try {
               const updated = await updateUserMutation({
@@ -42,7 +55,7 @@ export const EditUser = () => {
                 ...values,
               })
               await setQueryData(updated)
-              router.push(Routes.ShowUserPage({ userId: updated.id }))
+              notification.success({ type: "success", message: "Updated User" })
             } catch (error: any) {
               console.error(error)
               return {
@@ -51,6 +64,17 @@ export const EditUser = () => {
             }
           }}
         />
+
+        <Button
+          onClick={async () => {
+            if (window.confirm("This will be deleted")) {
+              await deleteUserMutation({ id: user.id })
+              router.push(Routes.UsersPage({ userId: user.role }))
+            }
+          }}
+        >
+          Delete
+        </Button>
       </div>
     </>
   )
@@ -58,21 +82,15 @@ export const EditUser = () => {
 
 const EditUserPage: BlitzPage = () => {
   return (
-    <div>
+    <div className="max-w-5xl mx-auto">
       <Suspense fallback={<div>Loading...</div>}>
         <EditUser />
       </Suspense>
-
-      <p>
-        <Link href={Routes.UsersPage({ userId: "ADMIN" })}>
-          <a>Users</a>
-        </Link>
-      </p>
     </div>
   )
 }
 
 EditUserPage.authenticate = { redirectTo: Routes.LoginPage() }
-EditUserPage.getLayout = (page) => <Layout>{page}</Layout>
+EditUserPage.getLayout = (page) => <Layout layout="DashboardLayout">{page}</Layout>
 
 export default EditUserPage

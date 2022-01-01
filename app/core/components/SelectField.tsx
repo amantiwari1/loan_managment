@@ -1,49 +1,40 @@
-import { forwardRef, ComponentPropsWithoutRef, PropsWithoutRef } from "react"
-import { useField, UseFieldConfig } from "react-final-form"
+import React, { forwardRef, ComponentPropsWithoutRef, PropsWithoutRef, useEffect } from "react"
+import { Field, useField, UseFieldConfig } from "react-final-form"
 import Select, { GroupBase, OptionsOrGroups } from "react-select"
 
-export interface SelectFieldProps extends PropsWithoutRef<JSX.IntrinsicElements["input"]> {
+export interface SelectFieldProps {
   /** Field name. */
   name: string
   /** Field label. */
   label: string
+  /** Field label. */
+  placeholder: string
   /** Field type. Doesn't include radio buttons and checkboxes */
   options: OptionsOrGroups<any, GroupBase<any>>
-
-  outerProps?: PropsWithoutRef<JSX.IntrinsicElements["div"]>
-  labelProps?: ComponentPropsWithoutRef<"label">
-  fieldProps?: UseFieldConfig<string>
 }
 
-export const SelectField = forwardRef<HTMLInputElement, SelectFieldProps>(
-  ({ name, label, outerProps, fieldProps, labelProps, options, ...props }, ref) => {
-    const {
-      input,
-      meta: { touched, error, submitError, submitting },
-    } = useField(name, {
-      parse:
-        props.type === "number"
-          ? (Number as any)
-          : // Converting `""` to `null` ensures empty values will be set to null in the DB
-            (v) => (v === "" ? null : v),
-      ...fieldProps,
-    })
-
-    const normalizedError = Array.isArray(error) ? error.join(", ") : error || submitError
-
-    return (
-      <div {...outerProps}>
-        <label {...labelProps}>
-          {label}
-          <Select options={options} {...input} />
-        </label>
-
-        <div role="alert" className="text-red-500 min-h-[20px]">
-          {touched && normalizedError && <>{normalizedError}</>}
-        </div>
+export const SelectField = ({ options, placeholder, label, ...rest }: SelectFieldProps) => {
+  return (
+    <div className="mb-5">
+      <label className="font-medium">{label}</label>
+      <div className="mt-1">
+        <Field {...rest} defaultValue={options[0].value}>
+          {(props) => (
+            <div>
+              <Select
+                // label="Client Occupation Type"
+                placeholder={placeholder}
+                name={props.input.name}
+                value={props.input.value?.value}
+                onChange={(value) => props.input.onChange(value?.value)}
+                options={options}
+              />
+            </div>
+          )}
+        </Field>
       </div>
-    )
-  }
-)
+    </div>
+  )
+}
 
 export default SelectField

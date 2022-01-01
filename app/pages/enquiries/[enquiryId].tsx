@@ -3,12 +3,53 @@ import { Head, Link, useRouter, useQuery, useParam, BlitzPage, useMutation, Rout
 import Layout from "app/core/layouts/Layout"
 import getEnquiry from "app/enquiries/queries/getEnquiry"
 import deleteEnquiry from "app/enquiries/mutations/deleteEnquiry"
-
+import { Avatar, Tab, Tabs, TabList, TabPanel, TabPanels } from "@chakra-ui/react"
+import { Divider } from "antd"
+import Overview from "app/enquiries/components/Overview"
 export const Enquiry = () => {
   const router = useRouter()
   const enquiryId = useParam("enquiryId", "number")
   const [deleteEnquiryMutation] = useMutation(deleteEnquiry)
   const [enquiry] = useQuery(getEnquiry, { id: enquiryId })
+
+  const TabData = [
+    {
+      name: "Overview",
+      components: <Overview enquiry={enquiry} />,
+    },
+    {
+      name: "Teaser",
+      components: <a>Hello</a>,
+    },
+    {
+      name: "Logs",
+      components: <a>Hello</a>,
+    },
+    {
+      name: "Document",
+      components: <a>Hello</a>,
+    },
+    {
+      name: "Project Report",
+      components: <a>Hello</a>,
+    },
+    {
+      name: "Case Status",
+      components: <a>Hello</a>,
+    },
+    {
+      name: "Search & Valuation Report",
+      components: <a>Hello</a>,
+    },
+    {
+      name: "Bank Queries",
+      components: <a>Hello</a>,
+    },
+    {
+      name: "Sanction & Disbursment",
+      components: <a>Hello</a>,
+    },
+  ]
 
   return (
     <>
@@ -16,27 +57,24 @@ export const Enquiry = () => {
         <title>Enquiry {enquiry.id}</title>
       </Head>
 
-      <div>
-        <h1>Enquiry {enquiry.id}</h1>
-        <pre>{JSON.stringify(enquiry, null, 2)}</pre>
-
-        <Link href={Routes.EditEnquiryPage({ enquiryId: enquiry.id })}>
-          <a>Edit</a>
-        </Link>
-
-        <button
-          type="button"
-          onClick={async () => {
-            if (window.confirm("This will be deleted")) {
-              await deleteEnquiryMutation({ id: enquiry.id })
-              router.push(Routes.EnquiriesPage())
-            }
-          }}
-          style={{ marginLeft: "0.5rem" }}
-        >
-          Delete
-        </button>
+      <div className="flex space-x-2 items-center">
+        <Avatar size="md" name={enquiry.client_name} />
+        <h1 className="text-2xl capitalize">{enquiry.client_name}</h1>
       </div>
+      <Divider />
+      <Tabs>
+        <TabList bg="white">
+          {TabData.map((item) => (
+            <Tab key={item.name}>{item.name}</Tab>
+          ))}
+        </TabList>
+
+        <TabPanels>
+          {TabData.map((item) => (
+            <TabPanel key={item.name}>{item.components}</TabPanel>
+          ))}
+        </TabPanels>
+      </Tabs>
     </>
   )
 }
@@ -44,12 +82,6 @@ export const Enquiry = () => {
 const ShowEnquiryPage: BlitzPage = () => {
   return (
     <div>
-      <p>
-        <Link href={Routes.EnquiriesPage()}>
-          <a>Enquiries</a>
-        </Link>
-      </p>
-
       <Suspense fallback={<div>Loading...</div>}>
         <Enquiry />
       </Suspense>
@@ -57,7 +89,7 @@ const ShowEnquiryPage: BlitzPage = () => {
   )
 }
 
-ShowEnquiryPage.authenticate = { redirectTo: Routes.LoginPage() }
-ShowEnquiryPage.getLayout = (page) => <Layout>{page}</Layout>
+ShowEnquiryPage.authenticate = true
+ShowEnquiryPage.getLayout = (page) => <Layout layout="DashboardLayout">{page}</Layout>
 
 export default ShowEnquiryPage

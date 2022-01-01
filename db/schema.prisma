@@ -61,7 +61,32 @@ enum TokenType {
 }
 
 model Enquiry {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                     Int                  @id @default(autoincrement())
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  client_name            String
+  client_mobile          BigInt
+  client_email           String
+  client_service         ClientServiceType
+  client_qccupation_type ClientOccupationType
+  loan_amount            BigInt
+  client_address         String
+  private_enquiry        Boolean
+}
+
+enum ClientServiceType {
+  HOME_LOAN
+  MORTGAGE_LOAN
+  UNSECURED_LOAN
+  MSME_LOAN
+  STARTUP_LOAN
+  SUBSIDY_SCHEMES
+}
+
+enum ClientOccupationType {
+  SALARIED_INDIVIDUAL
+  INDIVIDUAL
+  SELF_EMPLOYED_INDIVIDUAL_OR_PROPRIETORSHIP
+  PARTNERSHIP
+  COMPANY
 }

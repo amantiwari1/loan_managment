@@ -4,14 +4,15 @@ import { LabeledTextField } from "app/core/components/LabeledTextField"
 import { Form, FORM_ERROR } from "app/core/components/Form"
 import { ResetPassword } from "app/auth/validations"
 import resetPassword from "app/auth/mutations/resetPassword"
+import welcomePassword from "../mutations/welcomePassword"
 
-const ResetPasswordPage: BlitzPage = () => {
+const WelcomePasswordPage: BlitzPage = () => {
   const query = useRouterQuery()
-  const [resetPasswordMutation, { isSuccess }] = useMutation(resetPassword)
+  const [welcomePasswordMutation, { isSuccess }] = useMutation(welcomePassword)
 
   return (
     <div>
-      <h1>Set a New Password</h1>
+      <h1>Welcome</h1>
 
       {isSuccess ? (
         <div>
@@ -22,12 +23,12 @@ const ResetPasswordPage: BlitzPage = () => {
         </div>
       ) : (
         <Form
-          submitText="Reset Password"
+          submitText="Enter Password"
           schema={ResetPassword}
           initialValues={{ password: "", passwordConfirmation: "", token: query.token as string }}
           onSubmit={async (values) => {
             try {
-              await resetPasswordMutation(values)
+              await welcomePasswordMutation(values)
             } catch (error: any) {
               if (error.name === "ResetPasswordError") {
                 return {
@@ -53,11 +54,11 @@ const ResetPasswordPage: BlitzPage = () => {
   )
 }
 
-ResetPasswordPage.redirectAuthenticatedTo = "/"
-ResetPasswordPage.getLayout = (page) => (
+WelcomePasswordPage.redirectAuthenticatedTo = "/"
+WelcomePasswordPage.getLayout = (page) => (
   <Layout layout="AuthLayout" title="Reset Your Password">
     {page}
   </Layout>
 )
 
-export default ResetPasswordPage
+export default WelcomePasswordPage

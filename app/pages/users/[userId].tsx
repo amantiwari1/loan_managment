@@ -58,6 +58,6 @@ const ShowUserPage: BlitzPage = () => {
 }
 
 ShowUserPage.authenticate = true
-ShowUserPage.getLayout = (page) => <Layout>{page}</Layout>
+ShowUserPage.getLayout = (page) => <Layout layout="DashboardLayout">{page}</Layout>
 
 export default ShowUserPage

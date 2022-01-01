@@ -112,6 +112,6 @@ const UsersPage: BlitzPage = () => {
 }
 
 UsersPage.authenticate = { redirectTo: Routes.LoginPage() }
-UsersPage.getLayout = (page) => <Layout>{page}</Layout>
+UsersPage.getLayout = (page) => <Layout layout="DashboardLayout">{page}</Layout>
 
 export default UsersPage

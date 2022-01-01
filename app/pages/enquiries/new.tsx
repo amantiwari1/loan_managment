@@ -2,15 +2,16 @@ import { Link, useRouter, useMutation, BlitzPage, Routes } from "blitz"
 import Layout from "app/core/layouts/Layout"
 import createEnquiry from "app/enquiries/mutations/createEnquiry"
 import { EnquiryForm, FORM_ERROR } from "app/enquiries/components/EnquiryForm"
+import { Divider } from "antd"
 
 const NewEnquiryPage: BlitzPage = () => {
   const router = useRouter()
   const [createEnquiryMutation] = useMutation(createEnquiry)
 
   return (
-    <div>
-      <h1>Create New Enquiry</h1>
-
+    <div className="max-w-5xl mx-auto">
+      <h1 className="text-3xl font-medium">Create a new Loan Enquiry</h1>
+      <Divider />
       <EnquiryForm
         submitText="Create Enquiry"
         // TODO use a zod schema for form validation
@@ -31,16 +32,20 @@ const NewEnquiryPage: BlitzPage = () => {
         }}
       />
 
-      <p>
+      {/* <p>
         <Link href={Routes.EnquiriesPage()}>
           <a>Enquiries</a>
         </Link>
-      </p>
+      </p> */}
     </div>
   )
 }
 
-NewEnquiryPage.authenticate = { redirectTo: Routes.LoginPage() }
-NewEnquiryPage.getLayout = (page) => <Layout title={"Create New Enquiry"}>{page}</Layout>
+NewEnquiryPage.authenticate = true
+NewEnquiryPage.getLayout = (page) => (
+  <Layout layout="DashboardLayout" title={"Create New Enquiry"}>
+    {page}
+  </Layout>
+)
 
 export default NewEnquiryPage

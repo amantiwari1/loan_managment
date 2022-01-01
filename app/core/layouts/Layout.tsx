@@ -6,9 +6,11 @@ const DashboardLayout = dynamic(() => import("app/core/layouts/DashboardLayout")
 })
 import AuthLayout from "app/core/layouts/AuthLayout"
 
-const AuthLayoutPath = ["/login", "/forgot-password", "/signup", "/reset-password"]
-
-const Layout: BlitzLayout<{ title?: string }> = ({ title, children }) => {
+const Layout: BlitzLayout<{ title?: string; layout: "AuthLayout" | "DashboardLayout" }> = ({
+  title,
+  children,
+  layout,
+}) => {
   const router = useRouter()
   return (
     <>
@@ -16,11 +18,8 @@ const Layout: BlitzLayout<{ title?: string }> = ({ title, children }) => {
         <title>{title || "Kred Partner"}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {AuthLayoutPath.includes(router.pathname) ? (
-        <AuthLayout> {children} </AuthLayout>
-      ) : (
-        <DashboardLayout>{children}</DashboardLayout>
-      )}
+      {layout === "AuthLayout" && <AuthLayout> {children} </AuthLayout>}
+      {layout === "DashboardLayout" && <DashboardLayout>{children}</DashboardLayout>}
     </>
   )
 }

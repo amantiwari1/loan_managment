@@ -10,7 +10,7 @@ const ResultUserPage: BlitzPage = () => {
     <div className="max-w-5xl mx-auto">
       <Result
         status="success"
-        title="Successfully Created User"
+        title="Successfully Invited User"
         subTitle={token.token}
         extra={[
           <Button
@@ -18,7 +18,7 @@ const ResultUserPage: BlitzPage = () => {
             onClick={() => {
               navigator.clipboard.writeText(token.token as any).then(() => {
                 notification.success({
-                  message: "Copied the Link",
+                  message: "Copied the Invite Link",
                 })
               })
             }}
@@ -32,6 +32,10 @@ const ResultUserPage: BlitzPage = () => {
 }
 
 ResultUserPage.authenticate = { redirectTo: Routes.LoginPage() }
-ResultUserPage.getLayout = (page) => <Layout title={"Create New User"}>{page}</Layout>
+ResultUserPage.getLayout = (page) => (
+  <Layout layout="DashboardLayout" title={"Create New User"}>
+    {page}
+  </Layout>
+)
 
 export default ResultUserPage

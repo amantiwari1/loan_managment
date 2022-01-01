@@ -23,7 +23,7 @@ export const EnquiriesList = () => {
         {enquiries.map((enquiry) => (
           <li key={enquiry.id}>
             <Link href={Routes.ShowEnquiryPage({ enquiryId: enquiry.id })}>
-              <a>{enquiry.name}</a>
+              <a>{enquiry.id}</a>
             </Link>
           </li>
         ))}
@@ -61,7 +61,7 @@ const EnquiriesPage: BlitzPage = () => {
   )
 }
 
-EnquiriesPage.authenticate = { redirectTo: Routes.LoginPage() }
-EnquiriesPage.getLayout = (page) => <Layout>{page}</Layout>
+EnquiriesPage.authenticate = true
+EnquiriesPage.getLayout = (page) => <Layout layout="DashboardLayout">{page}</Layout>
 
 export default EnquiriesPage

@@ -72,7 +72,7 @@ const EditEnquiryPage: BlitzPage = () => {
   )
 }
 
-EditEnquiryPage.authenticate = { redirectTo: Routes.LoginPage() }
+EditEnquiryPage.authenticate = true
 EditEnquiryPage.getLayout = (page) => <Layout>{page}</Layout>
 
 export default EditEnquiryPage
