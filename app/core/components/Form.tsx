@@ -43,7 +43,9 @@ export function Form<S extends z.ZodType<any, any>>({
           <div className="my-2">
             {submitText && (
               <button className="w-full" type="submit">
-                <Button loading={submitting}>{submitText}</Button>
+                <Button isLoading={submitting} loadingText="Submitting">
+                  {submitText}
+                </Button>
               </button>
             )}
           </div>

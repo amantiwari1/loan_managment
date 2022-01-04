@@ -6,6 +6,8 @@ import deleteEnquiry from "app/enquiries/mutations/deleteEnquiry"
 import { Avatar, Tab, Tabs, TabList, TabPanel, TabPanels } from "@chakra-ui/react"
 import { Divider } from "antd"
 import Overview from "app/enquiries/components/Overview"
+import Log from "app/logs/components/log"
+import Document from "app/documents/components/documents"
 export const Enquiry = () => {
   const router = useRouter()
   const enquiryId = useParam("enquiryId", "number")
@@ -23,11 +25,11 @@ export const Enquiry = () => {
     },
     {
       name: "Logs",
-      components: <a>Hello</a>,
+      components: <Log enquiry={enquiry} />,
     },
     {
       name: "Document",
-      components: <a>Hello</a>,
+      components: <Document enquiry={enquiry} />,
     },
     {
       name: "Project Report",

@@ -30,8 +30,6 @@ export const LabeledTextField = forwardRef<HTMLInputElement, LabeledTextFieldPro
       ...fieldProps,
     })
 
-    console.log({ touched, error, submitError, submitting })
-
     const normalizedError = Array.isArray(error) ? error.join(", ") : error || submitError
 
     return (
