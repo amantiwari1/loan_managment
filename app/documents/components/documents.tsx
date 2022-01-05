@@ -25,7 +25,7 @@ import {
 import { DocumentForm } from "./DocumentForm"
 import createDocument from "../mutations/createDocument"
 import { FORM_ERROR } from "final-form"
-import getLogs from "app/logs/queries/getLogs"
+import getLogs from "../../logs/queries/getLogs"
 import updateDocument from "../mutations/updateDocument"
 import deleteDocument from "../mutations/deleteDocument"
 

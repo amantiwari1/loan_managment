@@ -22,12 +22,12 @@ import {
   AlertDialogOverlay,
 } from "@chakra-ui/react"
 import { FORM_ERROR } from "final-form"
-import getLogs from "app/logs/queries/getLogs"
 import createCaseStatus from "../mutations/createCaseStatus"
 import deleteCaseStatus from "../mutations/deleteCaseStatus"
 import updateCaseStatus from "../mutations/updateCaseStatus"
 import { CaseStatusForm } from "./CaseStatusForm"
 import getCaseStatuses from "../queries/getCaseStatuses"
+import getLogs from "../../logs/queries/getLogs"
 
 const StatusData = {
   UPLOADED: {
