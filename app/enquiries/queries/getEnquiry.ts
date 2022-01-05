@@ -11,9 +11,6 @@ export default resolver.pipe(resolver.zod(GetEnquiry), resolver.authorize(), asy
   // TODO: in multi-tenant app, you must add validation to ensure correct tenant
   const enquiry = await db.enquiry.findFirst({
     where: { id },
-    include: {
-      bank_queries: true,
-    },
   })
 
   if (!enquiry) throw new NotFoundError()
