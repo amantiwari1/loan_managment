@@ -20,6 +20,7 @@ model User {
   email          String   @unique
   hashedPassword String?
   role           String
+  log            Log[]
 
   tokens   Token[]
   sessions Session[]
@@ -92,14 +93,17 @@ model Log {
   name      String
   Enquiry   Enquiry? @relation(fields: [enquiryId], references: [id])
   enquiryId Int?
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
 }
 
 model Document {
-  id            Int      @id @default(autoincrement())
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id            Int        @id @default(autoincrement())
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
   client_name   String
   document_name String
+  status        StatusType @default(NOT_UPLOAD)
 
   Enquiry   Enquiry? @relation(fields: [enquiryId], references: [id])
   enquiryId Int?
@@ -111,21 +115,21 @@ model ProjectReport {
   updatedAt DateTime   @updatedAt
   label     String
   status    StatusType
-  remark    String
+  remark    String?
   Enquiry   Enquiry?   @relation(fields: [enquiryId], references: [id])
   enquiryId Int?
 }
 
 model CaseStatus {
-  id                 Int      @id @default(autoincrement())
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  id                 Int        @id @default(autoincrement())
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
   bank_name          String
-  status             String
+  status             StatusType
   response_from_bank Boolean
   final_login        String
-  remark             String
-  Enquiry            Enquiry? @relation(fields: [enquiryId], references: [id])
+  remark             String?
+  Enquiry            Enquiry?   @relation(fields: [enquiryId], references: [id])
   enquiryId          Int?
 }
 
@@ -146,7 +150,7 @@ model BankQuery {
   bank_query   String
   Status       StatusType
   our_response String
-  remark       String
+  remark       String?
 
   Enquiry   Enquiry? @relation(fields: [enquiryId], references: [id])
   enquiryId Int?

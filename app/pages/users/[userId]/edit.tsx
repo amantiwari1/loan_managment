@@ -47,15 +47,19 @@ export const EditUser = () => {
           //  - Tip: extract mutation's schema into a shared `validations.ts` file and
           //         then import and use it here
           // schema={UpdateUser}
-          initialValues={{ ...user, role: { value: user.role, label: options[user.role] } }}
+          initialValues={{ ...user }}
           onSubmit={async (values) => {
+            console.log(values)
+
             try {
               const updated = await updateUserMutation({
                 id: user.id,
                 ...values,
               })
               await setQueryData(updated)
+
               notification.success({ type: "success", message: "Updated User" })
+              router.push(Routes.UsersPage({ userId: values.role }))
             } catch (error: any) {
               console.error(error)
               return {

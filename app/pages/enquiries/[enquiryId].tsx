@@ -8,6 +8,7 @@ import { Divider } from "antd"
 import Overview from "app/enquiries/components/Overview"
 import Log from "app/logs/components/log"
 import Document from "app/documents/components/documents"
+import CaseStatus from "app/case-statuses/components/CaseStatus"
 export const Enquiry = () => {
   const router = useRouter()
   const enquiryId = useParam("enquiryId", "number")
@@ -37,7 +38,7 @@ export const Enquiry = () => {
     },
     {
       name: "Case Status",
-      components: <a>Hello</a>,
+      components: <CaseStatus enquiry={enquiry} />,
     },
     {
       name: "Search & Valuation Report",

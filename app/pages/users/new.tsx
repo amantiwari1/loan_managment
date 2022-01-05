@@ -8,9 +8,8 @@ import {
   validateZodSchema,
 } from "blitz"
 import Layout from "app/core/layouts/Layout"
-import createUser from "app/users/mutations/createUser"
+import createUser, { CreateUser } from "app/users/mutations/createUser"
 import { UserForm, FORM_ERROR } from "app/users/components/UserForm"
-import { CreateUserVALIDATION } from "app/users/mutations/validations"
 
 const NewUserPage: BlitzPage = () => {
   const router = useRouter()
@@ -22,8 +21,8 @@ const NewUserPage: BlitzPage = () => {
 
       <UserForm
         submitText="Invite User"
-        schema={CreateUserVALIDATION}
-        initialValues={{ email: "", password: "", name: "" }}
+        schema={CreateUser}
+        initialValues={{ email: "", password: "", name: "", role: "USER" }}
         onSubmit={async (values) => {
           try {
             const token = await createUserMutation(values)

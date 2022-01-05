@@ -1,12 +1,25 @@
 import { generateToken, hash256, resolver, SecurePassword } from "blitz"
 import db from "db"
 import { z } from "zod"
-import { CreateUserVALIDATION } from "./validations"
+
+export const CreateUser = z.object({
+  email: z
+    .string()
+    .email()
+    .transform((str) => str.toLowerCase().trim()),
+  password: z
+    .string()
+    .min(10)
+    .max(100)
+    .transform((str) => str.trim()),
+  name: z.string().max(50),
+  role: z.enum(["ADMIN", "USER", "STAFF", "PARTNER"]),
+})
 
 const RESET_PASSWORD_TOKEN_EXPIRATION_IN_HOURS = 24
 
 export default resolver.pipe(
-  resolver.zod(CreateUserVALIDATION),
+  resolver.zod(CreateUser),
   resolver.authorize(),
   async ({ email, password, role, name }, ctx) => {
     const origin = process.env.APP_ORIGIN || process.env.BLITZ_DEV_SERVER_ORIGIN

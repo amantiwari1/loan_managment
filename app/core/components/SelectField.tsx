@@ -9,23 +9,38 @@ export interface SelectFieldProps {
   label: string
   /** Field label. */
   placeholder: string
+
+  isDefault?: boolean
   /** Field type. Doesn't include radio buttons and checkboxes */
   options: OptionsOrGroups<any, GroupBase<any>>
 }
 
-export const SelectField = ({ options, placeholder, label, ...rest }: SelectFieldProps) => {
+export const SelectField = ({
+  options,
+  isDefault,
+  placeholder,
+  label,
+  ...rest
+}: SelectFieldProps) => {
+  const isDefaultData = {}
+
+  if (isDefault) {
+    isDefaultData["defaultValue"] = options[0]
+  }
   return (
     <div className="mb-5">
       <label className="font-medium">{label}</label>
       <div className="mt-1">
-        <Field {...rest} defaultValue={options[0].value}>
+        <Field {...rest}>
           {(props) => (
             <div>
               <Select
-                // label="Client Occupation Type"
                 placeholder={placeholder}
                 name={props.input.name}
-                value={props.input.value?.value}
+                value={{
+                  value: props.input.value,
+                  label: options.find((arr) => arr.value === props.input.value)?.label,
+                }}
                 onChange={(value) => props.input.onChange(value?.value)}
                 options={options}
               />

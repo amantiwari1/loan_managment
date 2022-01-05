@@ -2,7 +2,6 @@ import { Enquiry } from "@prisma/client"
 import { message, Table } from "antd"
 import React from "react"
 import { getQueryKey, queryClient, useMutation, useQuery } from "blitz"
-import getDocuments from "../queries/getDocuments"
 import { Button } from "app/core/components/Button"
 import { AddIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons"
 import {
@@ -22,12 +21,13 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
 } from "@chakra-ui/react"
-import { DocumentForm } from "./DocumentForm"
-import createDocument from "../mutations/createDocument"
 import { FORM_ERROR } from "final-form"
 import getLogs from "app/logs/queries/getLogs"
-import updateDocument from "../mutations/updateDocument"
-import deleteDocument from "../mutations/deleteDocument"
+import createCaseStatus from "../mutations/createCaseStatus"
+import deleteCaseStatus from "../mutations/deleteCaseStatus"
+import updateCaseStatus from "../mutations/updateCaseStatus"
+import { CaseStatusForm } from "./CaseStatusForm"
+import getCaseStatuses from "../queries/getCaseStatuses"
 
 const StatusData = {
   UPLOADED: {
@@ -44,14 +44,11 @@ const AddNewButton = ({ onClick }) => {
   return (
     <div className="flex justify-between">
       <div>
-        <p className="text-2xl font-light">Documents</p>
+        <p className="text-2xl font-light">Case status</p>
       </div>
       <div className="flex space-x-1">
         <Button w={220} onClick={onClick} leftIcon={<AddIcon />}>
-          Add New Document
-        </Button>
-        <Button variant="outline" w={150}>
-          Send Intimation
+          Add New Case status
         </Button>
       </div>
     </div>
@@ -69,7 +66,7 @@ const ActionComponent = ({ onEdit, onDelete, isDeleting }) => {
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete Document
+              Delete CaseStatus
             </AlertDialogHeader>
 
             <AlertDialogBody>
@@ -111,29 +108,29 @@ const ActionComponent = ({ onEdit, onDelete, isDeleting }) => {
   )
 }
 
-const Document = ({ enquiry }: { enquiry: Enquiry }) => {
-  const [createDocumentMutation] = useMutation(createDocument, {
+const CaseStatus = ({ enquiry }: { enquiry: Enquiry }) => {
+  const [createCaseStatusMutation] = useMutation(createCaseStatus, {
     onSuccess() {
-      message.success("Created Document")
+      message.success("Created Case")
     },
     onError() {
-      message.error("Failed to Create Document")
+      message.error("Failed to Create CaseStatus")
     },
   })
-  const [updateDocumentMutation] = useMutation(updateDocument, {
+  const [updateCaseStatusMutation] = useMutation(updateCaseStatus, {
     onSuccess() {
-      message.success("Updated Document")
+      message.success("Updated CaseStatus")
     },
     onError() {
-      message.error("Failed to Updated Document")
+      message.error("Failed to Updated CaseStatus")
     },
   })
-  const [deleteDocumentMutation, { isLoading }] = useMutation(deleteDocument, {
+  const [deleteCaseStatusMutation, { isLoading }] = useMutation(deleteCaseStatus, {
     onSuccess() {
-      message.success("Deleted Document")
+      message.success("Deleted CaseStatus")
     },
     onError() {
-      message.error("Failed to Delete Document")
+      message.error("Failed to Delete CaseStatus")
     },
   })
   const [Edit, setEdit] = React.useState({
@@ -149,7 +146,7 @@ const Document = ({ enquiry }: { enquiry: Enquiry }) => {
     },
   })
 
-  const [data, { refetch, setQueryData }] = useQuery(getDocuments, {
+  const [data, { refetch }] = useQuery(getCaseStatuses, {
     where: {
       enquiryId: enquiry.id,
     },
@@ -167,10 +164,10 @@ const Document = ({ enquiry }: { enquiry: Enquiry }) => {
 
   const columns = [
     {
-      title: "Document",
-      dataIndex: "document_name",
-      key: "document_name",
-      render: (document_name) => <p>{document_name}</p>,
+      title: "Bank Name",
+      dataIndex: "bank_name",
+      key: "bank_name",
+      render: (bank_name) => <p>{bank_name}</p>,
     },
     {
       title: "Status",
@@ -178,6 +175,25 @@ const Document = ({ enquiry }: { enquiry: Enquiry }) => {
       render: (status) => (
         <Tag colorScheme={StatusData[status]?.color}>{StatusData[status]?.title}</Tag>
       ),
+    },
+    {
+      title: "Response From Bank",
+      dataIndex: "response_from_bank",
+      render: (response_from_bank) => (
+        <Tag colorScheme={response_from_bank ? "green" : "red"}>
+          {response_from_bank ? "Yes" : "No"}
+        </Tag>
+      ),
+    },
+    {
+      title: "Final Login",
+      dataIndex: "final_login",
+      render: (final_login) => <p>{final_login}</p>,
+    },
+    {
+      title: "remark",
+      dataIndex: "remark",
+      render: (remark) => <p>{remark}</p>,
     },
     {
       title: "Upload on",
@@ -193,7 +209,7 @@ const Document = ({ enquiry }: { enquiry: Enquiry }) => {
         <ActionComponent
           isDeleting={isLoading}
           onDelete={async () => {
-            await deleteDocumentMutation(record)
+            await deleteCaseStatusMutation(record)
             await onRefreshData()
           }}
           onEdit={() => {
@@ -209,7 +225,7 @@ const Document = ({ enquiry }: { enquiry: Enquiry }) => {
     <div>
       <Table
         title={() => <AddNewButton onClick={onOpen} />}
-        dataSource={data.documents}
+        dataSource={data.caseStatuses}
         columns={columns}
       />
 
@@ -223,25 +239,29 @@ const Document = ({ enquiry }: { enquiry: Enquiry }) => {
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader borderBottomWidth="1px">Add New Document</DrawerHeader>
+          <DrawerHeader borderBottomWidth="1px">Add New Case status</DrawerHeader>
 
           <DrawerBody>
-            <DocumentForm
-              submitText="Create Document"
+            <CaseStatusForm
+              submitText="Create CaseStatus"
               // TODO use a zod schema for form validation
               //  - Tip: extract mutation's schema into a shared `validations.ts` file and
               //         then import and use it here
-              // schema={CreateDocument}
+              // schema={CreateCaseStatus}
               initialValues={Edit}
               onSubmit={async (values) => {
                 try {
                   if (values.id) {
-                    await updateDocumentMutation(values)
+                    await updateCaseStatusMutation({
+                      ...values,
+                      remark: values?.remark ? values?.remark : "",
+                    })
                   } else {
-                    await createDocumentMutation({
+                    await createCaseStatusMutation({
                       ...values,
                       client_name: enquiry.client_name,
                       enquiryId: enquiry.id,
+                      remark: values?.remark ? values?.remark : "",
                     })
                   }
                   onClose()
@@ -268,4 +288,4 @@ const Document = ({ enquiry }: { enquiry: Enquiry }) => {
   )
 }
 
-export default Document
+export default CaseStatus

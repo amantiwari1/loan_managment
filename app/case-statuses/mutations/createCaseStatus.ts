@@ -2,29 +2,31 @@ import { resolver } from "blitz"
 import db from "db"
 import { z } from "zod"
 
-const CreateDocument = z.object({
-  client_name: z.string(),
-  document_name: z.string(),
-  enquiryId: z.number(),
+const CreateCaseStatus = z.object({
+  bank_name: z.string(),
+  final_login: z.string(),
   status: z.enum(["UPLOADED", "NOT_UPLOAD"]),
+  response_from_bank: z.boolean().default(false),
+  remark: z.string().optional().default(""),
+  enquiryId: z.number(),
 })
 
 export default resolver.pipe(
-  resolver.zod(CreateDocument),
+  resolver.zod(CreateCaseStatus),
   resolver.authorize(),
   async (input, ctx) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
-    const document = await db.document.create({ data: input })
+    const caseStatus = await db.caseStatus.create({ data: input })
 
     await db.log.create({
       data: {
-        name: "Created Document by",
+        name: "Created Case Status by",
         type: "CREATED",
         enquiryId: input.enquiryId,
         userId: ctx.session.userId,
       },
     })
 
-    return document
+    return caseStatus
   }
 )

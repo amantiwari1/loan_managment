@@ -2,11 +2,15 @@ import { resolver } from "blitz"
 import db from "db"
 import { z } from "zod"
 
-const UpdateUser = z.object({
+export const UpdateUser = z.object({
   id: z.number(),
-  name: z.string(),
+  email: z
+    .string()
+    .email()
+    .transform((str) => str.toLowerCase().trim()),
+  name: z.string().max(50),
+  role: z.enum(["ADMIN", "USER", "STAFF", "PARTNER"]),
 })
-
 export default resolver.pipe(
   resolver.zod(UpdateUser),
   resolver.authorize(),
