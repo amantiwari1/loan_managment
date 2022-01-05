@@ -28,7 +28,6 @@ blitz-log.log
 .envrc
 
 # Logs
-logs
 *.log
 
 # Runtime data
