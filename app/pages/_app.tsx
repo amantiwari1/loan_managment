@@ -10,8 +10,9 @@ import {
 import LoginForm from "app/auth/components/LoginForm"
 import "antd/dist/antd.css"
 import "app/core/styles/index.css"
+import "react-pro-sidebar/dist/css/styles.css"
 
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider } from "@chakra-ui/react"
 
 export default function App({ Component, pageProps }: AppProps) {
   const getLayout = Component.getLayout || ((page) => page)
@@ -25,7 +26,7 @@ export default function App({ Component, pageProps }: AppProps) {
         {getLayout(<Component {...pageProps} />)}
       </ErrorBoundary>
     </ChakraProvider>
-  );
+  )
 }
 
 function RootErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps) {

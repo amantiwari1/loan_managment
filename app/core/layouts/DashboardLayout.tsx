@@ -1,7 +1,5 @@
-import { Menu, Layout, Divider } from "antd"
+import { Layout } from "antd"
 import {
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
   LogoutOutlined,
   PieChartOutlined,
   DashboardOutlined,
@@ -11,12 +9,13 @@ import {
 import React, { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/router"
-import SubMenu from "antd/lib/menu/SubMenu"
 import logo from "public/logo.png"
 import { Image, useMutation } from "blitz"
 import logout from "app/auth/mutations/logout"
+import { ProSidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar"
+import { Divider } from "@chakra-ui/react"
 
-const { Header, Sider, Content } = Layout
+const { Content } = Layout
 
 const sidebar_data = [
   {
@@ -118,55 +117,59 @@ const Sidebar = ({ children }) => {
     setcollapsed(!collapsed)
   }
   return (
-    <Layout>
-      <Sider theme="light" style={{ width: 200 }} trigger={null} collapsible collapsed={collapsed}>
-        <div className="p-5">
-          <Image src={logo} alt="logo" />
-        </div>
-
-        <Menu mode="inline" defaultSelectedKeys={[router.pathname]}>
-          {sidebar_data.map((item) => (
-            <Menu.Item key={item.link} icon={<item.icon />}>
-              <Link href={item.link}>{item.name}</Link>
-            </Menu.Item>
-          ))}
-          {sidebar_data_2.map((item) => (
-            <SubMenu key={item.name} icon={<item.icon />} title={item.name}>
-              {item.sidebar_data.map((item) => (
-                <Menu.Item key={item.link}>
+    <div className="flex ">
+      <div className="min-w-[17rem]">
+        <div className="fixed top-0 bottom-0">
+          <ProSidebar className="">
+            <div className="px-5 bg-white py-2">
+              <Image src={logo} alt="logo" />
+            </div>
+            <Menu>
+              {sidebar_data.map((item) => (
+                <MenuItem key={item.link} icon={<item.icon />}>
                   <Link href={item.link}>{item.name}</Link>
-                </Menu.Item>
+                </MenuItem>
               ))}
-            </SubMenu>
-          ))}
+              {sidebar_data_2.map((item) => (
+                <SubMenu key={item.name} icon={<item.icon />} title={item.name}>
+                  {item.sidebar_data.map((item) => (
+                    <MenuItem key={item.link}>
+                      <Link href={item.link}>{item.name}</Link>
+                    </MenuItem>
+                  ))}
+                </SubMenu>
+              ))}
 
-          <Divider />
-          <p className="text-center text-xs text-gray-500">ACCOUNT RELATED</p>
-          <Menu.Item key="Account" icon={<LogoutOutlined />}>
-            Account Setting
-          </Menu.Item>
-          <Menu.Item
-            onClick={async () => await logoutMutation()}
-            key="logout"
-            icon={<LogoutOutlined />}
+              <Divider />
+              <MenuItem key="Account" icon={<LogoutOutlined />}>
+                Account Setting
+              </MenuItem>
+              <MenuItem
+                onClick={async () => await logoutMutation()}
+                key="logout"
+                icon={<LogoutOutlined />}
+              >
+                Logout
+              </MenuItem>
+            </Menu>
+          </ProSidebar>
+        </div>
+      </div>
+      <div className="w-full h-full bg-[#f0f2f5] min-h-screen">
+        <div className="bg-white w-full h-16"></div>
+        <div className="p-5 ">
+          <Content
+            style={{
+              margin: "0px 16px",
+              padding: "16px",
+              minHeight: 280,
+            }}
           >
-            Logout
-          </Menu.Item>
-        </Menu>
-      </Sider>
-      <Layout className="min-h-screen">
-        <Header className="bg-[#fff]" style={{ padding: 0 }}></Header>
-        <Content
-          style={{
-            margin: "0px 16px",
-            padding: "16px",
-            minHeight: 280,
-          }}
-        >
-          {children}
-        </Content>
-      </Layout>
-    </Layout>
+            {children}
+          </Content>
+        </div>
+      </div>
+    </div>
   )
 }
 

@@ -8,8 +8,9 @@ import {
   validateZodSchema,
 } from "blitz"
 import Layout from "app/core/layouts/Layout"
-import createUser, { CreateUser } from "app/users/mutations/createUser"
+import createUser from "app/users/mutations/createUser"
 import { UserForm, FORM_ERROR } from "app/users/components/UserForm"
+import { CreateUser } from "app/auth/validations"
 
 const NewUserPage: BlitzPage = () => {
   const router = useRouter()

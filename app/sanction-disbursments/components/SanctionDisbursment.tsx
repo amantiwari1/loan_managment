@@ -2,7 +2,6 @@ import { Enquiry } from "@prisma/client"
 import { message, Table } from "antd"
 import React from "react"
 import { getQueryKey, queryClient, useMutation, useQuery } from "blitz"
-import getDocuments from "../queries/getDocuments"
 import { Button } from "app/core/components/Button"
 import { AddIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons"
 import {
@@ -22,13 +21,13 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
 } from "@chakra-ui/react"
-import { DocumentForm } from "./DocumentForm"
-import createDocument from "../mutations/createDocument"
 import { FORM_ERROR } from "final-form"
-import getLogs from "../../logs/queries/getLogs"
-import updateDocument from "../mutations/updateDocument"
-import deleteDocument from "../mutations/deleteDocument"
-import { CreateDocument } from "app/auth/validations"
+import getLogs from "app/logs/queries/getLogs"
+import createSanctionDisbursment from "../mutations/createSanctionDisbursment"
+import deleteSanctionDisbursment from "../mutations/deleteSanctionDisbursment"
+import updateSanctionDisbursment from "../mutations/updateSanctionDisbursment"
+import { SanctionDisbursmentForm } from "./SanctionDisbursmentForm"
+import getSanctionDisbursments from "../queries/getSanctionDisbursments"
 
 const StatusData = {
   UPLOADED: {
@@ -45,14 +44,11 @@ const AddNewButton = ({ onClick }) => {
   return (
     <div className="flex justify-between">
       <div>
-        <p className="text-2xl font-light">Documents</p>
+        <p className="text-2xl font-light">Case status</p>
       </div>
       <div className="flex space-x-1">
         <Button w={220} onClick={onClick} leftIcon={<AddIcon />}>
-          Add New Document
-        </Button>
-        <Button variant="outline" w={150}>
-          Send Intimation
+          Add New Case status
         </Button>
       </div>
     </div>
@@ -70,7 +66,7 @@ const ActionComponent = ({ onEdit, onDelete, isDeleting }) => {
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete Document
+              Delete SanctionDisbursment
             </AlertDialogHeader>
 
             <AlertDialogBody>
@@ -112,31 +108,34 @@ const ActionComponent = ({ onEdit, onDelete, isDeleting }) => {
   )
 }
 
-const Document = ({ enquiry }: { enquiry: Enquiry }) => {
-  const [createDocumentMutation] = useMutation(createDocument, {
+const SanctionDisbursment = ({ enquiry }: { enquiry: Enquiry }) => {
+  const [createSanctionDisbursmentMutation] = useMutation(createSanctionDisbursment, {
     onSuccess() {
-      message.success("Created Document")
+      message.success("Created Case")
     },
     onError() {
-      message.error("Failed to Create Document")
+      message.error("Failed to Create SanctionDisbursment")
     },
   })
-  const [updateDocumentMutation] = useMutation(updateDocument, {
+  const [updateSanctionDisbursmentMutation] = useMutation(updateSanctionDisbursment, {
     onSuccess() {
-      message.success("Updated Document")
+      message.success("Updated SanctionDisbursment")
     },
     onError() {
-      message.error("Failed to Updated Document")
+      message.error("Failed to Updated SanctionDisbursment")
     },
   })
-  const [deleteDocumentMutation, { isLoading }] = useMutation(deleteDocument, {
-    onSuccess() {
-      message.success("Deleted Document")
-    },
-    onError() {
-      message.error("Failed to Delete Document")
-    },
-  })
+  const [deleteSanctionDisbursmentMutation, { isLoading }] = useMutation(
+    deleteSanctionDisbursment,
+    {
+      onSuccess() {
+        message.success("Deleted SanctionDisbursment")
+      },
+      onError() {
+        message.error("Failed to Delete SanctionDisbursment")
+      },
+    }
+  )
   const [Edit, setEdit] = React.useState({
     status: "NOT_UPLOAD",
   })
@@ -150,7 +149,7 @@ const Document = ({ enquiry }: { enquiry: Enquiry }) => {
     },
   })
 
-  const [data, { refetch, setQueryData }] = useQuery(getDocuments, {
+  const [data, { refetch }] = useQuery(getSanctionDisbursments, {
     where: {
       enquiryId: enquiry.id,
     },
@@ -169,9 +168,9 @@ const Document = ({ enquiry }: { enquiry: Enquiry }) => {
   const columns = [
     {
       title: "Document",
-      dataIndex: "document_name",
-      key: "document_name",
-      render: (document_name) => <p>{document_name}</p>,
+      dataIndex: "document",
+      key: "document",
+      render: (document) => <p>{document}</p>,
     },
     {
       title: "Status",
@@ -194,7 +193,7 @@ const Document = ({ enquiry }: { enquiry: Enquiry }) => {
         <ActionComponent
           isDeleting={isLoading}
           onDelete={async () => {
-            await deleteDocumentMutation(record)
+            await deleteSanctionDisbursmentMutation(record)
             await onRefreshData()
           }}
           onEdit={() => {
@@ -210,7 +209,7 @@ const Document = ({ enquiry }: { enquiry: Enquiry }) => {
     <div>
       <Table
         title={() => <AddNewButton onClick={onOpen} />}
-        dataSource={data.documents}
+        dataSource={data.sanctionDisbursments}
         columns={columns}
       />
 
@@ -224,25 +223,29 @@ const Document = ({ enquiry }: { enquiry: Enquiry }) => {
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader borderBottomWidth="1px">Add New Document</DrawerHeader>
+          <DrawerHeader borderBottomWidth="1px">Add New Case status</DrawerHeader>
 
           <DrawerBody>
-            <DocumentForm
-              submitText="Create Document"
+            <SanctionDisbursmentForm
+              submitText="Create SanctionDisbursment"
               // TODO use a zod schema for form validation
               //  - Tip: extract mutation's schema into a shared `validations.ts` file and
               //         then import and use it here
-              schema={CreateDocument}
+              // schema={CreateSanctionDisbursment}
               initialValues={Edit}
               onSubmit={async (values) => {
                 try {
                   if (values.id) {
-                    await updateDocumentMutation(values)
+                    await updateSanctionDisbursmentMutation({
+                      ...values,
+                      remark: values?.remark ? values?.remark : "",
+                    })
                   } else {
-                    await createDocumentMutation({
+                    await createSanctionDisbursmentMutation({
                       ...values,
                       client_name: enquiry.client_name,
                       enquiryId: enquiry.id,
+                      remark: values?.remark ? values?.remark : "",
                     })
                   }
                   onClose()
@@ -269,4 +272,4 @@ const Document = ({ enquiry }: { enquiry: Enquiry }) => {
   )
 }
 
-export default Document
+export default SanctionDisbursment

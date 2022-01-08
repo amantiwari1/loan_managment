@@ -9,6 +9,11 @@ import Overview from "app/enquiries/components/Overview"
 import Log from "app/logs/components/log"
 import Document from "app/documents/components/documents"
 import CaseStatus from "app/case-statuses/components/CaseStatus"
+import ProjectReport from "app/project-reports/components/ProjectReport"
+import { SearchValuationReportForm } from "app/search-valuation-reports/components/SearchValuationReportForm"
+import SearchValuationReport from "app/search-valuation-reports/components/SeachValuationReport"
+import BankQuery from "app/bank-queries/components/bankQuery"
+import SanctionDisbursment from "app/sanction-disbursments/components/SanctionDisbursment"
 export const Enquiry = () => {
   const router = useRouter()
   const enquiryId = useParam("enquiryId", "number")
@@ -34,7 +39,7 @@ export const Enquiry = () => {
     },
     {
       name: "Project Report",
-      components: <a>Hello</a>,
+      components: <ProjectReport enquiry={enquiry} />,
     },
     {
       name: "Case Status",
@@ -42,15 +47,15 @@ export const Enquiry = () => {
     },
     {
       name: "Search & Valuation Report",
-      components: <a>Hello</a>,
+      components: <SearchValuationReport enquiry={enquiry} />,
     },
     {
       name: "Bank Queries",
-      components: <a>Hello</a>,
+      components: <BankQuery enquiry={enquiry} />,
     },
     {
       name: "Sanction & Disbursment",
-      components: <a>Hello</a>,
+      components: <SanctionDisbursment enquiry={enquiry} />,
     },
   ]
 

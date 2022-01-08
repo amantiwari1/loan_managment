@@ -2,7 +2,7 @@ import { generateToken, hash256, resolver, SecurePassword } from "blitz"
 import db from "db"
 import { z } from "zod"
 
-export const CreateUser = z.object({
+const CreateUser = z.object({
   email: z
     .string()
     .email()

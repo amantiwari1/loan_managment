@@ -138,7 +138,7 @@ model SearchValuationReport {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   document  String
-  Status    StatusType
+  status    StatusType
   Enquiry   Enquiry?   @relation(fields: [enquiryId], references: [id])
   enquiryId Int?
 }
@@ -148,7 +148,7 @@ model BankQuery {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   bank_query   String
-  Status       StatusType
+  status       StatusType
   our_response String
   remark       String?
 
@@ -161,7 +161,7 @@ model SanctionDisbursment {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   document  String
-  Status    StatusType
+  status    StatusType
   Enquiry   Enquiry?   @relation(fields: [enquiryId], references: [id])
   enquiryId Int?
 }

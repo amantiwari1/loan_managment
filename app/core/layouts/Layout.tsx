@@ -1,10 +1,6 @@
 import { Head, BlitzLayout, useRouter } from "blitz"
-
-import dynamic from "next/dynamic"
-const DashboardLayout = dynamic(() => import("app/core/layouts/DashboardLayout"), {
-  ssr: false,
-})
 import AuthLayout from "app/core/layouts/AuthLayout"
+import DashboardLayout from "./DashboardLayout"
 
 const Layout: BlitzLayout<{ title?: string; layout: "AuthLayout" | "DashboardLayout" }> = ({
   title,

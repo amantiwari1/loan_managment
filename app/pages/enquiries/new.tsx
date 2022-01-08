@@ -3,6 +3,7 @@ import Layout from "app/core/layouts/Layout"
 import createEnquiry from "app/enquiries/mutations/createEnquiry"
 import { EnquiryForm, FORM_ERROR } from "app/enquiries/components/EnquiryForm"
 import { Divider } from "antd"
+import { CreateEnquiry } from "app/auth/validations"
 
 const NewEnquiryPage: BlitzPage = () => {
   const router = useRouter()
@@ -17,7 +18,7 @@ const NewEnquiryPage: BlitzPage = () => {
         // TODO use a zod schema for form validation
         //  - Tip: extract mutation's schema into a shared `validations.ts` file and
         //         then import and use it here
-        // schema={CreateEnquiry}
+        schema={CreateEnquiry}
         // initialValues={{}}
         onSubmit={async (values) => {
           try {

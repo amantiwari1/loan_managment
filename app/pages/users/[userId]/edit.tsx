@@ -9,6 +9,7 @@ import { Button } from "app/core/components/Button"
 import deleteUser from "app/users/mutations/deleteUser"
 
 import dynamic from "next/dynamic"
+import { UpdateUser } from "app/auth/validations"
 const Popconfirm = dynamic(() => import("antd/lib/popconfirm"), {
   ssr: false,
 })
@@ -46,7 +47,7 @@ export const EditUser = () => {
           // TODO use a zod schema for form validation
           //  - Tip: extract mutation's schema into a shared `validations.ts` file and
           //         then import and use it here
-          // schema={UpdateUser}
+          schema={UpdateUser}
           initialValues={{ ...user }}
           onSubmit={async (values) => {
             console.log(values)
