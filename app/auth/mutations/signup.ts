@@ -1,9 +1,15 @@
-import { resolver, SecurePassword } from "blitz"
+import { resolver, SecurePassword, AuthorizationError } from "blitz"
 import db from "db"
 import { Signup } from "app/auth/validations"
 import { Role } from "types"
 
 export default resolver.pipe(resolver.zod(Signup), async ({ email, password, role }, ctx) => {
+  const count = await db.user.count()
+
+  if (count !== 0) {
+    throw new AuthorizationError()
+  }
+
   const hashedPassword = await SecurePassword.hash(password.trim())
   const user = await db.user.create({
     data: { email: email.toLowerCase().trim(), hashedPassword, role: role },

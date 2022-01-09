@@ -1,13 +1,17 @@
-import { useRouter, BlitzPage, Routes } from "blitz"
+import { useRouter, BlitzPage, Routes, useQuery } from "blitz"
 import Layout from "app/core/layouts/Layout"
 import { SignupForm } from "app/auth/components/SignupForm"
+import isSignup from "../queries/isSignup"
+import { Suspense } from "react"
 
 const SignupPage: BlitzPage = () => {
   const router = useRouter()
 
   return (
     <div>
-      <SignupForm onSuccess={() => router.push(Routes.Home())} />
+      <Suspense fallback>
+        <SignupForm onSuccess={() => router.push(Routes.Home())} />
+      </Suspense>
     </div>
   )
 }

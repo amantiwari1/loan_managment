@@ -1,26 +1,117 @@
 import { Enquiry } from "@prisma/client"
 import { Card, Divider } from "antd"
-import React from "react"
+import React, { useState } from "react"
+import Select from "react-select"
+
 import { Text } from "@chakra-ui/react"
+import { useMutation, useQuery } from "blitz"
+import getUsers from "app/users/queries/getUsers"
+import { valueTernary } from "react-select/dist/declarations/src/utils"
+import { Button } from "app/core/components/Button"
+import addPartnerEnquiry from "../mutations/addPartnerEnquiry"
+
+const client_service_options = [
+  { value: "HOME_LOAN", label: "Home Loan" },
+  { value: "MORTGAGE_LOAN", label: "Mortgage Loan" },
+  { value: "UNSECURED_LOAN", label: "Unsecured Loan" },
+  { value: "MSME_LOAN", label: "MSME Loan" },
+  { value: "STARTUP_LOAN", label: "Startup Loan" },
+  { value: "SUBSIDY_SCHEMES", label: "Subsidy Schemes" },
+].reduce((obj, item) => Object.assign(obj, { [item.value]: item.label }), {})
+
+const client_qccupation_type_options = [
+  { value: "SALARIED_INDIVIDUAL", label: "Salaried Individual" },
+  { value: "INDIVIDUAL", label: "Individual" },
+  {
+    value: "SELF_EMPLOYED_INDIVIDUAL_OR_PROPRIETORSHIP",
+    label: "Self Employed Individual / Proprietorship",
+  },
+  { value: "PARTNERSHIP", label: "Partnership" },
+  { value: "COMPANY", label: "Company" },
+].reduce((obj, item) => Object.assign(obj, { [item.value]: item.label }), {})
 
 const Overview = ({ enquiry }: { enquiry: Enquiry }) => {
+  const [addPartnerMutation] = useMutation(addPartnerEnquiry)
+  const [partner] = useQuery(getUsers, {
+    where: {
+      role: "PARTNER",
+    },
+  })
+  const data = [
+    {
+      name: "Client Name",
+      content: enquiry.client_name,
+      icon: "",
+    },
+    {
+      name: "Client Mobile",
+      content: enquiry.client_mobile.toString(),
+      icon: "",
+    },
+    {
+      name: "Client Address",
+      content: enquiry.client_address,
+      icon: "",
+    },
+    {
+      name: "Client Occupation type",
+      content: client_qccupation_type_options[enquiry.client_qccupation_type],
+      icon: "",
+    },
+    {
+      name: "Client Service",
+      content: client_service_options[enquiry.client_service],
+      icon: "",
+    },
+    {
+      name: "Loan Amount",
+      content: "₹" + enquiry.loan_amount.toString(),
+      icon: "",
+    },
+  ]
+
+  const [Partner, setPartner] = useState<number | undefined>(undefined)
+
   return (
     <div>
       <Card title="Enquiry Overview">
-        <Text fontSize="xl">{enquiry.client_name}</Text>
-        <Divider />
-        <Text fontSize="xl">{enquiry.client_mobile.toString()}</Text>
-        <Divider />
-        <Text fontSize="xl">{enquiry.client_address}</Text>
-        <Divider />
-        <Text fontSize="xl">{enquiry.client_qccupation_type}</Text>
-        <Divider />
-        <Text fontSize="xl">{enquiry.client_service}</Text>
-        <Divider />
-        {/* <p>{enquiry.reatedAt}</p> */}
-        <Text fontSize="xl">{enquiry.loan_amount.toString()}</Text>
-        <Divider />
-        <Text fontSize="xl">{enquiry.private_enquiry}</Text>
+        <Text fontSize="sm">Partner :</Text>
+        <div className="flex space-x-2 max-w-sm mb-4">
+          <div className="w-[40rem]">
+            <Select
+              onChange={(data) => {
+                setPartner(data?.value)
+              }}
+              value={{
+                value: enquiry?.partner?.user?.id,
+                label: enquiry?.partner?.user?.name,
+              }}
+              options={partner.users.map((item) => {
+                return {
+                  value: item.id,
+                  label: item.name,
+                }
+              })}
+            />
+          </div>
+          <Button
+            onClick={() => {
+              addPartnerMutation({
+                id: enquiry.id,
+                userId: Partner,
+              })
+            }}
+          >
+            Update Partner
+          </Button>
+        </div>
+        {data.map((item, i) => (
+          <div key={i}>
+            <Text fontSize="sm">{item.name}:</Text>
+            <Text fontSize="xl">{item.content}</Text>
+            <Divider />
+          </div>
+        ))}
       </Card>
     </div>
   )

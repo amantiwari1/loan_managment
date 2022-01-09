@@ -13,9 +13,17 @@ const UpdateProjectReport = z.object({
 export default resolver.pipe(
   resolver.zod(UpdateProjectReport),
   resolver.authorize(),
-  async ({ id, ...data }) => {
+  async ({ id, ...data }, ctx) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
     const projectReport = await db.projectReport.update({ where: { id }, data })
+    await db.log.create({
+      data: {
+        name: "Updated Project Report by",
+        type: "UPDATED",
+        enquiryId: data.enquiryId,
+        userId: ctx.session.userId,
+      },
+    })
 
     return projectReport
   }

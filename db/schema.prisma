@@ -13,21 +13,26 @@ generator client {
 // --------------------------------------
 
 model User {
-  id             Int      @id @default(autoincrement())
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id             Int               @id @default(autoincrement())
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
   name           String?
-  email          String   @unique
+  email          String            @unique
   hashedPassword String?
   role           String
   log            Log[]
+  tokens         Token[]
+  sessions       Session[]
+  enquries       UsersOnEnquires[]
+}
 
-  tokens   Token[]
-  sessions Session[]
-  parnter  User[]    @relation("UserToUser")
+model UsersOnEnquires {
+  user      User    @relation(fields: [userId], references: [id])
+  userId    Int
+  enquiry   Enquiry @relation(fields: [enquiryId], references: [id])
+  enquiryId Int
 
-  User   User? @relation("UserToUser", fields: [userId], references: [id])
-  userId Int?
+  @@id([userId, enquiryId])
 }
 
 model Session {
@@ -84,6 +89,7 @@ model Enquiry {
   sanction_and_disbursement SanctionDisbursment[]
   project_report            ProjectReport[]
   search_valuation_report   SearchValuationReport[]
+  users                     UsersOnEnquires[]
 }
 
 model Log {

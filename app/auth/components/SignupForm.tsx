@@ -1,22 +1,35 @@
-import { useMutation } from "blitz"
+import { Routes, useMutation, useQuery, useRouter } from "blitz"
 import { LabeledTextField } from "app/core/components/LabeledTextField"
 import { Form, FORM_ERROR } from "app/core/components/Form"
 import signup from "app/auth/mutations/signup"
 import { Signup } from "app/auth/validations"
+import isSignup from "../queries/isSignup"
 
 type SignupFormProps = {
   onSuccess?: () => void
 }
 
 export const SignupForm = (props: SignupFormProps) => {
+  const router = useRouter()
+  useQuery(
+    isSignup,
+    {},
+    {
+      onSuccess(data) {
+        if (!data) {
+          router.push(Routes.LoginPage())
+        }
+      },
+    }
+  )
   const [signupMutation] = useMutation(signup)
 
   return (
     <div>
-      <h1>Create an Account</h1>
+      <h1>Account</h1>
 
       <Form
-        submitText="Create Account"
+        submitText="create"
         schema={Signup}
         initialValues={{ email: "", password: "" }}
         onSubmit={async (values) => {

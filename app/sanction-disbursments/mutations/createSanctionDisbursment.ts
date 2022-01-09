@@ -11,9 +11,18 @@ const CreateSanctionDisbursment = z.object({
 export default resolver.pipe(
   resolver.zod(CreateSanctionDisbursment),
   resolver.authorize(),
-  async (input) => {
+  async (input, ctx) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
     const sanctionDisbursment = await db.sanctionDisbursment.create({ data: input })
+
+    await db.log.create({
+      data: {
+        name: "Created Sanction Disbursment by",
+        type: "CREATED",
+        enquiryId: input.enquiryId,
+        userId: ctx.session.userId,
+      },
+    })
 
     return sanctionDisbursment
   }
