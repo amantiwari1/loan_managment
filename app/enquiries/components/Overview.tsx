@@ -4,11 +4,12 @@ import React, { useState } from "react"
 import Select from "react-select"
 
 import { Text } from "@chakra-ui/react"
-import { useMutation, useQuery } from "blitz"
+import { useMutation, useParam, useQuery, useSession } from "blitz"
 import getUsers from "app/users/queries/getUsers"
-import { valueTernary } from "react-select/dist/declarations/src/utils"
 import { Button } from "app/core/components/Button"
 import addPartnerEnquiry from "../mutations/addPartnerEnquiry"
+import getEnquiry from "../queries/getEnquiry"
+import addCustomerEnquiry from "../mutations/addCustomerEnquiry"
 
 const client_service_options = [
   { value: "HOME_LOAN", label: "Home Loan" },
@@ -30,13 +31,35 @@ const client_qccupation_type_options = [
   { value: "COMPANY", label: "Company" },
 ].reduce((obj, item) => Object.assign(obj, { [item.value]: item.label }), {})
 
-const Overview = ({ enquiry }: { enquiry: Enquiry }) => {
-  const [addPartnerMutation] = useMutation(addPartnerEnquiry)
-  const [partner] = useQuery(getUsers, {
-    where: {
-      role: "PARTNER",
+const Overview = () => {
+  const enquiryId = useParam("enquiryId", "number")
+  const [enquiry] = useQuery(getEnquiry, { id: enquiryId })
+  const session = useSession()
+  const [addPartnerMutation, { isLoading: partnerLoading }] = useMutation(addPartnerEnquiry)
+  const [addCustomerMutation, { isLoading: customerLoading }] = useMutation(addCustomerEnquiry)
+  const [partner] = useQuery(
+    getUsers,
+    {
+      where: {
+        role: "PARTNER",
+      },
     },
-  })
+    {
+      enabled: session.role !== "USER",
+    }
+  )
+  const [customer] = useQuery(
+    getUsers,
+    {
+      where: {
+        role: "USER",
+      },
+    },
+    {
+      enabled: session.role !== "USER",
+    }
+  )
+
   const data = [
     {
       name: "Client Name",
@@ -68,43 +91,92 @@ const Overview = ({ enquiry }: { enquiry: Enquiry }) => {
       content: "₹" + enquiry.loan_amount.toString(),
       icon: "",
     },
+    {
+      name: "Partner",
+      content: enquiry?.partner?.user?.name ?? "Not Selected",
+      icon: "",
+    },
+    {
+      name: "Customer",
+      content: enquiry?.customer?.user?.name ?? "Not Selected",
+      icon: "",
+    },
   ]
 
   const [Partner, setPartner] = useState<number | undefined>(undefined)
+  const [Customer, setCustomer] = useState<number | undefined>(undefined)
 
   return (
     <div>
       <Card title="Enquiry Overview">
-        <Text fontSize="sm">Partner :</Text>
-        <div className="flex space-x-2 max-w-sm mb-4">
-          <div className="w-[40rem]">
-            <Select
-              onChange={(data) => {
-                setPartner(data?.value)
-              }}
-              value={{
-                value: enquiry?.partner?.user?.id,
-                label: enquiry?.partner?.user?.name,
-              }}
-              options={partner.users.map((item) => {
-                return {
-                  value: item.id,
-                  label: item.name,
-                }
-              })}
-            />
-          </div>
-          <Button
-            onClick={() => {
-              addPartnerMutation({
-                id: enquiry.id,
-                userId: Partner,
-              })
-            }}
-          >
-            Update Partner
-          </Button>
-        </div>
+        {session.role === "USER" ? (
+          <></>
+        ) : (
+          <>
+            <Text fontSize="sm">Partner :</Text>
+            <div className="flex space-x-2 max-w-sm mb-4">
+              <div className="w-[40rem]">
+                <Select
+                  onChange={(data) => {
+                    setPartner(data?.value)
+                  }}
+                  defaultValue={{
+                    value: enquiry?.partner?.user?.id,
+                    label: enquiry?.partner?.user?.name,
+                  }}
+                  options={partner?.users.map((item) => {
+                    return {
+                      value: item.id,
+                      label: item.name,
+                    }
+                  })}
+                />
+              </div>
+              <Button
+                isLoading={partnerLoading}
+                onClick={() => {
+                  addPartnerMutation({
+                    id: enquiry.id,
+                    userId: Partner,
+                  })
+                }}
+              >
+                Update Partner
+              </Button>
+            </div>
+            <Text fontSize="sm">Customer :</Text>
+            <div className="flex space-x-2 max-w-sm mb-4">
+              <div className="w-[40rem]">
+                <Select
+                  onChange={(data) => {
+                    setCustomer(data?.value)
+                  }}
+                  defaultValue={{
+                    value: enquiry?.customer?.user?.id,
+                    label: enquiry?.customer?.user?.name,
+                  }}
+                  options={customer.users.map((item) => {
+                    return {
+                      value: item.id,
+                      label: item.name,
+                    }
+                  })}
+                />
+              </div>
+              <Button
+                isLoading={customerLoading}
+                onClick={() => {
+                  addCustomerMutation({
+                    id: enquiry.id,
+                    userId: Customer,
+                  })
+                }}
+              >
+                Update customer
+              </Button>
+            </div>
+          </>
+        )}
         {data.map((item, i) => (
           <div key={i}>
             <Text fontSize="sm">{item.name}:</Text>

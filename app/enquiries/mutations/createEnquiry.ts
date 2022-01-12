@@ -5,7 +5,7 @@ import { EnquiryValidation } from "./validations"
 
 export default resolver.pipe(
   resolver.zod(EnquiryValidation),
-  resolver.authorize(),
+  resolver.authorize(["ADMIN", "STAFF"]),
   async (input) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
     const enquiry = await db.enquiry.create({ data: input })

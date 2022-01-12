@@ -1,7 +1,6 @@
-import { Enquiry } from "@prisma/client"
 import { message, Table } from "antd"
 import React from "react"
-import { getQueryKey, queryClient, useMutation, useQuery } from "blitz"
+import { getQueryKey, queryClient, useMutation, useParam, useQuery, useSession } from "blitz"
 import { Button } from "app/core/components/Button"
 import { AddIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons"
 import {
@@ -29,6 +28,7 @@ import updateProjectReport from "../mutations/updateProjectReport"
 import { ProjectReportForm } from "./ProjectReportForm"
 import getProjectReports from "../queries/getProjectReports"
 import { CreateProjectReport } from "app/auth/validations"
+import getEnquiry from "app/enquiries/queries/getEnquiry"
 
 const StatusData = {
   UPLOADED: {
@@ -42,15 +42,18 @@ const StatusData = {
 }
 
 const AddNewButton = ({ onClick }) => {
+  const session = useSession()
   return (
     <div className="flex justify-between">
       <div>
-        <p className="text-2xl font-light">Case status</p>
+        <p className="text-2xl font-light">Project Report</p>
       </div>
       <div className="flex space-x-1">
-        <Button w={220} onClick={onClick} leftIcon={<AddIcon />}>
-          Add New Case status
-        </Button>
+        {session.role !== "USER" && (
+          <Button w={220} onClick={onClick} leftIcon={<AddIcon />}>
+            Add New Case status
+          </Button>
+        )}
       </div>
     </div>
   )
@@ -109,7 +112,9 @@ const ActionComponent = ({ onEdit, onDelete, isDeleting }) => {
   )
 }
 
-const ProjectReport = ({ enquiry }: { enquiry: Enquiry }) => {
+const ProjectReport = () => {
+  const enquiryId = useParam("enquiryId", "number")
+  const [enquiry] = useQuery(getEnquiry, { id: enquiryId })
   const [createProjectReportMutation] = useMutation(createProjectReport, {
     onSuccess() {
       message.success("Created Case")
@@ -231,7 +236,7 @@ const ProjectReport = ({ enquiry }: { enquiry: Enquiry }) => {
 
           <DrawerBody>
             <ProjectReportForm
-              submitText="Create ProjectReport"
+              submitText="Create Project Report"
               // TODO use a zod schema for form validation
               //  - Tip: extract mutation's schema into a shared `validations.ts` file and
               //         then import and use it here

@@ -9,7 +9,7 @@ const DeleteSanctionDisbursment = z.object({
 
 export default resolver.pipe(
   resolver.zod(DeleteSanctionDisbursment),
-  resolver.authorize(),
+  resolver.authorize(["ADMIN", "STAFF"]),
   async ({ id, enquiryId }, ctx) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
     const sanctionDisbursment = await db.sanctionDisbursment.deleteMany({ where: { id } })

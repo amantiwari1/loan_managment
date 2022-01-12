@@ -11,7 +11,7 @@ const UpdateSanctionDisbursment = z.object({
 
 export default resolver.pipe(
   resolver.zod(UpdateSanctionDisbursment),
-  resolver.authorize(),
+  resolver.authorize(["ADMIN", "STAFF"]),
   async ({ id, ...data }, ctx) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
     const sanctionDisbursment = await db.sanctionDisbursment.update({ where: { id }, data })

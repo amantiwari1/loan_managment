@@ -11,7 +11,7 @@ const UpdateSearchValuationReport = z.object({
 
 export default resolver.pipe(
   resolver.zod(UpdateSearchValuationReport),
-  resolver.authorize(),
+  resolver.authorize(["ADMIN", "STAFF"]),
   async ({ id, ...data }, ctx) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
     const searchValuationReport = await db.searchValuationReport.update({ where: { id }, data })

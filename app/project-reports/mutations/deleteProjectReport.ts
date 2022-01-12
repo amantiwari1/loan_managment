@@ -9,7 +9,7 @@ const DeleteProjectReport = z.object({
 
 export default resolver.pipe(
   resolver.zod(DeleteProjectReport),
-  resolver.authorize(),
+  resolver.authorize(["ADMIN", "STAFF"]),
   async ({ id, enquiryId }, ctx) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
     const projectReport = await db.projectReport.deleteMany({ where: { id } })

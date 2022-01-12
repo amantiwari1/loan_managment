@@ -9,7 +9,7 @@ const DeleteBankQuery = z.object({
 
 export default resolver.pipe(
   resolver.zod(DeleteBankQuery),
-  resolver.authorize(),
+  resolver.authorize(["ADMIN", "STAFF"]),
   async ({ id, enquiryId }, ctx) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
     const bankQuery = await db.bankQuery.deleteMany({ where: { id } })

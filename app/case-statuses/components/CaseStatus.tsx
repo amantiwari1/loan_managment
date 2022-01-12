@@ -1,7 +1,7 @@
 import { Enquiry } from "@prisma/client"
 import { message, Table } from "antd"
 import React from "react"
-import { getQueryKey, queryClient, useMutation, useQuery } from "blitz"
+import { getQueryKey, queryClient, useMutation, useParam, useQuery, useSession } from "blitz"
 import { Button } from "app/core/components/Button"
 import { AddIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons"
 import {
@@ -28,6 +28,7 @@ import updateCaseStatus from "../mutations/updateCaseStatus"
 import { CaseStatusForm } from "./CaseStatusForm"
 import getCaseStatuses from "../queries/getCaseStatuses"
 import getLogs from "../../logs/queries/getLogs"
+import getEnquiry from "app/enquiries/queries/getEnquiry"
 
 const StatusData = {
   UPLOADED: {
@@ -41,15 +42,18 @@ const StatusData = {
 }
 
 const AddNewButton = ({ onClick }) => {
+  const session = useSession()
   return (
     <div className="flex justify-between">
       <div>
         <p className="text-2xl font-light">Case status</p>
       </div>
       <div className="flex space-x-1">
-        <Button w={220} onClick={onClick} leftIcon={<AddIcon />}>
-          Add New Case status
-        </Button>
+        {session.role !== "USER" && (
+          <Button w={220} onClick={onClick} leftIcon={<AddIcon />}>
+            Add New Case status
+          </Button>
+        )}
       </div>
     </div>
   )
@@ -108,7 +112,9 @@ const ActionComponent = ({ onEdit, onDelete, isDeleting }) => {
   )
 }
 
-const CaseStatus = ({ enquiry }: { enquiry: Enquiry }) => {
+const CaseStatus = () => {
+  const enquiryId = useParam("enquiryId", "number")
+  const [enquiry] = useQuery(getEnquiry, { id: enquiryId })
   const [createCaseStatusMutation] = useMutation(createCaseStatus, {
     onSuccess() {
       message.success("Created Case")
@@ -243,7 +249,7 @@ const CaseStatus = ({ enquiry }: { enquiry: Enquiry }) => {
 
           <DrawerBody>
             <CaseStatusForm
-              submitText="Create CaseStatus"
+              submitText="Create Case Status"
               // TODO use a zod schema for form validation
               //  - Tip: extract mutation's schema into a shared `validations.ts` file and
               //         then import and use it here

@@ -1,7 +1,7 @@
 import { Enquiry } from "@prisma/client"
 import { message, Table } from "antd"
 import React from "react"
-import { getQueryKey, queryClient, useMutation, useQuery } from "blitz"
+import { getQueryKey, queryClient, useMutation, useParam, useQuery, useSession } from "blitz"
 import getDocuments from "../queries/getDocuments"
 import { Button } from "app/core/components/Button"
 import { AddIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons"
@@ -29,6 +29,7 @@ import getLogs from "../../logs/queries/getLogs"
 import updateDocument from "../mutations/updateDocument"
 import deleteDocument from "../mutations/deleteDocument"
 import { CreateDocument } from "app/auth/validations"
+import getEnquiry from "app/enquiries/queries/getEnquiry"
 
 const StatusData = {
   UPLOADED: {
@@ -42,19 +43,24 @@ const StatusData = {
 }
 
 const AddNewButton = ({ onClick }) => {
+  const session = useSession()
+
   return (
     <div className="flex justify-between">
       <div>
         <p className="text-2xl font-light">Documents</p>
       </div>
-      <div className="flex space-x-1">
-        <Button w={220} onClick={onClick} leftIcon={<AddIcon />}>
-          Add New Document
-        </Button>
-        <Button variant="outline" w={150}>
-          Send Intimation
-        </Button>
-      </div>
+
+      {session.role !== "USER" && (
+        <div className="flex space-x-1">
+          <Button w={220} onClick={onClick} leftIcon={<AddIcon />}>
+            Add New Document
+          </Button>
+          <Button variant="outline" w={150}>
+            Send Intimation
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
@@ -112,7 +118,10 @@ const ActionComponent = ({ onEdit, onDelete, isDeleting }) => {
   )
 }
 
-const Document = ({ enquiry }: { enquiry: Enquiry }) => {
+const Document = () => {
+  const enquiryId = useParam("enquiryId", "number")
+  const [enquiry] = useQuery(getEnquiry, { id: enquiryId })
+
   const [createDocumentMutation] = useMutation(createDocument, {
     onSuccess() {
       message.success("Created Document")

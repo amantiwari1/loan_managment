@@ -13,7 +13,7 @@ export const UpdateUser = z.object({
 })
 export default resolver.pipe(
   resolver.zod(UpdateUser),
-  resolver.authorize(),
+  resolver.authorize("ADMIN"),
   async ({ id, ...data }) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
     const user = await db.user.update({ where: { id }, data })

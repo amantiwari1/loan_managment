@@ -12,7 +12,7 @@ const CreateProjectReport = z.object({
 
 export default resolver.pipe(
   resolver.zod(CreateProjectReport),
-  resolver.authorize(),
+  resolver.authorize(["ADMIN", "STAFF"]),
   async (input, ctx) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
     const projectReport = await db.projectReport.create({ data: input })

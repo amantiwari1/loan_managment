@@ -10,10 +10,11 @@ import React, { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import logo from "public/logo.png"
-import { Image, useMutation } from "blitz"
+import { Image, useMutation, useSession } from "blitz"
 import logout from "app/auth/mutations/logout"
 import { ProSidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar"
 import { Divider } from "@chakra-ui/react"
+import { useCurrentUser } from "../hooks/useCurrentUser"
 
 const { Content } = Layout
 
@@ -28,6 +29,7 @@ const sidebar_data_2 = [
   {
     name: "Enquiries",
     icon: FormOutlined,
+    role: ["ADMIN", "STAFF"],
     sidebar_data: [
       {
         name: "Add a New Enquiry",
@@ -59,6 +61,7 @@ const sidebar_data_2 = [
   {
     name: "Users",
     icon: UserOutlined,
+    role: ["ADMIN"],
 
     sidebar_data: [
       {
@@ -91,7 +94,7 @@ const sidebar_data_2 = [
   {
     name: "Channel Partner",
     icon: PieChartOutlined,
-
+    role: ["ADMIN"],
     sidebar_data: [
       {
         name: "All Channel Partner",
@@ -108,14 +111,9 @@ const sidebar_data_2 = [
 ]
 
 const Sidebar = ({ children }) => {
-  const [collapsed, setcollapsed] = useState(false)
-  const router = useRouter()
   const [logoutMutation] = useMutation(logout)
+  const session = useSession()
 
-  const toggle = () => {
-    console.log(router.pathname)
-    setcollapsed(!collapsed)
-  }
   return (
     <div className="flex ">
       <div className="min-w-[17rem]">
@@ -131,13 +129,17 @@ const Sidebar = ({ children }) => {
                 </MenuItem>
               ))}
               {sidebar_data_2.map((item) => (
-                <SubMenu key={item.name} icon={<item.icon />} title={item.name}>
-                  {item.sidebar_data.map((item) => (
-                    <MenuItem key={item.link}>
-                      <Link href={item.link}>{item.name}</Link>
-                    </MenuItem>
-                  ))}
-                </SubMenu>
+                <>
+                  {session.role !== "USER" && (
+                    <SubMenu key={item.name} icon={<item.icon />} title={item.name}>
+                      {item.sidebar_data.map((item) => (
+                        <MenuItem key={item.link}>
+                          <Link href={item.link}>{item.name}</Link>
+                        </MenuItem>
+                      ))}
+                    </SubMenu>
+                  )}
+                </>
               ))}
 
               <Divider />

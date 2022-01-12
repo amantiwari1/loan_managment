@@ -1,13 +1,13 @@
 import { Head, BlitzLayout, useRouter } from "blitz"
 import AuthLayout from "app/core/layouts/AuthLayout"
 import DashboardLayout from "./DashboardLayout"
+import { Suspense } from "react"
 
 const Layout: BlitzLayout<{ title?: string; layout: "AuthLayout" | "DashboardLayout" }> = ({
   title,
   children,
   layout,
 }) => {
-  const router = useRouter()
   return (
     <>
       <Head>
@@ -15,7 +15,11 @@ const Layout: BlitzLayout<{ title?: string; layout: "AuthLayout" | "DashboardLay
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {layout === "AuthLayout" && <AuthLayout> {children} </AuthLayout>}
-      {layout === "DashboardLayout" && <DashboardLayout>{children}</DashboardLayout>}
+      {layout === "DashboardLayout" && (
+        <Suspense fallback={<div>Loading...</div>}>
+          <DashboardLayout>{children}</DashboardLayout>
+        </Suspense>
+      )}
     </>
   )
 }

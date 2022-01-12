@@ -9,7 +9,7 @@ const DeleteDocument = z.object({
 
 export default resolver.pipe(
   resolver.zod(DeleteDocument),
-  resolver.authorize(),
+  resolver.authorize(["ADMIN", "STAFF"]),
   async ({ id, enquiryId }, ctx) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
     const document = await db.document.deleteMany({ where: { id } })

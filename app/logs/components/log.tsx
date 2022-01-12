@@ -1,9 +1,10 @@
 import { Enquiry } from "@prisma/client"
 import { Card } from "antd"
 import React from "react"
-import { useQuery } from "blitz"
+import { useParam, useQuery, useSession } from "blitz"
 import getLogs from "../queries/getLogs"
 import { Timeline } from "antd"
+import getEnquiry from "app/enquiries/queries/getEnquiry"
 
 const TimelineColor = {
   CREATED: "green",
@@ -11,7 +12,9 @@ const TimelineColor = {
   UPDATED: "blue",
 }
 
-const Log = ({ enquiry }: { enquiry: Enquiry }) => {
+const Log = () => {
+  const enquiryId = useParam("enquiryId", "number")
+  const [enquiry] = useQuery(getEnquiry, { id: enquiryId })
   const [data] = useQuery(getLogs, {
     where: {
       enquiryId: enquiry.id,

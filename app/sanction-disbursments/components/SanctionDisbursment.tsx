@@ -1,7 +1,7 @@
 import { Enquiry } from "@prisma/client"
 import { message, Table } from "antd"
 import React from "react"
-import { getQueryKey, queryClient, useMutation, useQuery } from "blitz"
+import { getQueryKey, queryClient, useMutation, useParam, useQuery, useSession } from "blitz"
 import { Button } from "app/core/components/Button"
 import { AddIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons"
 import {
@@ -28,6 +28,7 @@ import deleteSanctionDisbursment from "../mutations/deleteSanctionDisbursment"
 import updateSanctionDisbursment from "../mutations/updateSanctionDisbursment"
 import { SanctionDisbursmentForm } from "./SanctionDisbursmentForm"
 import getSanctionDisbursments from "../queries/getSanctionDisbursments"
+import getEnquiry from "app/enquiries/queries/getEnquiry"
 
 const StatusData = {
   UPLOADED: {
@@ -41,15 +42,18 @@ const StatusData = {
 }
 
 const AddNewButton = ({ onClick }) => {
+  const session = useSession()
   return (
     <div className="flex justify-between">
       <div>
-        <p className="text-2xl font-light">Case status</p>
+        <p className="text-2xl font-light">Sanction Disbursment</p>
       </div>
       <div className="flex space-x-1">
-        <Button w={220} onClick={onClick} leftIcon={<AddIcon />}>
-          Add New Case status
-        </Button>
+        {session.role !== "USER" && (
+          <Button w={220} onClick={onClick} leftIcon={<AddIcon />}>
+            Add New Sanction Disbursment
+          </Button>
+        )}
       </div>
     </div>
   )
@@ -108,7 +112,9 @@ const ActionComponent = ({ onEdit, onDelete, isDeleting }) => {
   )
 }
 
-const SanctionDisbursment = ({ enquiry }: { enquiry: Enquiry }) => {
+const SanctionDisbursment = () => {
+  const enquiryId = useParam("enquiryId", "number")
+  const [enquiry] = useQuery(getEnquiry, { id: enquiryId })
   const [createSanctionDisbursmentMutation] = useMutation(createSanctionDisbursment, {
     onSuccess() {
       message.success("Created Case")
@@ -129,10 +135,10 @@ const SanctionDisbursment = ({ enquiry }: { enquiry: Enquiry }) => {
     deleteSanctionDisbursment,
     {
       onSuccess() {
-        message.success("Deleted SanctionDisbursment")
+        message.success("Deleted Sanction Disbursment")
       },
       onError() {
-        message.error("Failed to Delete SanctionDisbursment")
+        message.error("Failed to Delete Sanction Disbursment")
       },
     }
   )
@@ -227,7 +233,7 @@ const SanctionDisbursment = ({ enquiry }: { enquiry: Enquiry }) => {
 
           <DrawerBody>
             <SanctionDisbursmentForm
-              submitText="Create SanctionDisbursment"
+              submitText="Create Sanction Disbursment"
               // TODO use a zod schema for form validation
               //  - Tip: extract mutation's schema into a shared `validations.ts` file and
               //         then import and use it here

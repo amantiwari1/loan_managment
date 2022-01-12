@@ -9,7 +9,7 @@ const SignupPage: BlitzPage = () => {
 
   return (
     <div>
-      <Suspense fallback>
+      <Suspense fallback={<div>Loading...</div>}>
         <SignupForm onSuccess={() => router.push(Routes.Home())} />
       </Suspense>
     </div>

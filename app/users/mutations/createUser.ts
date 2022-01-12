@@ -20,7 +20,7 @@ const RESET_PASSWORD_TOKEN_EXPIRATION_IN_HOURS = 24
 
 export default resolver.pipe(
   resolver.zod(CreateUser),
-  resolver.authorize(),
+  resolver.authorize("ADMIN"),
   async ({ email, password, role, name }, ctx) => {
     const origin = process.env.APP_ORIGIN || process.env.BLITZ_DEV_SERVER_ORIGIN
     const hashedPassword = await SecurePassword.hash(password.trim())

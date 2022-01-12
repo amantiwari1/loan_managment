@@ -6,8 +6,47 @@ interface GetEnquiriesInput
 
 export default resolver.pipe(
   resolver.authorize(),
-  async ({ where, orderBy, skip = 0, take = 100 }: GetEnquiriesInput) => {
-    // TODO: in multi-tenant app, you must add validation to ensure correct tenant
+  async ({ where, orderBy, skip = 0, take = 100 }: GetEnquiriesInput, ctx) => {
+    if (ctx.session.role === "USER") {
+      const {
+        items: enquiries,
+        hasMore,
+        nextPage,
+        count,
+      } = await paginate({
+        skip,
+        take,
+        count: () =>
+          db.enquiry.count({
+            where: {
+              users: {
+                some: {
+                  userId: ctx.session.userId,
+                },
+              },
+            },
+          }),
+        query: (paginateArgs) =>
+          db.enquiry.findMany({
+            ...paginateArgs,
+            where: {
+              users: {
+                some: {
+                  userId: ctx.session.userId,
+                },
+              },
+            },
+            orderBy,
+          }),
+      })
+
+      return {
+        enquiries,
+        nextPage,
+        hasMore,
+        count,
+      }
+    }
     const {
       items: enquiries,
       hasMore,
