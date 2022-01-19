@@ -42,7 +42,7 @@ const NewEnquiryPage: BlitzPage = () => {
   )
 }
 
-NewEnquiryPage.authenticate = true
+NewEnquiryPage.authenticate = { redirectTo: Routes.LoginPage() }
 NewEnquiryPage.getLayout = (page) => (
   <Layout layout="DashboardLayout" title={"Create New Enquiry"}>
     {page}

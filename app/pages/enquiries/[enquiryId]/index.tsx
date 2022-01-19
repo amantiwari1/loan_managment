@@ -91,7 +91,7 @@ const ShowEnquiryPage: BlitzPage = () => {
   )
 }
 
-ShowEnquiryPage.authenticate = true
+ShowEnquiryPage.authenticate = { redirectTo: Routes.LoginPage() }
 ShowEnquiryPage.getLayout = (page) => <Layout layout="DashboardLayout">{page}</Layout>
 
 export default ShowEnquiryPage

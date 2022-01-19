@@ -60,6 +60,10 @@ export const UpdateUser = z.object({
   name: z.string().min(3).max(50),
   role,
 })
+export const ProfileUser = z.object({
+  email,
+  name: z.string().min(3).max(50),
+})
 
 // Project Report
 export const CreateProjectReport = z.object({

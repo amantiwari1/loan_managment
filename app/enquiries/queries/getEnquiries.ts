@@ -7,7 +7,7 @@ interface GetEnquiriesInput
 export default resolver.pipe(
   resolver.authorize(),
   async ({ where, orderBy, skip = 0, take = 100 }: GetEnquiriesInput, ctx) => {
-    if (ctx.session.role === "USER") {
+    if (["USER", "PARTNER", "STAFF"].includes(ctx.session.role)) {
       const {
         items: enquiries,
         hasMore,

@@ -10,11 +10,12 @@ import React, { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import logo from "public/logo.png"
-import { Image, useMutation, useSession } from "blitz"
+import { Image, Routes, useMutation, useQuery, useSession } from "blitz"
 import logout from "app/auth/mutations/logout"
 import { ProSidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar"
 import { Divider } from "@chakra-ui/react"
 import { useCurrentUser } from "../hooks/useCurrentUser"
+import getCurrentUser from "app/users/queries/getCurrentUser"
 
 const { Content } = Layout
 
@@ -35,11 +36,6 @@ const sidebar_data_2 = [
         name: "Add a New Enquiry",
         icon: PieChartOutlined,
         link: "/enquiries/new",
-      },
-      {
-        name: "New Enquiries",
-        icon: PieChartOutlined,
-        link: "/enquiries",
       },
       {
         name: "Approved Enquiries",
@@ -113,7 +109,7 @@ const sidebar_data_2 = [
 const Sidebar = ({ children }) => {
   const [logoutMutation] = useMutation(logout)
   const session = useSession()
-
+  const [user] = useQuery(getCurrentUser, null)
   return (
     <div className="flex ">
       <div className="min-w-[17rem]">
@@ -130,7 +126,7 @@ const Sidebar = ({ children }) => {
               ))}
               {sidebar_data_2.map((item) => (
                 <>
-                  {session.role !== "USER" && (
+                  {!["USER", "PARTNER"].includes(session.role as string) && (
                     <SubMenu key={item.name} icon={<item.icon />} title={item.name}>
                       {item.sidebar_data.map((item) => (
                         <MenuItem key={item.link}>
@@ -144,7 +140,7 @@ const Sidebar = ({ children }) => {
 
               <Divider />
               <MenuItem key="Account" icon={<LogoutOutlined />}>
-                Account Setting
+                <Link href="/users/profile">Account Setting</Link>
               </MenuItem>
               <MenuItem
                 onClick={async () => await logoutMutation()}
@@ -158,7 +154,14 @@ const Sidebar = ({ children }) => {
         </div>
       </div>
       <div className="w-full h-full bg-[#f0f2f5] min-h-screen">
-        <div className="bg-white w-full h-16"></div>
+        <div className="bg-white w-full h-16">
+          <div className="flex justify-end w-full items-center h-full pr-10">
+            <div>
+              <p className="text-xl font-semibold">{user?.name}</p>
+              <p className="text-xs text-gray-600">{user?.email}</p>
+            </div>
+          </div>
+        </div>
         <div className="p-5 ">
           <Content
             style={{

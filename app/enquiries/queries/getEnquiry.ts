@@ -23,7 +23,7 @@ export default resolver.pipe(
       },
     }
 
-    if (ctx.session.role === "USER") {
+    if (["USER", "PARTNER", "STAFF"].includes(ctx.session.role)) {
       options = {
         where: {
           id,

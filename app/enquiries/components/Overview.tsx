@@ -45,7 +45,7 @@ const Overview = () => {
       },
     },
     {
-      enabled: session.role !== "USER",
+      enabled: !["USER", "PARTNER"].includes(session.role as string),
     }
   )
   const [customer] = useQuery(
@@ -56,7 +56,7 @@ const Overview = () => {
       },
     },
     {
-      enabled: session.role !== "USER",
+      enabled: !["USER", "PARTNER"].includes(session.role as string),
     }
   )
 
@@ -109,7 +109,7 @@ const Overview = () => {
   return (
     <div>
       <Card title="Enquiry Overview">
-        {session.role === "USER" ? (
+        {["USER", "PARTNER"].includes(session.role as string) ? (
           <></>
         ) : (
           <>

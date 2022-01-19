@@ -1,7 +1,15 @@
 import { Enquiry } from "@prisma/client"
 import { message, Table } from "antd"
 import React from "react"
-import { getQueryKey, queryClient, useMutation, useParam, useQuery, useSession } from "blitz"
+import {
+  getQueryKey,
+  queryClient,
+  useAuthenticatedSession,
+  useMutation,
+  useParam,
+  useQuery,
+  useSession,
+} from "blitz"
 import { Button } from "app/core/components/Button"
 import { AddIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons"
 import {
@@ -49,7 +57,7 @@ const AddNewButton = ({ onClick }) => {
         <p className="text-2xl font-light">Sanction Disbursment</p>
       </div>
       <div className="flex space-x-1">
-        {session.role !== "USER" && (
+        {!["USER", "PARTNER"].includes(session.role as string) && (
           <Button w={220} onClick={onClick} leftIcon={<AddIcon />}>
             Add New Sanction Disbursment
           </Button>
@@ -170,6 +178,7 @@ const SanctionDisbursment = () => {
     await queryClient.invalidateQueries(queryKey)
     await refetch()
   }
+  const session = useAuthenticatedSession()
 
   const columns = [
     {
@@ -209,7 +218,7 @@ const SanctionDisbursment = () => {
         />
       ),
     },
-  ]
+  ].slice(0, !["USER", "PARTNER"].includes(session.role as string) ? undefined : -1)
 
   return (
     <div>

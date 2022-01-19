@@ -1,4 +1,4 @@
-import { Link, BlitzPage, Routes, usePaginatedQuery, useRouter } from "blitz"
+import { Link, BlitzPage, Routes, usePaginatedQuery, useRouter, useSession } from "blitz"
 import Layout from "app/core/layouts/Layout"
 import { Card, Divider, Tag } from "antd"
 import { Table } from "antd"
@@ -58,25 +58,6 @@ const columns = [
  * You can delete everything in here and start from scratch if you like.
  */
 
-const cardData = [
-  {
-    name: "TOTAL ENQUIRIES",
-    count: 5,
-  },
-  {
-    name: "ACTIVE ENQUIRIES",
-    count: 0,
-  },
-  {
-    name: "REJECTED ENQUIRIES",
-    count: 0,
-  },
-  {
-    name: "SANCTIONED ENQUIRIES",
-    count: 0,
-  },
-]
-
 export const EnquiriesList = () => {
   const router = useRouter()
   const page = Number(router.query.page) || 0
@@ -86,24 +67,58 @@ export const EnquiriesList = () => {
     take: ITEMS_PER_PAGE,
   })
 
-  const goToPreviousPage = () => router.push({ query: { page: page - 1 } })
-  const goToNextPage = () => router.push({ query: { page: page + 1 } })
+  const cardData = [
+    {
+      name: "TOTAL ENQUIRIES",
+      count: enquiries.length,
+    },
+    {
+      name: "ACTIVE ENQUIRIES",
+      count: enquiries.length,
+    },
+    {
+      name: "REJECTED ENQUIRIES",
+      count: 0,
+    },
+    {
+      name: "SANCTIONED ENQUIRIES",
+      count: 0,
+    },
+  ]
+  const session = useSession()
+
+  // const goToPreviousPage = () => router.push({ query: { page: page - 1 } })
+  // const goToNextPage = () => router.push({ query: { page: page + 1 } })
 
   return (
     <div>
+      {!["USER", "PARTNER"].includes(session.role as string) && (
+        <div>
+          <p className="text-3xl font-bold">Overview</p>
+          <Divider />
+          <div className="grid grid-cols-4 gap-5">
+            {cardData.map((item) => (
+              <Card key={item.name}>
+                <p className="text-gray-500 text-xs">{item.name}</p>
+                <p className="text-xl font-bold">{item.count}</p>
+              </Card>
+            ))}
+          </div>
+          <Divider />
+        </div>
+      )}
       <Table
         columns={columns}
         dataSource={enquiries}
         bordered
         title={() => <p className="text-lg font-bold">Active Enquiries</p>}
       />
-
-      <button disabled={page === 0} onClick={goToPreviousPage}>
+      {/* <button disabled={page === 0} onClick={goToPreviousPage}>
         Previous
       </button>
       <button disabled={!hasMore} onClick={goToNextPage}>
         Next
-      </button>
+      </button> */}
     </div>
   )
 }
@@ -111,18 +126,6 @@ export const EnquiriesList = () => {
 const Home: BlitzPage = () => {
   return (
     <div>
-      <p className="text-3xl font-bold">Overview</p>
-      <Divider />
-      <div className="grid grid-cols-4 gap-5">
-        {cardData.map((item) => (
-          <Card key={item.name}>
-            <p className="text-gray-500 text-xs">{item.name}</p>
-            <p className="text-xl font-bold">{item.count}</p>
-          </Card>
-        ))}
-      </div>
-      <Divider />
-
       <Suspense fallback={<div>Loading...</div>}>
         <EnquiriesList />
       </Suspense>
