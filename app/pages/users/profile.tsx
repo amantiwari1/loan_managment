@@ -22,7 +22,7 @@ export const EditUser = () => {
         <ProfileForm
           submitText="Update Profile"
           schema={ProfileUser}
-          initialValues={{ ...user }}
+          initialValues={{ ...user } as any}
           onSubmit={async (values) => {
             try {
               const updated = await updateUserMutation({

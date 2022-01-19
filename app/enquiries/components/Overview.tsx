@@ -137,7 +137,7 @@ const Overview = () => {
                 onClick={() => {
                   addPartnerMutation({
                     id: enquiry.id,
-                    userId: Partner,
+                    userId: Partner as number,
                   })
                 }}
               >
@@ -155,7 +155,7 @@ const Overview = () => {
                     value: enquiry?.customer?.user?.id,
                     label: enquiry?.customer?.user?.name,
                   }}
-                  options={customer.users.map((item) => {
+                  options={customer?.users.map((item) => {
                     return {
                       value: item.id,
                       label: item.name,
@@ -168,7 +168,7 @@ const Overview = () => {
                 onClick={() => {
                   addCustomerMutation({
                     id: enquiry.id,
-                    userId: Customer,
+                    userId: Customer as number,
                   })
                 }}
               >

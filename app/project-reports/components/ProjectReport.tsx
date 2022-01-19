@@ -147,7 +147,7 @@ const ProjectReport = () => {
       message.error("Failed to Delete ProjectReport")
     },
   })
-  const [Edit, setEdit] = React.useState({
+  const [Edit, setEdit] = React.useState<any>({
     status: "NOT_UPLOAD",
   })
 
@@ -251,13 +251,13 @@ const ProjectReport = () => {
               //         then import and use it here
               schema={CreateProjectReport}
               initialValues={Edit}
-              onSubmit={async (values) => {
+              onSubmit={async (values: any) => {
                 try {
                   if (values?.id) {
                     await updateProjectReportMutation({
                       ...values,
                       remark: values?.remark ? values?.remark : "",
-                    })
+                    } as any)
                   } else {
                     await createProjectReportMutation({
                       ...values,

@@ -148,7 +148,7 @@ const BankQuery = () => {
       message.error("Failed to Delete BankQuery")
     },
   })
-  const [Edit, setEdit] = React.useState({
+  const [Edit, setEdit] = React.useState<any>({
     status: "NOT_UPLOAD",
   })
 

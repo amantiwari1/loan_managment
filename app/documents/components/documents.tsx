@@ -154,7 +154,7 @@ const Document = () => {
       message.error("Failed to Delete Document")
     },
   })
-  const [Edit, setEdit] = React.useState({
+  const [Edit, setEdit] = React.useState<any>({
     status: "NOT_UPLOAD",
   })
 
@@ -256,7 +256,7 @@ const Document = () => {
               onSubmit={async (values) => {
                 try {
                   if (values.id) {
-                    await updateDocumentMutation(values)
+                    await updateDocumentMutation(values as any)
                   } else {
                     await createDocumentMutation({
                       ...values,

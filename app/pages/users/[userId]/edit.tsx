@@ -48,7 +48,7 @@ export const EditUser = () => {
           //  - Tip: extract mutation's schema into a shared `validations.ts` file and
           //         then import and use it here
           schema={UpdateUser}
-          initialValues={{ ...user }}
+          initialValues={{ ...user } as any}
           onSubmit={async (values) => {
             console.log(values)
 
