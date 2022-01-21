@@ -56,7 +56,28 @@ export default resolver.pipe(
       skip,
       take,
       count: () => db.enquiry.count({ where }),
-      query: (paginateArgs) => db.enquiry.findMany({ ...paginateArgs, where, orderBy }),
+      query: (paginateArgs) =>
+        db.enquiry.findMany({
+          ...paginateArgs,
+          where,
+          orderBy,
+          include: {
+            users: {
+              select: {
+                user: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+              where: {
+                user: {
+                  role: "PARTNER",
+                },
+              },
+            },
+          },
+        }),
     })
 
     return {

@@ -58,7 +58,7 @@ const AddNewButton = ({ onClick }) => {
       </div>
       <div className="flex space-x-1">
         {!["USER", "PARTNER"].includes(session.role as string) && (
-          <Button w={220} onClick={onClick} leftIcon={<AddIcon />}>
+          <Button w={320} onClick={onClick} leftIcon={<AddIcon />}>
             Add New Sanction Disbursment
           </Button>
         )}
@@ -78,7 +78,7 @@ const ActionComponent = ({ onEdit, onDelete, isDeleting }) => {
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete SanctionDisbursment
+              Delete Sanction Disbursment
             </AlertDialogHeader>
 
             <AlertDialogBody>
@@ -238,7 +238,7 @@ const SanctionDisbursment = () => {
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader borderBottomWidth="1px">Add New Case status</DrawerHeader>
+          <DrawerHeader borderBottomWidth="1px">Add New Sanction Disbursment</DrawerHeader>
 
           <DrawerBody>
             <SanctionDisbursmentForm

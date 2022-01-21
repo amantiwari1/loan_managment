@@ -58,7 +58,7 @@ const AddNewButton = ({ onClick }) => {
       </div>
       <div className="flex space-x-1">
         {!["USER", "PARTNER"].includes(session.role as string) && (
-          <Button w={220} onClick={onClick} leftIcon={<AddIcon />}>
+          <Button w={320} onClick={onClick} leftIcon={<AddIcon />}>
             Add New Search Valuation Report
           </Button>
         )}
@@ -78,7 +78,7 @@ const ActionComponent = ({ onEdit, onDelete, isDeleting }) => {
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete SearchValuationReport
+              Delete Search Valuation Report
             </AlertDialogHeader>
 
             <AlertDialogBody>
@@ -239,7 +239,7 @@ const SearchValuationReport = () => {
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader borderBottomWidth="1px">Add New Case status</DrawerHeader>
+          <DrawerHeader borderBottomWidth="1px">Add New Search Valuation Report</DrawerHeader>
 
           <DrawerBody>
             <SearchValuationReportForm

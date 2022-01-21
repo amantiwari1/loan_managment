@@ -205,6 +205,26 @@ const Document = () => {
       key: "updatedAt",
       render: (updatedAt) => <p>{new Date(updatedAt).toDateString()}</p>,
     },
+    // {
+    //   title: "Upload",
+    //   dataIndex: "updatedAt",
+    //   key: "updatedAt",
+    //   render: (updatedAt) => (
+    //     <Button variant="outline" onClick={onClose}>
+    //       Upload
+    //     </Button>
+    //   ),
+    // },
+    // {
+    //   title: "Download",
+    //   dataIndex: "updatedAt",
+    //   key: "updatedAt",
+    //   render: (updatedAt) => (
+    //     <Button variant="outline" onClick={onClose}>
+    //       Download
+    //     </Button>
+    //   ),
+    // },
     {
       title: "Action",
       dataIndex: "updatedAt",

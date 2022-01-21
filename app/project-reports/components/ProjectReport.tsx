@@ -59,7 +59,7 @@ const AddNewButton = ({ onClick }) => {
       <div className="flex space-x-1">
         {!["USER", "PARTNER"].includes(session.role as string) && (
           <Button w={220} onClick={onClick} leftIcon={<AddIcon />}>
-            Add New Case status
+            Add Project Report
           </Button>
         )}
       </div>
@@ -78,7 +78,7 @@ const ActionComponent = ({ onEdit, onDelete, isDeleting }) => {
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete ProjectReport
+              Delete Project Report
             </AlertDialogHeader>
 
             <AlertDialogBody>
@@ -241,7 +241,7 @@ const ProjectReport = () => {
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader borderBottomWidth="1px">Add New Case status</DrawerHeader>
+          <DrawerHeader borderBottomWidth="1px">Add Project Report</DrawerHeader>
 
           <DrawerBody>
             <ProjectReportForm

@@ -6,16 +6,15 @@ import {
   UserOutlined,
   FormOutlined,
 } from "@ant-design/icons"
-import React, { useState } from "react"
+import React from "react"
 import Link from "next/link"
-import { useRouter } from "next/router"
 import logo from "public/logo.png"
 import { Image, Routes, useMutation, useQuery, useSession } from "blitz"
 import logout from "app/auth/mutations/logout"
 import { ProSidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar"
 import { Divider } from "@chakra-ui/react"
-import { useCurrentUser } from "../hooks/useCurrentUser"
 import getCurrentUser from "app/users/queries/getCurrentUser"
+import { AiOutlineSetting } from "react-icons/ai"
 
 const { Content } = Layout
 
@@ -115,10 +114,19 @@ const Sidebar = ({ children }) => {
       <div className="min-w-[17rem]">
         <div className="fixed top-0 bottom-0">
           <ProSidebar className="">
-            <div className="px-5 bg-white py-2">
+            {/* LOGO */}
+            <div className="px-5 bg-white py-2 mt-4">
               <Image src={logo} alt="logo" />
             </div>
             <Menu>
+              <MenuItem key="profile">
+                <div className="flex justify-end w-full items-center h-full pr-10">
+                  <div>
+                    <p className="text-xl font-semibold">{user?.name}</p>
+                    <p className="text-xs text-gray-600">{user?.email}</p>
+                  </div>
+                </div>
+              </MenuItem>
               {sidebar_data.map((item) => (
                 <MenuItem key={item.link} icon={<item.icon />}>
                   <Link href={item.link}>{item.name}</Link>
@@ -139,7 +147,7 @@ const Sidebar = ({ children }) => {
               ))}
 
               <Divider />
-              <MenuItem key="Account" icon={<LogoutOutlined />}>
+              <MenuItem key="Account" icon={<AiOutlineSetting />}>
                 <Link href="/users/profile">Account Setting</Link>
               </MenuItem>
               <MenuItem
@@ -153,15 +161,7 @@ const Sidebar = ({ children }) => {
           </ProSidebar>
         </div>
       </div>
-      <div className="w-full h-full bg-[#f0f2f5] min-h-screen">
-        <div className="bg-white w-full h-16">
-          <div className="flex justify-end w-full items-center h-full pr-10">
-            <div>
-              <p className="text-xl font-semibold">{user?.name}</p>
-              <p className="text-xs text-gray-600">{user?.email}</p>
-            </div>
-          </div>
-        </div>
+      <div className="w-full h-full bg-[#f9fbfd] min-h-screen">
         <div className="p-5 ">
           <Content
             style={{

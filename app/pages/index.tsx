@@ -5,6 +5,8 @@ import { Table } from "antd"
 import getEnquiries from "app/enquiries/queries/getEnquiries"
 import { Suspense } from "react"
 import { Enquiry } from "@prisma/client"
+import { Text } from "@chakra-ui/react"
+import { ColumnsType } from "antd/lib/table"
 
 const ITEMS_PER_PAGE = 100
 
@@ -17,7 +19,7 @@ const Client_Service = {
   SUBSIDY_SCHEMES: "Subsidy Schemes",
 }
 
-const columns = [
+const columns: ColumnsType<Enquiry> = [
   {
     title: "Client Name",
     dataIndex: "client_name",
@@ -33,14 +35,20 @@ const columns = [
   {
     title: "Amount",
     dataIndex: "loan_amount",
+
     key: "loan_amount",
     render: (text) => <p>{text.toString()}</p>,
   },
-  // {
-  //   title: "Status",
-  //   dataIndex: "status",
-  //   render: (text) => <Tag color="gold">{text}</Tag>,
-  // },
+  {
+    title: "Channel Partner",
+    dataIndex: "users",
+
+    render: (users) => (
+      <Text fontWeight="medium" textTransform="capitalize">
+        {users[0].user.name}
+      </Text>
+    ),
+  },
   // {
   //   title: "Staff",
   //   dataIndex: "staff",
@@ -53,10 +61,6 @@ const columns = [
     render: (updatedAt) => <p>{new Date(updatedAt).toDateString()}</p>,
   },
 ]
-/*
- * This file is just for a pleasant getting started page for your new app.
- * You can delete everything in here and start from scratch if you like.
- */
 
 export const EnquiriesList = () => {
   const router = useRouter()
@@ -111,7 +115,7 @@ export const EnquiriesList = () => {
         columns={columns}
         dataSource={enquiries}
         bordered
-        title={() => <p className="text-lg font-bold">Active Enquiries</p>}
+        title={() => <Text fontWeight="bold">Active Enquiries</Text>}
       />
       {/* <button disabled={page === 0} onClick={goToPreviousPage}>
         Previous

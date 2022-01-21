@@ -79,7 +79,7 @@ const ActionComponent = ({ onEdit, onDelete, isDeleting }) => {
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete BankQuery
+              Delete Bank Query
             </AlertDialogHeader>
 
             <AlertDialogBody>
@@ -246,7 +246,7 @@ const BankQuery = () => {
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader borderBottomWidth="1px">Add New Case status</DrawerHeader>
+          <DrawerHeader borderBottomWidth="1px">Add New Bank Query</DrawerHeader>
 
           <DrawerBody>
             <BankQueryForm

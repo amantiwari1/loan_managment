@@ -2,18 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components {
-  .hero {
-    @apply w-full text-[#333];
-  }
+* {
+  font-family: "Cerebri Sans", sans-serif;
 }
 
-.title {
-  @apply m-0 w-full pt-20;
-  font-size: 48px;
+.pro-sidebar-inner {
+  background-color: #fff !important;
+  @apply !text-gray-600;
 }
 
-.title,
-.description {
-  @apply text-center;
+.pro-menu-item,
+.pro-item-content,
+.pro-icon-wrapper,
+.keychainify-checked {
+  @apply !text-gray-600 hover:!text-black;
+}
+
+.pro-inner-list-item {
+  background-color: #f9fbfd !important;
 }

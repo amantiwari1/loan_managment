@@ -78,7 +78,7 @@ const ActionComponent = ({ onEdit, onDelete, isDeleting }) => {
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete CaseStatus
+              Delete Case Status
             </AlertDialogHeader>
 
             <AlertDialogBody>

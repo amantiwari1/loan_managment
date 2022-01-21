@@ -14,7 +14,6 @@ export default resolver.pipe(
   resolver.zod(CreateBankQuery),
   resolver.authorize(["ADMIN", "STAFF"]),
   async (input, ctx) => {
-    // TODO: in multi-tenant app, you must add validation to ensure correct tenant
     const bankQuery = await db.bankQuery.create({ data: input })
     await db.log.create({
       data: {

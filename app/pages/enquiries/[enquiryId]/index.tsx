@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import { Head, Link, useRouter, useQuery, useParam, BlitzPage, useMutation, Routes } from "blitz"
 import Layout from "app/core/layouts/Layout"
-import { Avatar, Tab, Tabs, TabList, TabPanel, TabPanels } from "@chakra-ui/react"
+import { Avatar, Tab, Tabs, TabList, TabPanel, TabPanels, Text } from "@chakra-ui/react"
 import { Divider } from "antd"
 import Overview from "app/enquiries/components/Overview"
 import Log from "app/logs/components/log"
@@ -65,7 +65,9 @@ export const Enquiry = () => {
       <Tabs isLazy>
         <TabList bg="white">
           {TabData.map((item) => (
-            <Tab key={item.name}>{item.name}</Tab>
+            <Tab key={item.name}>
+              <Text fontWeight="medium">{item.name}</Text>
+            </Tab>
           ))}
         </TabList>
 
