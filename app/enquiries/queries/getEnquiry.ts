@@ -49,7 +49,7 @@ export default resolver.pipe(
 
     const partner = enquiry.users.filter((arr) => arr.user.role === "PARTNER")[0]
     const customer = enquiry.users.filter((arr) => arr.user.role === "USER")[0]
-    const staff = enquiry.users.filter((arr) => arr.user.role === "STAFF")[0]
+    const staff = enquiry.users.filter((arr) => arr.user.role === "STAFF")
 
     return { ...enquiry, partner, customer, staff }
   }
