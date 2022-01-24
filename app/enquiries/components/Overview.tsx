@@ -16,7 +16,7 @@ import getEnquiry from "../queries/getEnquiry"
 import addCustomerEnquiry from "../mutations/addCustomerEnquiry"
 import PartnerSelect from "./PartnerSelect"
 import CustomerSelect from "./CustomerSelect"
-import StaffDraw from "./StaffDraw"
+// import StaffDraw from "./StaffDraw"
 
 const client_service_options = [
   { value: "HOME_LOAN", label: "Home Loan" },
