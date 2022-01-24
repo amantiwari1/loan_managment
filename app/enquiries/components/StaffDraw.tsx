@@ -13,7 +13,7 @@ import { Button } from "app/core/components/Button"
 import getUsers from "app/users/queries/getUsers"
 import { useQuery, useSession } from "blitz"
 import React, { useState } from "react"
-import { BiEdit } from "react-icons/bi"
+import { BiEdit, BiUser } from "react-icons/bi"
 import Select from "react-select"
 
 const StaffDraw = ({ enquiry }) => {
@@ -59,11 +59,7 @@ const StaffDraw = ({ enquiry }) => {
                 <div className="w-[40rem]">
                   <Select
                     onChange={(data) => {
-                      setStaff((prevArr) => [...prevArr, data?.value])
-                    }}
-                    defaultValue={{
-                      value: enquiry?.customer?.user?.id,
-                      label: enquiry?.customer?.user?.name,
+                      setStaff((prevArr) => [...prevArr, data?.value as number])
                     }}
                     options={staff?.users.map((item) => {
                       return {
@@ -90,16 +86,25 @@ const StaffDraw = ({ enquiry }) => {
             </DrawerFooter>
           </DrawerContent>
         </Drawer>
-
-        <Text fontSize="sm">Staff :</Text>
-        <div className="text-2xl cursor-pointer">
-          <BiEdit onClick={onOpen} />
+        <div className="flex items-center space-x-2">
+          <Text fontSize="sm">Staff :</Text>
+          <div className="text-2xl cursor-pointer">
+            <BiEdit onClick={onOpen} />
+          </div>
         </div>
         <div className="flex space-x-2 font-medium items-center">
-          {enquiry?.staff?.map((arr) => (
-            <Text fontSize="2xl" key={arr.name}>
-              {arr.name}
-            </Text>
+          {!enquiry.length && <Text fontWeight="medium">No Staff Selected</Text>}
+          {enquiry?.staff?.map((arr, i) => (
+            <div key={i} className="flex space-x-2 items-center">
+              <div>
+                <div className="bg-blue-200 text-blue-500 text-xl p-2 rounded-full">
+                  <BiUser />
+                </div>
+              </div>
+              <div>
+                <Text fontWeight="medium">{arr.name}</Text>
+              </div>
+            </div>
           ))}
         </div>
       </div>

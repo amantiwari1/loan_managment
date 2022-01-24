@@ -43,9 +43,9 @@ const columns: ColumnsType<Enquiry> = [
     title: "Channel Partner",
     dataIndex: "users",
 
-    render: (users) => (
+    render: (users: any[]) => (
       <Text fontWeight="medium" textTransform="capitalize">
-        {users[0].user.name}
+        {users.length !== 0 ? users[0]?.user?.name ?? "Not Selected" : "Not Selected"}
       </Text>
     ),
   },
