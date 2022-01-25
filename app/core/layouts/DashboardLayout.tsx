@@ -37,6 +37,11 @@ const sidebar_data_2 = [
         link: "/enquiries/new",
       },
       {
+        name: "Enquiry Request",
+        icon: PieChartOutlined,
+        link: "/enquiries/request",
+      },
+      {
         name: "Approved Enquiries",
         icon: PieChartOutlined,
         link: "/enquiries/approved",

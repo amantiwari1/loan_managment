@@ -1,14 +1,12 @@
-import { Link, BlitzPage, Routes, usePaginatedQuery, useRouter, useSession, useQuery } from "blitz"
+import { Link, BlitzPage, Routes, usePaginatedQuery, useRouter, useSession } from "blitz"
 import Layout from "app/core/layouts/Layout"
-import { Card, Divider, message, Tag } from "antd"
+import { Card, Divider, Tag } from "antd"
 import { Table } from "antd"
 import getEnquiries from "app/enquiries/queries/getEnquiries"
 import { Suspense } from "react"
 import { Enquiry } from "@prisma/client"
-import { IconButton, Text } from "@chakra-ui/react"
+import { Text } from "@chakra-ui/react"
 import { ColumnsType } from "antd/lib/table"
-import { IoMdRefresh } from "react-icons/io"
-import getEnquiriesCount from "app/enquiries/queries/getEnquiriesCount"
 
 const ITEMS_PER_PAGE = 100
 
@@ -66,36 +64,16 @@ const columns: ColumnsType<Enquiry> = [
 
 export const EnquiriesList = () => {
   const router = useRouter()
-
-  const [count] = useQuery(getEnquiriesCount, {})
   const page = Number(router.query.page) || 0
-  const [{ enquiries, hasMore }, { refetch }] = usePaginatedQuery(getEnquiries, {
+  const [{ enquiries, hasMore }] = usePaginatedQuery(getEnquiries, {
     orderBy: { id: "asc" },
     skip: ITEMS_PER_PAGE * page,
     take: ITEMS_PER_PAGE,
     where: {
-      enquiry_request: "APPROVED",
+      enquiry_request: "SANCTIONED",
     },
   })
 
-  const cardData = [
-    {
-      name: "TOTAL ENQUIRIES",
-      count: count.active + count.reject + count.sanction,
-    },
-    {
-      name: "ACTIVE ENQUIRIES",
-      count: count.active,
-    },
-    {
-      name: "REJECTED ENQUIRIES",
-      count: count.reject,
-    },
-    {
-      name: "SANCTIONED ENQUIRIES",
-      count: count.sanction,
-    },
-  ]
   const session = useSession()
 
   // const goToPreviousPage = () => router.push({ query: { page: page - 1 } })
@@ -103,39 +81,12 @@ export const EnquiriesList = () => {
 
   return (
     <div>
-      {!["USER", "PARTNER"].includes(session.role as string) && (
-        <div>
-          <p className="text-3xl font-bold">Overview</p>
-          <Divider />
-          <div className="grid grid-cols-4 gap-5">
-            {cardData.map((item) => (
-              <Card key={item.name}>
-                <p className="text-gray-500 text-xs">{item.name}</p>
-                <p className="text-xl font-bold">{item.count}</p>
-              </Card>
-            ))}
-          </div>
-          <Divider />
-        </div>
-      )}
+      {!["USER", "PARTNER"].includes(session.role as string) && <div></div>}
       <Table
         columns={columns}
         dataSource={enquiries}
         bordered
-        title={() => (
-          <div className="flex justify-between">
-            <Text fontWeight="bold">Active Enquiries</Text>
-            <IconButton
-              aria-label="Search database"
-              onClick={async () => {
-                await refetch()
-                message.success("Updated")
-              }}
-              variant="outline"
-              icon={<IoMdRefresh />}
-            />
-          </div>
-        )}
+        title={() => <Text fontWeight="bold">Sanctioned Enquiries</Text>}
       />
       {/* <button disabled={page === 0} onClick={goToPreviousPage}>
         Previous
@@ -147,7 +98,7 @@ export const EnquiriesList = () => {
   )
 }
 
-const Home: BlitzPage = () => {
+const EnquirySanctionedPage: BlitzPage = () => {
   return (
     <div>
       <Suspense fallback={<div>Loading...</div>}>
@@ -157,11 +108,11 @@ const Home: BlitzPage = () => {
   )
 }
 
-Home.getLayout = (page) => (
-  <Layout layout="DashboardLayout" title="Home">
+EnquirySanctionedPage.getLayout = (page) => (
+  <Layout layout="DashboardLayout" title="Enquiries Request">
     {page}
   </Layout>
 )
-Home.authenticate = { redirectTo: Routes.LoginPage() }
+EnquirySanctionedPage.authenticate = { redirectTo: Routes.LoginPage() }
 
-export default Home
+export default EnquirySanctionedPage

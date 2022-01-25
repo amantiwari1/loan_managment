@@ -90,6 +90,14 @@ model Enquiry {
   project_report            ProjectReport[]
   search_valuation_report   SearchValuationReport[]
   users                     UsersOnEnquires[]
+  enquiry_request           EnquiryRequestType      @default(PENDING)
+}
+
+enum EnquiryRequestType {
+  PENDING
+  APPROVED
+  REJECTED
+  SANCTIONED
 }
 
 model Log {
