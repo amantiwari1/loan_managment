@@ -12,7 +12,7 @@ const CreateDocument = z.object({
 export default resolver.pipe(
   resolver.zod(CreateDocument),
   resolver.authorize(["ADMIN", "STAFF"]),
-  async (input, ctx) => {
+  async (input: any, ctx) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
     const document = await db.document.create({ data: input })
 

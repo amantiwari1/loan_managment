@@ -13,7 +13,7 @@ const CreateBankQuery = z.object({
 export default resolver.pipe(
   resolver.zod(CreateBankQuery),
   resolver.authorize(["ADMIN", "STAFF"]),
-  async (input, ctx) => {
+  async (input: any, ctx) => {
     const bankQuery = await db.bankQuery.create({ data: input })
     await db.log.create({
       data: {

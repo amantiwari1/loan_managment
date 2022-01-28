@@ -10,10 +10,10 @@ const UpdateEnquiry = z.object({
 export default resolver.pipe(
   resolver.zod(UpdateEnquiry),
   resolver.authorize(["ADMIN"]),
-  async ({ id, enquiry_request }) => {
+  async ({ id, enquiry_request }: any) => {
     const enquiry = await db.enquiry.update({
       where: { id },
-      data: { enquiry_request: enquiry_request },
+      data: { enquiry_request: enquiry_request as any },
     })
 
     return enquiry

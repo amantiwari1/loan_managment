@@ -14,7 +14,7 @@ const CreateCaseStatus = z.object({
 export default resolver.pipe(
   resolver.zod(CreateCaseStatus),
   resolver.authorize(["ADMIN", "STAFF"]),
-  async (input, ctx) => {
+  async (input: any, ctx) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
     const caseStatus = await db.caseStatus.create({ data: input })
 

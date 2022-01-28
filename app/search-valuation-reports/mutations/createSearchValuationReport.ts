@@ -11,7 +11,7 @@ const CreateSearchValuationReport = z.object({
 export default resolver.pipe(
   resolver.zod(CreateSearchValuationReport),
   resolver.authorize(["ADMIN", "STAFF"]),
-  async (input, ctx) => {
+  async (input: any, ctx) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
     const searchValuationReport = await db.searchValuationReport.create({ data: input })
     await db.log.create({
