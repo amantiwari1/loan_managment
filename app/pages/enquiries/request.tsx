@@ -31,6 +31,16 @@ import { CheckIcon, CloseIcon } from "@chakra-ui/icons"
 import { Button } from "app/core/components/Button"
 import updateEnquiryRequest from "app/enquiries/mutations/updateEnquiryRequest"
 import { BiRefresh } from "react-icons/bi"
+import createUser from "app/users/mutations/createUser"
+function generatePassword() {
+  var length = 8,
+    charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+    retVal = ""
+  for (var i = 0, n = charset.length; i < length; ++i) {
+    retVal += charset.charAt(Math.floor(Math.random() * n))
+  }
+  return retVal
+}
 
 const ITEMS_PER_PAGE = 100
 
@@ -45,6 +55,8 @@ const Client_Service = {
 
 export const EnquiriesList = () => {
   const [updateEnquiryMutation, { isLoading }] = useMutation(updateEnquiryRequest)
+  const [createUserMutation] = useMutation(createUser)
+
   const columns: ColumnsType<Enquiry> = [
     {
       title: "Client Name",
@@ -90,7 +102,7 @@ export const EnquiriesList = () => {
       title: "Actions",
       dataIndex: "id",
       key: "id",
-      render: (id) => (
+      render: (id, data) => (
         <div className="space-x-5">
           <Popover>
             <PopoverTrigger>
@@ -113,7 +125,13 @@ export const EnquiriesList = () => {
                     <Button
                       isLoading={isLoading}
                       onClick={async () => {
-                        await updateEnquiryMutation({ id: id, enquiry_request: "APPROVED" })
+                        const token: any = await updateEnquiryMutation({
+                          id: id,
+                          enquiry_request: "APPROVED",
+                        })
+
+                        router.push(Routes.ResultUserPage({ token }))
+
                         await refetch()
                       }}
                       w={50}
@@ -146,7 +164,10 @@ export const EnquiriesList = () => {
                     <Button
                       isLoading={isLoading}
                       onClick={async () => {
-                        await updateEnquiryMutation({ id: id, enquiry_request: "REJECTED" })
+                        await updateEnquiryMutation({
+                          id: id,
+                          enquiry_request: "REJECTED",
+                        })
 
                         await refetch()
                       }}

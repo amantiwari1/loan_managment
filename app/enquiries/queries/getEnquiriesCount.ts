@@ -7,6 +7,11 @@ export default resolver.pipe(resolver.authorize(), async ({}, ctx) => {
       enquiry_request: "APPROVED",
     },
   })
+  const pending = await db.enquiry.count({
+    where: {
+      enquiry_request: "PENDING",
+    },
+  })
   const reject = await db.enquiry.count({
     where: {
       enquiry_request: "REJECTED",
@@ -22,5 +27,6 @@ export default resolver.pipe(resolver.authorize(), async ({}, ctx) => {
     active,
     reject,
     sanction,
+    pending,
   }
 })

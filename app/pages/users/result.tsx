@@ -10,7 +10,7 @@ const ResultUserPage: BlitzPage = () => {
     <div className="max-w-5xl mx-auto">
       <Result
         status="success"
-        title="Successfully Invited User"
+        title="Successfully Invited User (24 hr Expired link)"
         subTitle={token.token}
         extra={[
           <Button

@@ -25,11 +25,15 @@ const NewEnquiryPage: BlitzPage = () => {
             const enquiry = await createEnquiryMutation(values)
             router.push(Routes.ShowEnquiryPage({ enquiryId: enquiry.id }))
           } catch (error: any) {
-            console.error(error)
-            return {
-              [FORM_ERROR]: error.toString(),
+            if (error.code === "P2002" && error.meta?.target?.includes("client_email")) {
+              return { client_email: "This email is already being used" }
+            } else {
+              return { [FORM_ERROR]: error.toString() }
             }
           }
+
+          try {
+          } catch (error: any) {}
         }}
       />
 

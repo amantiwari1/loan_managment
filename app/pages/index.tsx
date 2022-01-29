@@ -9,6 +9,7 @@ import { IconButton, Text } from "@chakra-ui/react"
 import { ColumnsType } from "antd/lib/table"
 import { IoMdRefresh } from "react-icons/io"
 import getEnquiriesCount from "app/enquiries/queries/getEnquiriesCount"
+import { Button } from "app/core/components/Button"
 
 const ITEMS_PER_PAGE = 100
 
@@ -28,7 +29,7 @@ const columns: ColumnsType<Enquiry> = [
     render: (text, data: Enquiry) => (
       <div>
         <Link href={Routes.ShowEnquiryPage({ enquiryId: data.id })}>
-          <a className="text-lg font-bold">{text}</a>
+          <a className="text-lg font-bold underline hover:text-blue-500">{text}</a>
         </Link>
         <p>{Client_Service[data.client_service]}</p>
       </div>
@@ -62,6 +63,18 @@ const columns: ColumnsType<Enquiry> = [
     key: "updatedAt",
     render: (updatedAt) => <p>{new Date(updatedAt).toDateString()}</p>,
   },
+  {
+    title: "Action",
+    dataIndex: "id",
+    key: "id",
+    render: (id) => (
+      <Link href={Routes.ShowEnquiryPage({ enquiryId: id })}>
+        <Button variant="outline" w={20}>
+          View
+        </Button>
+      </Link>
+    ),
+  },
 ]
 
 export const EnquiriesList = () => {
@@ -81,19 +94,27 @@ export const EnquiriesList = () => {
   const cardData = [
     {
       name: "TOTAL ENQUIRIES",
-      count: count.active + count.reject + count.sanction,
+      count: count.active + count.reject + count.sanction + count.pending,
     },
     {
       name: "ACTIVE ENQUIRIES",
       count: count.active,
+      link: "/enquiries/approved",
     },
     {
       name: "REJECTED ENQUIRIES",
       count: count.reject,
+      link: "/enquiries/rejected",
     },
     {
       name: "SANCTIONED ENQUIRIES",
       count: count.sanction,
+      link: "/enquiries/sanctioned",
+    },
+    {
+      name: "REQUEST ENQUIRIES",
+      count: count.pending,
+      link: "/enquiries/request",
     },
   ]
   const session = useSession()
@@ -107,10 +128,23 @@ export const EnquiriesList = () => {
         <div>
           <p className="text-3xl font-bold">Overview</p>
           <Divider />
-          <div className="grid grid-cols-4 gap-5">
+          <div className="grid grid-cols-5 gap-5">
             {cardData.map((item) => (
               <Card key={item.name}>
-                <p className="text-gray-500 text-xs">{item.name}</p>
+                {item.link ? (
+                  <p className="text-gray-500 text-xs">
+                    <span className="mr-1">{item.name}</span>
+                    <span>
+                      {"( "}
+                      <Link href={item.link}>
+                        <a className="underline hover:underline hover:text-blue-500">View</a>
+                      </Link>
+                      {" )"}
+                    </span>
+                  </p>
+                ) : (
+                  <p className="text-gray-500 text-xs">{item.name}</p>
+                )}
                 <p className="text-xl font-bold">{item.count}</p>
               </Card>
             ))}

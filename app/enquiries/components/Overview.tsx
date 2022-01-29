@@ -16,7 +16,7 @@ import getEnquiry from "../queries/getEnquiry"
 import addCustomerEnquiry from "../mutations/addCustomerEnquiry"
 import PartnerSelect from "./PartnerSelect"
 import CustomerSelect from "./CustomerSelect"
-// import StaffDraw from "./StaffDraw"
+import StaffDraw from "./StaffDraw"
 
 const client_service_options = [
   { value: "HOME_LOAN", label: "Home Loan" },
@@ -40,7 +40,7 @@ const client_qccupation_type_options = [
 
 const Overview = () => {
   const enquiryId = useParam("enquiryId", "number")
-  const [enquiry] = useQuery(getEnquiry, { id: enquiryId })
+  const [enquiry, { refetch }] = useQuery(getEnquiry, { id: enquiryId })
   const session = useSession()
 
   const data = [
@@ -127,7 +127,16 @@ const Overview = () => {
             <div className="space-y-5">
               <PartnerSelect enquiry={enquiry} />
               <CustomerSelect enquiry={enquiry} />
-              {/* <StaffDraw enquiry={enquiry} /> */}
+              <StaffDraw
+                enquiry={enquiry}
+                refetch={refetch}
+                StaffEnquiry={enquiry?.staff?.map((arr) => {
+                  return {
+                    label: arr.user.name,
+                    value: arr.user.id,
+                  }
+                })}
+              />
             </div>
           )}
         </div>

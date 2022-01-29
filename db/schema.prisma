@@ -76,7 +76,7 @@ model Enquiry {
   updatedAt                 DateTime                @updatedAt
   client_name               String
   client_mobile             BigInt
-  client_email              String
+  client_email              String                  @unique
   client_service            ClientServiceType
   client_qccupation_type    ClientOccupationType
   loan_amount               BigInt

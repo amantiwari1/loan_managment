@@ -13,25 +13,21 @@ export default resolver.pipe(
   async ({ id, userId }) => {
     const connectUserStaff = userId.map((arr) => {
       return {
-        user: {
-          connect: {
-            id: arr,
-          },
-        },
+        enquiryId: id,
+        userId: arr,
       }
     })
 
-    const enquiry = await db.enquiry.update({
+    await db.usersOnEnquires.deleteMany({
       where: {
-        id,
-      },
-      data: {
-        users: {
-          create: connectUserStaff,
+        enquiryId: id,
+        user: {
+          role: "STAFF",
         },
       },
     })
-
-    return enquiry
+    await db.usersOnEnquires.createMany({
+      data: connectUserStaff,
+    })
   }
 )
