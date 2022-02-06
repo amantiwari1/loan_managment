@@ -20,6 +20,7 @@ const UploadFile = () => {
     getFile,
     { id: fileId },
     {
+      refetchOnWindowFocus: false,
       enabled: fileId !== 0,
       onSuccess(data) {
         setFileName(data.name)
