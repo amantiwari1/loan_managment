@@ -1,16 +1,11 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
-generator client {
-  provider = "prisma-client-js"
-}
-
-// --------------------------------------
 
 model User {
   id             Int               @id @default(autoincrement())
@@ -21,16 +16,16 @@ model User {
   hashedPassword String?
   role           String
   log            Log[]
-  tokens         Token[]
   sessions       Session[]
+  tokens         Token[]
   enquries       UsersOnEnquires[]
 }
 
 model UsersOnEnquires {
-  user      User    @relation(fields: [userId], references: [id])
   userId    Int
-  enquiry   Enquiry @relation(fields: [enquiryId], references: [id])
   enquiryId Int
+  enquiry   Enquiry @relation(fields: [enquiryId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
 
   @@id([userId, enquiryId])
 }
@@ -45,9 +40,8 @@ model Session {
   antiCSRFToken      String?
   publicData         String?
   privateData        String?
-
-  user   User? @relation(fields: [userId], references: [id])
-  userId Int?
+  userId             Int?
+  user               User?     @relation(fields: [userId], references: [id])
 }
 
 model Token {
@@ -58,46 +52,42 @@ model Token {
   type        TokenType
   expiresAt   DateTime
   sentTo      String
-
-  user   User @relation(fields: [userId], references: [id])
-  userId Int
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id])
 
   @@unique([hashedToken, type])
-}
-
-enum TokenType {
-  RESET_PASSWORD
-  INVITE_PASSWORD
 }
 
 model Enquiry {
   id                        Int                     @id @default(autoincrement())
   createdAt                 DateTime                @default(now())
   updatedAt                 DateTime                @updatedAt
-  client_name               String
-  client_mobile             BigInt
-  client_email              String                  @unique
-  client_service            ClientServiceType
-  client_qccupation_type    ClientOccupationType
-  loan_amount               BigInt
   client_address            String
+  client_email              String                  @unique
+  client_name               String
+  client_qccupation_type    ClientOccupationType
+  client_service            ClientServiceType
   private_enquiry           Boolean
-  logs                      Log[]
-  documents                 Document[]
+  client_mobile             BigInt
+  loan_amount               BigInt
+  enquiry_request           EnquiryRequestType      @default(PENDING)
   bank_queries              BankQuery[]
   case_status               CaseStatus[]
-  sanction_and_disbursement SanctionDisbursment[]
+  documents                 Document[]
+  logs                      Log[]
   project_report            ProjectReport[]
+  sanction_and_disbursement SanctionDisbursment[]
   search_valuation_report   SearchValuationReport[]
   users                     UsersOnEnquires[]
-  enquiry_request           EnquiryRequestType      @default(PENDING)
 }
 
-enum EnquiryRequestType {
-  PENDING
-  APPROVED
-  REJECTED
-  SANCTIONED
+model File {
+  id        Int        @id @default(autoincrement())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  key       String
+  name      String
+  Document  Document[]
 }
 
 model Log {
@@ -105,10 +95,10 @@ model Log {
   createdAt DateTime @default(now())
   type      String
   name      String
-  Enquiry   Enquiry? @relation(fields: [enquiryId], references: [id])
   enquiryId Int?
-  User      User?    @relation(fields: [userId], references: [id])
   userId    Int?
+  Enquiry   Enquiry? @relation(fields: [enquiryId], references: [id])
+  User      User?    @relation(fields: [userId], references: [id])
 }
 
 model Document {
@@ -117,10 +107,12 @@ model Document {
   updatedAt     DateTime   @updatedAt
   client_name   String
   document_name String
+  enquiryId     Int?
+  fileId        Int?
   status        StatusType @default(NOT_UPLOAD)
+  Enquiry       Enquiry?   @relation(fields: [enquiryId], references: [id])
+  file          File?      @relation(fields: [fileId], references: [id])
 
-  Enquiry   Enquiry? @relation(fields: [enquiryId], references: [id])
-  enquiryId Int?
 }
 
 model ProjectReport {
@@ -130,8 +122,8 @@ model ProjectReport {
   label     String
   status    StatusType
   remark    String?
-  Enquiry   Enquiry?   @relation(fields: [enquiryId], references: [id])
   enquiryId Int?
+  Enquiry   Enquiry?   @relation(fields: [enquiryId], references: [id])
 }
 
 model CaseStatus {
@@ -139,12 +131,12 @@ model CaseStatus {
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
   bank_name          String
-  status             StatusType
   response_from_bank Boolean
   final_login        String
   remark             String?
-  Enquiry            Enquiry?   @relation(fields: [enquiryId], references: [id])
   enquiryId          Int?
+  status             StatusType
+  Enquiry            Enquiry?   @relation(fields: [enquiryId], references: [id])
 }
 
 model SearchValuationReport {
@@ -152,9 +144,9 @@ model SearchValuationReport {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   document  String
+  enquiryId Int?
   status    StatusType
   Enquiry   Enquiry?   @relation(fields: [enquiryId], references: [id])
-  enquiryId Int?
 }
 
 model BankQuery {
@@ -162,12 +154,11 @@ model BankQuery {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   bank_query   String
-  status       StatusType
   our_response String
   remark       String?
-
-  Enquiry   Enquiry? @relation(fields: [enquiryId], references: [id])
-  enquiryId Int?
+  enquiryId    Int?
+  status       StatusType
+  Enquiry      Enquiry?   @relation(fields: [enquiryId], references: [id])
 }
 
 model SanctionDisbursment {
@@ -175,9 +166,21 @@ model SanctionDisbursment {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   document  String
+  enquiryId Int?
   status    StatusType
   Enquiry   Enquiry?   @relation(fields: [enquiryId], references: [id])
-  enquiryId Int?
+}
+
+enum TokenType {
+  RESET_PASSWORD
+  INVITE_PASSWORD
+}
+
+enum EnquiryRequestType {
+  PENDING
+  APPROVED
+  REJECTED
+  SANCTIONED
 }
 
 enum StatusType {

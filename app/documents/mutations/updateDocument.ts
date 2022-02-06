@@ -7,6 +7,7 @@ const UpdateDocument = z.object({
   document_name: z.string(),
   enquiryId: z.number(),
   status: z.enum(["UPLOADED", "NOT_UPLOAD"]),
+  fileId: z.number().nullish(),
 })
 
 export default resolver.pipe(
@@ -14,7 +15,9 @@ export default resolver.pipe(
   resolver.authorize(["ADMIN", "STAFF"]),
   async ({ id, ...data }, ctx) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
-    const document = await db.document.update({ where: { id }, data })
+
+    const modified: any = { ...data, status: data.fileId ? "UPLOADED" : "NOT_UPLOAD" }
+    const document = await db.document.update({ where: { id }, data: modified })
     await db.log.create({
       data: {
         name: "Updated Document by",

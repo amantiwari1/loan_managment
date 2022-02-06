@@ -18,22 +18,18 @@ import React, { useEffect, useState } from "react"
 import { BiEdit, BiUser } from "react-icons/bi"
 import Select from "react-select"
 import addStaffEnquiry from "../mutations/addStaffEnquiry"
+import { EnquireUserInterface, EnquiryUser } from "app/type"
+import { TransformationData } from "app/common"
 
-const TransformationData = (staff, StaffEnquiry) => {
-  const selected = StaffEnquiry.map((arr) => arr.value)
-  const users = staff.users.filter((arr) => !selected.includes(arr.id))
-
-  const users1 = users.map((item) => {
-    return {
-      value: item.id,
-      label: item.name,
-    }
-  })
-
-  return users1
-}
-
-const StaffDraw = ({ StaffEnquiry, enquiry, refetch }) => {
+const StaffDraw = ({
+  StaffEnquiry,
+  enquiry,
+  refetch,
+}: {
+  enquiry: EnquiryUser
+  StaffEnquiry: EnquireUserInterface[]
+  refetch: any
+}) => {
   const session = useSession()
   const [addStaffEnquiryMutation, { isLoading }] = useMutation(addStaffEnquiry)
 
@@ -45,27 +41,19 @@ const StaffDraw = ({ StaffEnquiry, enquiry, refetch }) => {
       },
     },
     {
-      enabled: !["USER", "PARTNER"].includes(session.role as string),
+      enabled: !["USER", "PARTNER", "STAFF"].includes(session.role as string),
     }
   )
 
-  const [Staff, setStaff] = useState<
-    {
-      value: number
-      label: string
-    }[]
-  >([])
+  const [Staff, setStaff] = useState<EnquireUserInterface[]>([])
 
   const [Options, setOptions] = useState([])
 
-  const [select, setSelected] = useState<{
-    value: number
-    label: string
-  }>()
+  const [select, setSelected] = useState<EnquireUserInterface>()
 
   useEffect(() => {
     setOptions(TransformationData(FetchStaff, StaffEnquiry))
-    setStaff(StaffEnquiry)
+    setStaff(StaffEnquiry ?? [])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [StaffEnquiry])
 
@@ -107,7 +95,7 @@ const StaffDraw = ({ StaffEnquiry, enquiry, refetch }) => {
               </div>
 
               {!Staff.length && <Text fontWeight="medium">No Staff Selected</Text>}
-              {Staff.map((arr, i) => (
+              {Staff?.map((arr, i) => (
                 <div key={i}>
                   <div className="flex justify-between items-center my-2">
                     <div>
@@ -146,7 +134,7 @@ const StaffDraw = ({ StaffEnquiry, enquiry, refetch }) => {
                 onClick={async () => {
                   await addStaffEnquiryMutation({
                     id: enquiry.id,
-                    userId: Staff.map((arr) => arr.value),
+                    userId: Staff?.map((arr) => arr.value),
                   })
                   await refetch()
 
@@ -166,9 +154,11 @@ const StaffDraw = ({ StaffEnquiry, enquiry, refetch }) => {
         </Drawer>
         <div className="flex items-center space-x-2">
           <Text fontSize="sm">Staff :</Text>
-          <div className="text-2xl cursor-pointer">
-            <BiEdit onClick={onOpen} />
-          </div>
+          {!["STAFF", "USER", "PARTNER"].includes(session.role) && (
+            <div className="text-2xl cursor-pointer">
+              <BiEdit onClick={onOpen} />
+            </div>
+          )}
         </div>
         <div className="space-y-2 font-medium items-center">
           {!enquiry?.staff.length && <Text fontWeight="medium">No Staff Selected</Text>}

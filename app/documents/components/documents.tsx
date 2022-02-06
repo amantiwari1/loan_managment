@@ -1,7 +1,9 @@
 import { Enquiry } from "@prisma/client"
 import { message, Table } from "antd"
 import React from "react"
+
 import {
+  getAntiCSRFToken,
   getQueryKey,
   queryClient,
   useAuthenticatedSession,
@@ -12,7 +14,7 @@ import {
 } from "blitz"
 import getDocuments from "../queries/getDocuments"
 import { Button } from "app/core/components/Button"
-import { AddIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons"
+import { AddIcon, DeleteIcon, DownloadIcon, EditIcon } from "@chakra-ui/icons"
 import {
   DrawerBody,
   DrawerCloseButton,
@@ -73,7 +75,7 @@ const AddNewButton = ({ onClick }) => {
   )
 }
 
-const ActionComponent = ({ onEdit, onDelete, isDeleting }) => {
+const ActionComponent = ({ onEdit, onDelete, isDeleting, session }) => {
   const [isAlertOpen, setIsAlertOpen] = React.useState(false)
   const onAlertClose = () => setIsAlertOpen(false)
   const firstField = React.useRef(null)
@@ -113,15 +115,17 @@ const ActionComponent = ({ onEdit, onDelete, isDeleting }) => {
       <Button onClick={onEdit} variant="outline" leftIcon={<EditIcon />}>
         Edit
       </Button>
-      <Button
-        onClick={() => {
-          setIsAlertOpen(true)
-        }}
-        colorScheme="red"
-        leftIcon={<DeleteIcon />}
-      >
-        Delete
-      </Button>
+      {["ADMIN", "STAFF"].includes(session.role) && (
+        <Button
+          onClick={() => {
+            setIsAlertOpen(true)
+          }}
+          colorScheme="red"
+          leftIcon={<DeleteIcon />}
+        >
+          Delete
+        </Button>
+      )}
     </div>
   )
 }
@@ -167,11 +171,17 @@ const Document = () => {
     },
   })
 
-  const [data, { refetch, setQueryData }] = useQuery(getDocuments, {
-    where: {
-      enquiryId: enquiry.id,
+  const [data, { refetch, setQueryData }] = useQuery(
+    getDocuments,
+    {
+      where: {
+        enquiryId: enquiry.id,
+      },
     },
-  })
+    {
+      refetchOnWindowFocus: false,
+    }
+  )
 
   const onRefreshData = async () => {
     const queryKey = getQueryKey(getLogs, {
@@ -205,26 +215,22 @@ const Document = () => {
       key: "updatedAt",
       render: (updatedAt) => <p>{new Date(updatedAt).toDateString()}</p>,
     },
-    // {
-    //   title: "Upload",
-    //   dataIndex: "updatedAt",
-    //   key: "updatedAt",
-    //   render: (updatedAt) => (
-    //     <Button variant="outline" onClick={onClose}>
-    //       Upload
-    //     </Button>
-    //   ),
-    // },
-    // {
-    //   title: "Download",
-    //   dataIndex: "updatedAt",
-    //   key: "updatedAt",
-    //   render: (updatedAt) => (
-    //     <Button variant="outline" onClick={onClose}>
-    //       Download
-    //     </Button>
-    //   ),
-    // },
+    {
+      title: "Download",
+      dataIndex: "file",
+      key: "file",
+      render: (file) => {
+        return (
+          <>
+            {file?.name && (
+              <Button variant="outline" w={40} leftIcon={<DownloadIcon />}>
+                {file.name}
+              </Button>
+            )}
+          </>
+        )
+      },
+    },
     {
       title: "Action",
       dataIndex: "updatedAt",
@@ -232,6 +238,7 @@ const Document = () => {
       render: (updatedAt, record) => (
         <ActionComponent
           isDeleting={isLoading}
+          session={session}
           onDelete={async () => {
             await deleteDocumentMutation(record)
             await onRefreshData()
@@ -243,7 +250,7 @@ const Document = () => {
         />
       ),
     },
-  ].slice(0, !["USER", "PARTNER"].includes(session.role as string) ? undefined : -1)
+  ].slice(0, !["PARTNER"].includes(session.role as string) ? undefined : -1)
 
   return (
     <div>
@@ -268,12 +275,10 @@ const Document = () => {
           <DrawerBody>
             <DocumentForm
               submitText="Create Document"
-              // TODO use a zod schema for form validation
-              //  - Tip: extract mutation's schema into a shared `validations.ts` file and
-              //         then import and use it here
               schema={CreateDocument}
               initialValues={Edit}
               onSubmit={async (values) => {
+                console.log(values)
                 try {
                   if (values.id) {
                     await updateDocumentMutation(values as any)

@@ -1,4 +1,4 @@
-import { Link, useRouter, useMutation, BlitzPage, Routes } from "blitz"
+import { Link, useRouter, useMutation, BlitzPage, Routes, useSession } from "blitz"
 import Layout from "app/core/layouts/Layout"
 import createEnquiry from "app/enquiries/mutations/createEnquiry"
 import { EnquiryForm, FORM_ERROR } from "app/enquiries/components/EnquiryForm"
@@ -8,6 +8,7 @@ import { CreateEnquiry } from "app/auth/validations"
 const NewEnquiryPage: BlitzPage = () => {
   const router = useRouter()
   const [createEnquiryMutation] = useMutation(createEnquiry)
+  const session = useSession()
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -23,7 +24,9 @@ const NewEnquiryPage: BlitzPage = () => {
         onSubmit={async (values) => {
           try {
             const enquiry = await createEnquiryMutation(values)
-            router.push(Routes.ShowEnquiryPage({ enquiryId: enquiry.id }))
+            if (session.role === "ADMIN") {
+              router.push(Routes.ShowEnquiryPage({ enquiryId: enquiry.id }))
+            }
           } catch (error: any) {
             if (error.code === "P2002" && error.meta?.target?.includes("client_email")) {
               return { client_email: "This email is already being used" }

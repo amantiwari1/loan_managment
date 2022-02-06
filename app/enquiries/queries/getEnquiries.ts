@@ -37,6 +37,18 @@ export default resolver.pipe(
               },
             },
             orderBy,
+            include: {
+              users: {
+                select: {
+                  user: {
+                    select: {
+                      name: true,
+                      role: true,
+                    },
+                  },
+                },
+              },
+            },
           }),
       })
 
@@ -67,12 +79,8 @@ export default resolver.pipe(
                 user: {
                   select: {
                     name: true,
+                    role: true,
                   },
-                },
-              },
-              where: {
-                user: {
-                  role: "PARTNER",
                 },
               },
             },

@@ -1,16 +1,39 @@
-import { Text } from "@chakra-ui/react"
+import { DeleteIcon } from "@chakra-ui/icons"
+import {
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  DrawerHeader,
+  DrawerBody,
+  DrawerFooter,
+  Drawer,
+  useDisclosure,
+  Text,
+  Divider,
+} from "@chakra-ui/react"
 import { Button } from "app/core/components/Button"
 import getUsers from "app/users/queries/getUsers"
 import { useMutation, useQuery, useSession } from "blitz"
-import React, { useState } from "react"
-import { BiEdit } from "react-icons/bi"
-import addPartnerEnquiry from "../mutations/addPartnerEnquiry"
+import React, { useEffect, useState } from "react"
+import { BiEdit, BiUser } from "react-icons/bi"
 import Select from "react-select"
+import addPartnerEnquiry from "../mutations/addPartnerEnquiry"
+import { EnquireUserInterface, EnquiryUser, getUsersType } from "app/type"
+import { TransformationData } from "app/common"
 
-const PartnerSelect = ({ enquiry }) => {
+const PartnerSelect = ({
+  PartnerEnquiry,
+  enquiry,
+  refetch,
+}: {
+  enquiry: EnquiryUser
+  PartnerEnquiry: EnquireUserInterface[]
+  refetch: any
+}) => {
   const session = useSession()
+  const [addPartnerEnquiryMutation, { isLoading }] = useMutation(addPartnerEnquiry)
 
-  const [partner] = useQuery(
+  const [FetchPartner] = useQuery(
     getUsers,
     {
       where: {
@@ -21,62 +44,147 @@ const PartnerSelect = ({ enquiry }) => {
       enabled: !["USER", "PARTNER"].includes(session.role as string),
     }
   )
-  const [Edit, setEdit] = useState(false)
 
-  const [addPartnerMutation, { isLoading: partnerLoading }] = useMutation(addPartnerEnquiry)
-  const [Partner, setPartner] = useState<number | undefined>(undefined)
+  const [Partner, setPartner] = useState<
+    {
+      value: number
+      label: string
+    }[]
+  >([])
+
+  const [Options, setOptions] = useState([])
+
+  const [select, setSelected] = useState<{
+    value: number
+    label: string
+  }>()
+
+  useEffect(() => {
+    setOptions(TransformationData(FetchPartner, PartnerEnquiry))
+    setPartner(PartnerEnquiry ?? [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [PartnerEnquiry])
+
+  const firstField = React.useRef(null)
+  const { isOpen, onOpen, onClose } = useDisclosure({
+    onClose: () => {
+      setPartner(PartnerEnquiry ?? [])
+    },
+  })
 
   return (
     <div>
       <div>
-        <Text fontSize="sm">Partner :</Text>
-        {Edit ? (
-          <div className="flex space-x-2 max-w-xl mb-4">
-            <div className="w-[40rem]">
-              <Select
-                onChange={(data) => {
-                  setPartner(data?.value)
+        <Drawer
+          isOpen={isOpen}
+          size="lg"
+          placement="right"
+          initialFocusRef={firstField}
+          onClose={onClose}
+        >
+          <DrawerOverlay />
+          <DrawerContent>
+            <DrawerCloseButton />
+            <DrawerHeader borderBottomWidth="1px">Edit Partner</DrawerHeader>
+
+            <DrawerBody>
+              <div className="flex space-x-2 max-w-xl mb-4">
+                <div className="w-[40rem]">
+                  <Select
+                    onChange={(data) => {
+                      console.log(data)
+                      console.log(Partner)
+                      setPartner((prevArr) => [...prevArr, data])
+                      setOptions((prevArr) => prevArr.filter((arr) => arr.value !== data.value))
+                      setSelected(null)
+                    }}
+                    value={select}
+                    options={Options}
+                  />
+                </div>
+              </div>
+
+              {!Partner?.length && <Text fontWeight="medium">No Partner Selected</Text>}
+              {Partner.map((arr, i) => (
+                <div key={i}>
+                  <div className="flex justify-between items-center my-2">
+                    <div>
+                      <div className="bg-blue-200 text-blue-500 text-xl p-2 rounded-full">
+                        <BiUser />
+                      </div>
+                    </div>
+                    <div>
+                      <Text fontWeight="medium">{arr.label}</Text>
+                    </div>
+
+                    <Button
+                      w={24}
+                      onClick={() => {
+                        setPartner((prevArr) => prevArr.filter((i) => i.value !== arr.value))
+                        setOptions(
+                          TransformationData(
+                            FetchPartner,
+                            Partner.filter((i) => i.value !== arr.value)
+                          )
+                        )
+                      }}
+                      colorScheme="red"
+                      leftIcon={<DeleteIcon />}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                  <Divider />
+                </div>
+              ))}
+
+              <Button
+                className="mt-10"
+                isLoading={isLoading}
+                onClick={async () => {
+                  await addPartnerEnquiryMutation({
+                    id: enquiry.id,
+                    userId: Partner?.map((arr) => arr.value),
+                  })
+                  await refetch()
+
+                  onClose()
                 }}
-                defaultValue={{
-                  value: enquiry?.partner?.user?.id,
-                  label: enquiry?.partner?.user?.name,
-                }}
-                options={partner?.users.map((item) => {
-                  return {
-                    value: item.id,
-                    label: item.name,
-                  }
-                })}
-              />
-            </div>
-            <Button
-              isLoading={partnerLoading}
-              onClick={async () => {
-                await addPartnerMutation({
-                  id: enquiry.id,
-                  userId: Partner as number,
-                })
-                setEdit(false)
-              }}
-            >
-              Change Partner
-            </Button>
-            <Button
-              onClick={() => {
-                setEdit(false)
-              }}
-            >
-              Cancel
-            </Button>
-          </div>
-        ) : (
-          <div className="flex space-x-2 font-medium items-center">
-            <Text fontSize="2xl">{enquiry?.partner?.user?.name ?? "Not Selected"} </Text>
+              >
+                Update Partner
+              </Button>
+            </DrawerBody>
+
+            <DrawerFooter borderTopWidth="1px">
+              <Button variant="outline" mr={3} onClick={onClose}>
+                Cancel
+              </Button>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+        <div className="flex items-center space-x-2">
+          <Text fontSize="sm">Partner :</Text>
+          {!["USER", "PARTNER"].includes(session.role) && (
             <div className="text-2xl cursor-pointer">
-              <BiEdit onClick={() => setEdit(true)} />
+              <BiEdit onClick={onOpen} />
             </div>
-          </div>
-        )}
+          )}
+        </div>
+        <div className="space-y-2 font-medium items-center">
+          {!enquiry?.partner?.length && <Text fontWeight="medium">No Partner Selected</Text>}
+          {enquiry?.partner?.map((arr, i) => (
+            <div key={i} className="flex space-x-2 items-center">
+              <div>
+                <div className="bg-blue-200 text-blue-500 text-xl p-2 rounded-full">
+                  <BiUser />
+                </div>
+              </div>
+              <div>
+                <Text fontWeight="medium">{arr.user.name}</Text>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )

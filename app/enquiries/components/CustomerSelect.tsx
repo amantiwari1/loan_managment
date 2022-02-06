@@ -7,7 +7,7 @@ import { BiEdit } from "react-icons/bi"
 import Select from "react-select"
 import addCustomerEnquiry from "../mutations/addCustomerEnquiry"
 
-const CustomerSelect = ({ enquiry }) => {
+const CustomerSelect = ({ enquiry, refetch }) => {
   const session = useSession()
 
   const [customer] = useQuery(
@@ -56,6 +56,8 @@ const CustomerSelect = ({ enquiry }) => {
                 id: enquiry.id,
                 userId: Customer as number,
               })
+
+              await refetch()
               setEdit(false)
             }}
           >

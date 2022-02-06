@@ -7,12 +7,29 @@ const GetEnquiry = z.object({
   id: z.number().optional().refine(Boolean, "Required"),
 })
 
+interface Options {
+  where: {
+    id: number
+    users?: {
+      some: {
+        userId: number
+      }
+    }
+  }
+  include: {
+    users: {
+      include: {
+        user: boolean
+      }
+    }
+  }
+}
+
 export default resolver.pipe(
   resolver.zod(GetEnquiry),
   resolver.authorize(),
   async ({ id }, ctx) => {
-    // TODO: in multi-tenant app, you must add validation to ensure correct tenant
-    let options: any = {
+    let options: Options = {
       where: { id },
       include: {
         users: {
@@ -43,11 +60,11 @@ export default resolver.pipe(
       }
     }
 
-    const enquiry: any = await db.enquiry.findFirst(options)
+    const enquiry = await db.enquiry.findFirst(options)
 
     if (!enquiry) throw new NotFoundError()
 
-    const partner = enquiry.users.filter((arr) => arr.user.role === "PARTNER")[0]
+    const partner = enquiry.users.filter((arr) => arr.user.role === "PARTNER")
     const customer = enquiry.users.filter((arr) => arr.user.role === "USER")[0]
     const staff = enquiry.users.filter((arr) => arr.user.role === "STAFF")
 

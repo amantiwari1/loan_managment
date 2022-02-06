@@ -1,15 +1,16 @@
 import { Link, BlitzPage, Routes, usePaginatedQuery, useRouter, useSession, useQuery } from "blitz"
 import Layout from "app/core/layouts/Layout"
-import { Card, Divider, message, Tag } from "antd"
+import { Card, Divider, message } from "antd"
 import { Table } from "antd"
 import getEnquiries from "app/enquiries/queries/getEnquiries"
 import { Suspense } from "react"
-import { Enquiry } from "@prisma/client"
-import { IconButton, Text } from "@chakra-ui/react"
+import { Enquiry, User } from "@prisma/client"
+import { Avatar, AvatarGroup, IconButton, Text, Tooltip } from "@chakra-ui/react"
 import { ColumnsType } from "antd/lib/table"
 import { IoMdRefresh } from "react-icons/io"
 import getEnquiriesCount from "app/enquiries/queries/getEnquiriesCount"
 import { Button } from "app/core/components/Button"
+import { BiUser } from "react-icons/bi"
 
 const ITEMS_PER_PAGE = 100
 
@@ -45,35 +46,56 @@ const columns: ColumnsType<Enquiry> = [
   {
     title: "Channel Partner",
     dataIndex: "users",
-
     render: (users: any[]) => (
       <Text fontWeight="medium" textTransform="capitalize">
-        {users.length !== 0 ? users[0]?.user?.name ?? "Not Selected" : "Not Selected"}
+        <div className="space-y-2 font-medium items-center">
+          {!users.filter((arr) => arr.user.role === "PARTNER").length && (
+            <Text fontWeight="medium">No Partner Selected</Text>
+          )}
+          <AvatarGroup size="md" max={3}>
+            {users
+              .filter((arr) => arr.user.role === "PARTNER")
+              .map((arr, i) => (
+                <Tooltip key={i} label={arr.user.name}>
+                  <div>
+                    <Avatar name={arr.user.name} />
+                  </div>
+                </Tooltip>
+              ))}
+          </AvatarGroup>
+        </div>
       </Text>
     ),
   },
-  // {
-  //   title: "Staff",
-  //   dataIndex: "staff",
-  //   render: (text) => <a>{text}</a>,
-  // },
+  {
+    title: "STAFF",
+    dataIndex: "users",
+    render: (users: any[]) => (
+      <Text fontWeight="medium" textTransform="capitalize">
+        <div className="space-y-2 font-medium items-center">
+          {!users.filter((arr) => arr.user.role === "STAFF").length && (
+            <Text fontWeight="medium">No Staff Selected</Text>
+          )}
+          <AvatarGroup size="md" max={3}>
+            {users
+              .filter((arr) => arr.user.role === "STAFF")
+              .map((arr, i) => (
+                <Tooltip key={i} label={arr.user.name}>
+                  <div>
+                    <Avatar name={arr.user.name} />
+                  </div>
+                </Tooltip>
+              ))}
+          </AvatarGroup>
+        </div>
+      </Text>
+    ),
+  },
   {
     title: "Last Updated",
     dataIndex: "updatedAt",
     key: "updatedAt",
     render: (updatedAt) => <p>{new Date(updatedAt).toDateString()}</p>,
-  },
-  {
-    title: "Action",
-    dataIndex: "id",
-    key: "id",
-    render: (id) => (
-      <Link href={Routes.ShowEnquiryPage({ enquiryId: id })}>
-        <Button variant="outline" w={20}>
-          View
-        </Button>
-      </Link>
-    ),
   },
 ]
 
@@ -130,23 +152,14 @@ export const EnquiriesList = () => {
           <Divider />
           <div className="grid grid-cols-5 gap-5">
             {cardData.map((item) => (
-              <Card key={item.name}>
-                {item.link ? (
-                  <p className="text-gray-500 text-xs">
-                    <span className="mr-1">{item.name}</span>
-                    <span>
-                      {"( "}
-                      <Link href={item.link}>
-                        <a className="underline hover:underline hover:text-blue-500">View</a>
-                      </Link>
-                      {" )"}
-                    </span>
-                  </p>
-                ) : (
-                  <p className="text-gray-500 text-xs">{item.name}</p>
-                )}
-                <p className="text-xl font-bold">{item.count}</p>
-              </Card>
+              <div key={item.name}>
+                <Link href={item.link ?? "#"}>
+                  <Card hoverable={item.link ? true : false}>
+                    <p className="text-gray-500 text-xs">{item.name}</p>
+                    <p className="text-xl font-bold">{item.count}</p>
+                  </Card>
+                </Link>
+              </div>
             ))}
           </div>
           <Divider />

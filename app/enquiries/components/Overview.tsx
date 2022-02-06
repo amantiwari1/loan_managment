@@ -11,12 +11,10 @@ import { Text } from "@chakra-ui/react"
 import { useMutation, useParam, useQuery, useSession } from "blitz"
 import getUsers from "app/users/queries/getUsers"
 import { Button } from "app/core/components/Button"
-import addPartnerEnquiry from "../mutations/addPartnerEnquiry"
 import getEnquiry from "../queries/getEnquiry"
-import addCustomerEnquiry from "../mutations/addCustomerEnquiry"
 import PartnerSelect from "./PartnerSelect"
 import CustomerSelect from "./CustomerSelect"
-import StaffDraw from "./StaffDraw"
+import StaffSelect from "./StaffSelect"
 
 const client_service_options = [
   { value: "HOME_LOAN", label: "Home Loan" },
@@ -80,11 +78,6 @@ const Overview = () => {
       icon: BiRupee,
     },
     {
-      name: "Partner",
-      content: enquiry?.partner?.user?.name ?? "Not Selected",
-      icon: FiUsers,
-    },
-    {
       name: "Client",
       content: enquiry?.customer?.user?.name ?? "Not Selected",
       icon: BiUser,
@@ -125,9 +118,18 @@ const Overview = () => {
             <></>
           ) : (
             <div className="space-y-5">
-              <PartnerSelect enquiry={enquiry} />
-              <CustomerSelect enquiry={enquiry} />
-              <StaffDraw
+              <PartnerSelect
+                enquiry={enquiry}
+                refetch={refetch}
+                PartnerEnquiry={enquiry?.partner?.map((arr) => {
+                  return {
+                    label: arr.user.name,
+                    value: arr.user.id,
+                  }
+                })}
+              />
+              <CustomerSelect enquiry={enquiry} refetch={refetch} />
+              <StaffSelect
                 enquiry={enquiry}
                 refetch={refetch}
                 StaffEnquiry={enquiry?.staff?.map((arr) => {

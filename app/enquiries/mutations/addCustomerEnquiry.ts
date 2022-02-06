@@ -7,28 +7,10 @@ const UpdateEnquiry = z.object({
   userId: z.number(),
 })
 
-export function $exists<T>(ts: T[]): boolean {
-  return ts.length > 0
-}
-
 export default resolver.pipe(
   resolver.zod(UpdateEnquiry),
-  resolver.authorize(["ADMIN", "STAFF"]),
+  resolver.authorize(["ADMIN"]),
   async ({ id, userId }) => {
-    // TODO: in multi-tenant app, you must add validation to ensure correct tenant
-    const isUser = await db.user
-      .findMany({
-        where: {
-          id: userId,
-          role: "USER",
-        },
-      })
-      .then($exists)
-
-    if (!isUser) {
-      throw new NotFoundError()
-    }
-
     await db.usersOnEnquires.deleteMany({
       where: {
         enquiryId: id,
@@ -37,26 +19,11 @@ export default resolver.pipe(
         },
       },
     })
-
-    const enquiry = await db.enquiry.update({
-      where: {
-        id,
-      },
+    await db.usersOnEnquires.create({
       data: {
-        users: {
-          create: [
-            {
-              user: {
-                connect: {
-                  id: userId,
-                },
-              },
-            },
-          ],
-        },
+        enquiryId: id,
+        userId: userId,
       },
     })
-
-    return enquiry
   }
 )

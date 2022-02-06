@@ -29,7 +29,19 @@ const sidebar_data_2 = [
   {
     name: "Enquiries",
     icon: FormOutlined,
-    role: ["ADMIN", "STAFF"],
+    role: ["STAFF"],
+    sidebar_data: [
+      {
+        name: "Add a New Enquiry",
+        icon: PieChartOutlined,
+        link: "/enquiries/new",
+      },
+    ],
+  },
+  {
+    name: "Enquiries",
+    icon: FormOutlined,
+    role: ["ADMIN"],
     sidebar_data: [
       {
         name: "Add a New Enquiry",
@@ -139,7 +151,7 @@ const Sidebar = ({ children }) => {
               ))}
               {sidebar_data_2.map((item) => (
                 <>
-                  {!["USER", "PARTNER"].includes(session.role as string) && (
+                  {item.role.includes(session.role as string) && (
                     <SubMenu key={item.name} icon={<item.icon />} title={item.name}>
                       {item.sidebar_data.map((item) => (
                         <MenuItem key={item.link}>
