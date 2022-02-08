@@ -7,48 +7,30 @@ import { AiFillDelete } from "react-icons/ai"
 import { useField } from "react-final-form"
 import getFile from "app/file/queries/getFile"
 import deleteFile from "app/file/mutations/deleteFile"
-import { id } from "app/auth/validations"
 
 const UploadFile = () => {
+  console.log("Rendered")
   const enquiryId = useParam("enquiryId", "number")
   const [createFileMutation, { isLoading }] = useMutation(createFile)
   const [DeleteFileMutation, { isLoading: isLoadingDelete }] = useMutation(deleteFile)
-  const [FileName, setFileName] = useState("")
-  const [fileId, setFileID] = useState(0)
-
-  useQuery(
-    getFile,
-    { id: fileId },
-    {
-      refetchOnWindowFocus: false,
-      enabled: fileId !== 0,
-      onSuccess(data) {
-        setFileName(data.name)
-      },
-    }
-  )
+  const { input } = useField("fileId", {})
+  const { input: fileNameInput } = useField("file.name", {})
 
   const ref = React.useRef<HTMLInputElement>()
 
-  const { input } = useField("fileId", {})
-
   const removeFile = async () => {
-    await DeleteFileMutation({ id: fileId })
-    setFileName("")
+    await DeleteFileMutation({ id: input.value })
     input.onChange(null)
+    fileNameInput.onChange(null)
   }
-
-  useEffect(() => {
-    setFileID(input.value !== "" ? input.value : 0)
-  }, [input.value])
 
   const uploadFile = async (e) => {
     const file = e.target.files[0]
-    setFileName(file.name)
     const key = encodeURIComponent(getFileName(enquiryId, file.name))
 
     const fileId = await createFileMutation({ key: key, name: file.name })
     input.onChange(fileId.id)
+    fileNameInput.onChange(file.name)
 
     // const antiCSRFToken = getAntiCSRFToken()
     // const res = await fetch(`/api/upload-url?file=${key}`, {
@@ -79,9 +61,9 @@ const UploadFile = () => {
 
   return (
     <div>
-      {FileName ? (
+      {fileNameInput.value ? (
         <div className="flex justify-between items-center max-w-sm mx-auto">
-          <p>{FileName}</p>
+          <p>{fileNameInput.value}</p>
           <IconButton
             onClick={removeFile}
             aria-label="delete"

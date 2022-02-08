@@ -17,7 +17,15 @@ export default resolver.pipe(
       skip,
       take,
       count: () => db.sanctionDisbursment.count({ where }),
-      query: (paginateArgs) => db.sanctionDisbursment.findMany({ ...paginateArgs, where, orderBy }),
+      query: (paginateArgs) =>
+        db.sanctionDisbursment.findMany({
+          ...paginateArgs,
+          where,
+          orderBy,
+          include: {
+            file: true,
+          },
+        }),
     })
 
     return {

@@ -82,12 +82,16 @@ model Enquiry {
 }
 
 model File {
-  id        Int        @id @default(autoincrement())
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  key       String
-  name      String
-  Document  Document[]
+  id                    Int                     @id @default(autoincrement())
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+  key                   String
+  name                  String
+  Document              Document[]
+  ProjectReport         ProjectReport[]
+  CaseStatus            CaseStatus[]
+  SearchValuationReport SearchValuationReport[]
+  SanctionDisbursment   SanctionDisbursment[]
 }
 
 model Log {
@@ -120,10 +124,12 @@ model ProjectReport {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   label     String
-  status    StatusType
+  status    StatusType @default(NOT_UPLOAD)
   remark    String?
   enquiryId Int?
   Enquiry   Enquiry?   @relation(fields: [enquiryId], references: [id])
+  file      File?      @relation(fields: [fileId], references: [id])
+  fileId    Int?
 }
 
 model CaseStatus {
@@ -135,8 +141,10 @@ model CaseStatus {
   final_login        String
   remark             String?
   enquiryId          Int?
-  status             StatusType
+  status             StatusType @default(NOT_UPLOAD)
   Enquiry            Enquiry?   @relation(fields: [enquiryId], references: [id])
+  file               File?      @relation(fields: [fileId], references: [id])
+  fileId             Int?
 }
 
 model SearchValuationReport {
@@ -145,8 +153,10 @@ model SearchValuationReport {
   updatedAt DateTime   @updatedAt
   document  String
   enquiryId Int?
-  status    StatusType
+  status    StatusType @default(NOT_UPLOAD)
   Enquiry   Enquiry?   @relation(fields: [enquiryId], references: [id])
+  file      File?      @relation(fields: [fileId], references: [id])
+  fileId    Int?
 }
 
 model BankQuery {
@@ -157,7 +167,7 @@ model BankQuery {
   our_response String
   remark       String?
   enquiryId    Int?
-  status       StatusType
+  status       StatusType @default(NOT_UPLOAD)
   Enquiry      Enquiry?   @relation(fields: [enquiryId], references: [id])
 }
 
@@ -167,8 +177,10 @@ model SanctionDisbursment {
   updatedAt DateTime   @updatedAt
   document  String
   enquiryId Int?
-  status    StatusType
+  status    StatusType @default(NOT_UPLOAD)
   Enquiry   Enquiry?   @relation(fields: [enquiryId], references: [id])
+  file      File?      @relation(fields: [fileId], references: [id])
+  fileId    Int?
 }
 
 enum TokenType {

@@ -1,6 +1,7 @@
 import { Form, FormProps } from "app/core/components/Form"
 import { LabeledTextField } from "app/core/components/LabeledTextField"
 import SelectField from "app/core/components/SelectField"
+import UploadFile from "app/core/components/UploadFile"
 import { z } from "zod"
 export { FORM_ERROR } from "app/core/components/Form"
 const options = [
@@ -17,7 +18,7 @@ export function SanctionDisbursmentForm<S extends z.ZodType<any, any>>(props: Fo
   return (
     <Form<S> {...props}>
       <LabeledTextField name="document" label="Document" placeholder="Name" />
-      <SelectField name="status" label="status" options={options} placeholder="Select" />
+      <UploadFile />
     </Form>
   )
 }

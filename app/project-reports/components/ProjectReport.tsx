@@ -10,7 +10,7 @@ import {
   useSession,
 } from "blitz"
 import { Button } from "app/core/components/Button"
-import { AddIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons"
+import { AddIcon, DeleteIcon, DownloadIcon, EditIcon } from "@chakra-ui/icons"
 import {
   DrawerBody,
   DrawerCloseButton,
@@ -37,13 +37,14 @@ import { ProjectReportForm } from "./ProjectReportForm"
 import getProjectReports from "../queries/getProjectReports"
 import { CreateProjectReport } from "app/auth/validations"
 import getEnquiry from "app/enquiries/queries/getEnquiry"
+import { File } from "@prisma/client"
 
 const StatusData = {
-  UPLOADED: {
+  true: {
     color: "green",
     title: "Uploaded",
   },
-  NOT_UPLOAD: {
+  false: {
     color: "red",
     title: "No Upload",
   },
@@ -154,6 +155,7 @@ const ProjectReport = () => {
   const firstField = React.useRef(null)
   const { isOpen, onOpen, onClose } = useDisclosure({
     onClose: () => {
+      refetch()
       setEdit({
         status: "NOT_UPLOAD",
       })
@@ -185,17 +187,35 @@ const ProjectReport = () => {
       render: (label) => <p>{label}</p>,
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      render: (status) => (
-        <Tag colorScheme={StatusData[status]?.color}>{StatusData[status]?.title}</Tag>
-      ),
-    },
-
-    {
       title: "remark",
       dataIndex: "remark",
       render: (remark) => <p>{remark}</p>,
+    },
+
+    {
+      title: "Status",
+      dataIndex: "file",
+      render: (file: File) => (
+        <Tag colorScheme={StatusData[file?.id ? "true" : "false"]?.color}>
+          {StatusData[file?.id ? "true" : "false"]?.title}
+        </Tag>
+      ),
+    },
+    {
+      title: "Download",
+      dataIndex: "file",
+      key: "file",
+      render: (file: File) => {
+        return (
+          <>
+            {file?.name && (
+              <Button variant="outline" w={40} leftIcon={<DownloadIcon />}>
+                {file.name.substring(0, 6)}...{file.name.split(".").at(-1)}
+              </Button>
+            )}
+          </>
+        )
+      },
     },
     {
       title: "Upload on",

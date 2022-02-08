@@ -1,4 +1,4 @@
-import { Enquiry } from "@prisma/client"
+import { Enquiry, File } from "@prisma/client"
 import { message, Table } from "antd"
 import React from "react"
 import {
@@ -11,7 +11,7 @@ import {
   useSession,
 } from "blitz"
 import { Button } from "app/core/components/Button"
-import { AddIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons"
+import { AddIcon, DeleteIcon, DownloadIcon, EditIcon } from "@chakra-ui/icons"
 import {
   DrawerBody,
   DrawerCloseButton,
@@ -39,11 +39,11 @@ import getSanctionDisbursments from "../queries/getSanctionDisbursments"
 import getEnquiry from "app/enquiries/queries/getEnquiry"
 
 const StatusData = {
-  UPLOADED: {
+  true: {
     color: "green",
     title: "Uploaded",
   },
-  NOT_UPLOAD: {
+  false: {
     color: "red",
     title: "No Upload",
   },
@@ -157,6 +157,7 @@ const SanctionDisbursment = () => {
   const firstField = React.useRef(null)
   const { isOpen, onOpen, onClose } = useDisclosure({
     onClose: () => {
+      refetch()
       setEdit({
         status: "NOT_UPLOAD",
       })
@@ -189,10 +190,28 @@ const SanctionDisbursment = () => {
     },
     {
       title: "Status",
-      dataIndex: "status",
-      render: (status) => (
-        <Tag colorScheme={StatusData[status]?.color}>{StatusData[status]?.title}</Tag>
+      dataIndex: "file",
+      render: (file: File) => (
+        <Tag colorScheme={StatusData[file?.id ? "true" : "false"]?.color}>
+          {StatusData[file?.id ? "true" : "false"]?.title}
+        </Tag>
       ),
+    },
+    {
+      title: "Download",
+      dataIndex: "file",
+      key: "file",
+      render: (file: File) => {
+        return (
+          <>
+            {file?.name && (
+              <Button variant="outline" w={40} leftIcon={<DownloadIcon />}>
+                {file.name.substring(0, 6)}...{file.name.split(".").at(-1)}
+              </Button>
+            )}
+          </>
+        )
+      },
     },
     {
       title: "Upload on",

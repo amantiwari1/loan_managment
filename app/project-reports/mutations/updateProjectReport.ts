@@ -5,7 +5,7 @@ import { z } from "zod"
 const UpdateProjectReport = z.object({
   id: z.number(),
   label: z.string(),
-  status: z.enum(["UPLOADED", "NOT_UPLOAD"]),
+  fileId: z.number().optional().nullable(),
   remark: z.string().optional().default(""),
   enquiryId: z.number(),
 })

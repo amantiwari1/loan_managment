@@ -18,7 +18,14 @@ export default resolver.pipe(
       take,
       count: () => db.searchValuationReport.count({ where }),
       query: (paginateArgs) =>
-        db.searchValuationReport.findMany({ ...paginateArgs, where, orderBy }),
+        db.searchValuationReport.findMany({
+          ...paginateArgs,
+          where,
+          orderBy,
+          include: {
+            file: true,
+          },
+        }),
     })
 
     return {

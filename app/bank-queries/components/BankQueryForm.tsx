@@ -18,7 +18,6 @@ export function BankQueryForm<S extends z.ZodType<any, any>>(props: FormProps<S>
     <Form<S> {...props}>
       <LabeledTextField name="bank_query" label="Bank Query" placeholder="Name" />
       <LabeledTextField name="our_response" label="Our Response" placeholder="Name" />
-      <SelectField name="status" label="status" options={options} placeholder="Select" />
       <LabeledTextField name="remark" label="remark" placeholder="Remark" />
     </Form>
   )

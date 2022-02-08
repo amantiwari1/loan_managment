@@ -6,7 +6,7 @@ const UpdateSearchValuationReport = z.object({
   id: z.number(),
   document: z.string(),
   enquiryId: z.number(),
-  status: z.enum(["UPLOADED", "NOT_UPLOAD"]),
+  fileId: z.number().optional().nullable(),
 })
 
 export default resolver.pipe(

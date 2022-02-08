@@ -254,7 +254,7 @@ const CaseStatus = () => {
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader borderBottomWidth="1px">Add New Case status</DrawerHeader>
+          <DrawerHeader borderBottomWidth="1px">Bank Finalization</DrawerHeader>
 
           <DrawerBody>
             <CaseStatusForm

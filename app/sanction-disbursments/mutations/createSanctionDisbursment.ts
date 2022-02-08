@@ -5,7 +5,7 @@ import { z } from "zod"
 const CreateSanctionDisbursment = z.object({
   document: z.string(),
   enquiryId: z.number(),
-  status: z.enum(["UPLOADED", "NOT_UPLOAD"]),
+  fileId: z.number().optional().nullable(),
 })
 
 export default resolver.pipe(
