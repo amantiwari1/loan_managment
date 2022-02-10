@@ -56,13 +56,13 @@ const AddNewButton = ({ onClick }) => {
   const session = useSession()
 
   return (
-    <div className="flex justify-between">
+    <div className="space-y-1 md:flex md:justify-between">
       <div>
         <p className="text-2xl font-light">Documents</p>
       </div>
 
       {!["USER", "PARTNER"].includes(session.role as string) && (
-        <div className="flex space-x-1">
+        <div className=" space-y-1 md:flex md:space-x-1  ">
           <Button w={220} onClick={onClick} leftIcon={<AddIcon />}>
             Add New Document
           </Button>
@@ -264,6 +264,7 @@ const Document = () => {
   return (
     <div>
       <Table
+        scroll={{ x: "max-content" }}
         title={() => <AddNewButton onClick={onOpen} />}
         dataSource={data.documents}
         columns={columns}

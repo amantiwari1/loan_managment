@@ -1,18 +1,20 @@
-import { BlitzPage, useRouterQuery, Link, useMutation, Routes } from "blitz"
+import { BlitzPage, useRouterQuery, Link, useMutation, Routes, Image } from "blitz"
 import Layout from "app/core/layouts/Layout"
 import { LabeledTextField } from "app/core/components/LabeledTextField"
 import { Form, FORM_ERROR } from "app/core/components/Form"
 import { ResetPassword } from "app/auth/validations"
-import resetPassword from "app/auth/mutations/resetPassword"
 import welcomePassword from "../mutations/welcomePassword"
-
+import logo from "public/logo.png"
 const WelcomePasswordPage: BlitzPage = () => {
   const query = useRouterQuery()
   const [welcomePasswordMutation, { isSuccess }] = useMutation(welcomePassword)
 
   return (
     <div>
-      <h1>Welcome</h1>
+      <div className="max-w-sm">
+        <Image src={logo} alt="logo" />
+      </div>
+      <h1 className="text-center text-2xl py-2 font-bold">Welcome to Kred Partner</h1>
 
       {isSuccess ? (
         <div>

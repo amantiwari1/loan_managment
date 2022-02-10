@@ -83,6 +83,7 @@ export const EnquiriesList = () => {
     <div>
       {!["USER", "PARTNER"].includes(session.role as string) && <div></div>}
       <Table
+        scroll={{ x: "max-content" }}
         columns={columns}
         dataSource={enquiries}
         bordered

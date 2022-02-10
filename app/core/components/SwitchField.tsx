@@ -21,6 +21,7 @@ export const LabeledTextField = forwardRef<HTMLInputElement, LabeledTextFieldPro
       input,
       meta: { touched, error, submitError, submitting },
     } = useField(name, {
+      initialValue: false,
       parse:
         props.type === "number"
           ? (Number as any)

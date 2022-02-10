@@ -183,6 +183,18 @@ model SanctionDisbursment {
   fileId    Int?
 }
 
+model ChannelPartner {
+  id        Int                @id @default(autoincrement())
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  name      String
+  email     String             @unique
+  phone     BigInt
+  city      String
+  company   String
+  request   EnquiryRequestType @default(PENDING)
+}
+
 enum TokenType {
   RESET_PASSWORD
   INVITE_PASSWORD

@@ -45,6 +45,7 @@ const columns: ColumnsType<Enquiry> = [
   },
   {
     title: "Channel Partner",
+
     dataIndex: "users",
     render: (users: any[]) => (
       <Text fontWeight="medium" textTransform="capitalize">
@@ -69,6 +70,7 @@ const columns: ColumnsType<Enquiry> = [
   },
   {
     title: "STAFF",
+
     dataIndex: "users",
     render: (users: any[]) => (
       <Text fontWeight="medium" textTransform="capitalize">
@@ -150,7 +152,7 @@ export const EnquiriesList = () => {
         <div>
           <p className="text-3xl font-bold">Overview</p>
           <Divider />
-          <div className="grid grid-cols-5 gap-5">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
             {cardData.map((item) => (
               <div key={item.name}>
                 <Link href={item.link ?? "#"}>
@@ -165,25 +167,28 @@ export const EnquiriesList = () => {
           <Divider />
         </div>
       )}
-      <Table
-        columns={columns}
-        dataSource={enquiries}
-        bordered
-        title={() => (
-          <div className="flex justify-between">
-            <Text fontWeight="bold">Active Enquiries</Text>
-            <IconButton
-              aria-label="Search database"
-              onClick={async () => {
-                await refetch()
-                message.success("Updated")
-              }}
-              variant="outline"
-              icon={<IoMdRefresh />}
-            />
-          </div>
-        )}
-      />
+      <div>
+        <Table
+          scroll={{ x: "max-content" }}
+          columns={columns}
+          dataSource={enquiries}
+          bordered
+          title={() => (
+            <div className="flex justify-between">
+              <Text fontWeight="bold">Active Enquiries</Text>
+              <IconButton
+                aria-label="Search database"
+                onClick={async () => {
+                  await refetch()
+                  message.success("Updated")
+                }}
+                variant="outline"
+                icon={<IoMdRefresh />}
+              />
+            </div>
+          )}
+        />
+      </div>
       {/* <button disabled={page === 0} onClick={goToPreviousPage}>
         Previous
       </button>

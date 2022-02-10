@@ -78,7 +78,7 @@ export const UsersList = () => {
 
   return (
     <div>
-      <Table bordered columns={Columns} dataSource={users} />
+      <Table scroll={{ x: "max-content" }} bordered columns={Columns} dataSource={users} />
 
       <button disabled={page === 0} onClick={goToPreviousPage}>
         Previous

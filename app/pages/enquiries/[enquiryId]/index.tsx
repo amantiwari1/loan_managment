@@ -62,14 +62,18 @@ export const Enquiry = () => {
         <h1 className="text-2xl capitalize">{enquiry.client_name}</h1> */}
       </div>
       <Divider />
-      <Tabs isLazy>
-        <TabList bg="white">
-          {TabData.map((item) => (
-            <Tab key={item.name}>
-              <Text fontWeight="medium">{item.name}</Text>
-            </Tab>
-          ))}
-        </TabList>
+      <Tabs isLazy variant="enclosed">
+        <div className="overflow-scroll p-2">
+          <TabList bg="white">
+            {TabData.map((item) => (
+              <Tab key={item.name}>
+                <Text fontWeight="medium" className="whitespace-nowrap">
+                  {item.name}
+                </Text>
+              </Tab>
+            ))}
+          </TabList>
+        </div>
 
         <TabPanels>
           {TabData.map((item) => (

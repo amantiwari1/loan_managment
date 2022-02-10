@@ -86,7 +86,7 @@ const Overview = () => {
 
   return (
     <Card title="Enquiry Overview">
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid md:grid-cols-2 gap-5">
         <div>
           {data.map((item, i) => (
             <div key={i}>

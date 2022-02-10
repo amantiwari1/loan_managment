@@ -52,7 +52,7 @@ const StatusData = {
 const AddNewButton = ({ onClick }) => {
   const session = useSession()
   return (
-    <div className="flex justify-between">
+    <div className="space-y-1 md:flex md:justify-between">
       <div>
         <p className="text-2xl font-light">Case status</p>
       </div>
@@ -239,6 +239,7 @@ const CaseStatus = () => {
   return (
     <div>
       <Table
+        scroll={{ x: "max-content" }}
         title={() => <AddNewButton onClick={onOpen} />}
         dataSource={data.caseStatuses}
         columns={columns}

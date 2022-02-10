@@ -120,3 +120,11 @@ export const CreateEnquiry = z.object({
   client_address,
   private_enquiry,
 })
+
+export const CreateChannelPartner = z.object({
+  name: client_name,
+  phone: client_mobile,
+  email: client_email,
+  company: z.string(),
+  city: z.string(),
+})

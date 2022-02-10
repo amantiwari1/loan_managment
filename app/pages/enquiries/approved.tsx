@@ -84,11 +84,12 @@ export const EnquiriesList = () => {
     <div>
       {!["USER", "PARTNER"].includes(session.role as string) && <div></div>}
       <Table
+        scroll={{ x: "max-content" }}
         columns={columns}
         dataSource={enquiries}
         bordered
         title={() => (
-          <div className="flex justify-between">
+          <div className="space-y-1 md:flex md:justify-between">
             <Text fontWeight="bold">Approved Enquiries</Text>
             <IconButton
               aria-label="Search database"
