@@ -79,6 +79,7 @@ model Enquiry {
   sanction_and_disbursement SanctionDisbursment[]
   search_valuation_report   SearchValuationReport[]
   users                     UsersOnEnquires[]
+  Teaser                    Teaser?
 }
 
 model File {
@@ -89,9 +90,8 @@ model File {
   name                  String
   Document              Document[]
   ProjectReport         ProjectReport[]
-  CaseStatus            CaseStatus[]
-  SearchValuationReport SearchValuationReport[]
   SanctionDisbursment   SanctionDisbursment[]
+  SearchValuationReport SearchValuationReport[]
 }
 
 model Log {
@@ -112,11 +112,10 @@ model Document {
   client_name   String
   document_name String
   enquiryId     Int?
-  fileId        Int?
   status        StatusType @default(NOT_UPLOAD)
+  fileId        Int?
   Enquiry       Enquiry?   @relation(fields: [enquiryId], references: [id])
   file          File?      @relation(fields: [fileId], references: [id])
-
 }
 
 model ProjectReport {
@@ -127,24 +126,22 @@ model ProjectReport {
   status    StatusType @default(NOT_UPLOAD)
   remark    String?
   enquiryId Int?
+  fileId    Int?
   Enquiry   Enquiry?   @relation(fields: [enquiryId], references: [id])
   file      File?      @relation(fields: [fileId], references: [id])
-  fileId    Int?
 }
 
 model CaseStatus {
-  id                 Int        @id @default(autoincrement())
-  createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @updatedAt
-  bank_name          String
-  response_from_bank Boolean
-  final_login        String
-  remark             String?
-  enquiryId          Int?
-  status             StatusType @default(NOT_UPLOAD)
-  Enquiry            Enquiry?   @relation(fields: [enquiryId], references: [id])
-  file               File?      @relation(fields: [fileId], references: [id])
-  fileId             Int?
+  id          Int        @id @default(autoincrement())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  bank_name   String
+  final_login Boolean
+  remark      String?
+  enquiryId   Int?
+  bank_query  BankQuery? @relation(fields: [bankQueryId], references: [id])
+  Enquiry     Enquiry?   @relation(fields: [enquiryId], references: [id])
+  bankQueryId Int?       @unique
 }
 
 model SearchValuationReport {
@@ -154,21 +151,22 @@ model SearchValuationReport {
   document  String
   enquiryId Int?
   status    StatusType @default(NOT_UPLOAD)
+  fileId    Int?
   Enquiry   Enquiry?   @relation(fields: [enquiryId], references: [id])
   file      File?      @relation(fields: [fileId], references: [id])
-  fileId    Int?
 }
 
 model BankQuery {
-  id           Int        @id @default(autoincrement())
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id           Int         @id @default(autoincrement())
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
   bank_query   String
   our_response String
   remark       String?
   enquiryId    Int?
-  status       StatusType @default(NOT_UPLOAD)
-  Enquiry      Enquiry?   @relation(fields: [enquiryId], references: [id])
+  status       StatusType  @default(NOT_UPLOAD)
+  Enquiry      Enquiry?    @relation(fields: [enquiryId], references: [id])
+  CaseStatus   CaseStatus?
 }
 
 model SanctionDisbursment {
@@ -178,9 +176,9 @@ model SanctionDisbursment {
   document  String
   enquiryId Int?
   status    StatusType @default(NOT_UPLOAD)
+  fileId    Int?
   Enquiry   Enquiry?   @relation(fields: [enquiryId], references: [id])
   file      File?      @relation(fields: [fileId], references: [id])
-  fileId    Int?
 }
 
 model ChannelPartner {
@@ -188,11 +186,20 @@ model ChannelPartner {
   createdAt DateTime           @default(now())
   updatedAt DateTime           @updatedAt
   name      String
-  email     String             @unique
-  phone     BigInt
+  email     String
   city      String
-  company   String
   request   EnquiryRequestType @default(PENDING)
+  company   String
+  phone     BigInt
+}
+
+model Teaser {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  data      Json     @default(dbgenerated("'{}'"))
+  Enquiry   Enquiry? @relation(fields: [enquiryId], references: [id])
+  enquiryId Int?     @unique
 }
 
 enum TokenType {

@@ -21,3 +21,13 @@
 .pro-inner-list-item {
   background-color: #f9fbfd !important;
 }
+.inline-imp,
+.inline-imp > *,
+.inline-imp > * > * {
+  display: inline !important;
+}
+
+.para-bottom p,
+.para-bottom h2 {
+  @apply !pb-3 ml-2;
+}

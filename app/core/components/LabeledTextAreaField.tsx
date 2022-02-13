@@ -3,6 +3,7 @@ import { useField, UseFieldConfig } from "react-final-form"
 
 import { Input } from "@chakra-ui/input"
 import { FormControl, FormLabel } from "@chakra-ui/form-control"
+import { Textarea } from "@chakra-ui/react"
 
 export interface LabeledTextFieldProps extends ComponentPropsWithoutRef<typeof Input> {
   /** Field name. */
@@ -16,7 +17,7 @@ export interface LabeledTextFieldProps extends ComponentPropsWithoutRef<typeof I
   fieldProps?: UseFieldConfig<string>
 }
 
-export const LabeledTextField = forwardRef<HTMLInputElement, LabeledTextFieldProps>(
+export const LabeledTextAreaField = forwardRef<HTMLInputElement, LabeledTextFieldProps>(
   ({ name, label, outerProps, fieldProps, labelProps, ...props }, ref) => {
     const {
       input,
@@ -36,7 +37,7 @@ export const LabeledTextField = forwardRef<HTMLInputElement, LabeledTextFieldPro
       <div {...outerProps}>
         <FormLabel {...labelProps}>
           <span className=" text-gray-700">{label}</span>
-          <Input
+          <Textarea
             bg="white"
             {...input}
             disabled={submitting}
@@ -54,4 +55,4 @@ export const LabeledTextField = forwardRef<HTMLInputElement, LabeledTextFieldPro
   }
 )
 
-export default LabeledTextField
+export default LabeledTextAreaField

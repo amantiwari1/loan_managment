@@ -4,9 +4,7 @@ import { z } from "zod"
 
 const CreateCaseStatus = z.object({
   bank_name: z.string(),
-  final_login: z.string(),
-  status: z.enum(["UPLOADED", "NOT_UPLOAD"]),
-  response_from_bank: z.boolean().default(false),
+  final_login: z.boolean(),
   remark: z.string().optional().default(""),
   enquiryId: z.number(),
 })
@@ -14,10 +12,25 @@ const CreateCaseStatus = z.object({
 export default resolver.pipe(
   resolver.zod(CreateCaseStatus),
   resolver.authorize(["ADMIN", "STAFF"]),
-  async (input: any, ctx) => {
-    // TODO: in multi-tenant app, you must add validation to ensure correct tenant
-    const caseStatus = await db.caseStatus.create({ data: input })
+  async (input, ctx) => {
+    const caseStatus = await db.caseStatus.create({
+      data: {
+        bank_name: input.bank_name,
+        final_login: input.final_login,
+        enquiryId: input.enquiryId,
+        remark: input.remark,
+      },
+    })
 
+    if (input.final_login) {
+      await db.bankQuery.create({
+        data: {
+          bank_query: input.bank_name,
+          enquiryId: input.enquiryId,
+          our_response: "",
+        },
+      })
+    }
     await db.log.create({
       data: {
         name: "Created Case Status by",

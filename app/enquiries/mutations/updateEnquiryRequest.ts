@@ -30,7 +30,7 @@ const CreateUser = z.object({
   role: z.enum(["ADMIN", "USER", "STAFF", "PARTNER"]),
 })
 
-const RESET_PASSWORD_TOKEN_EXPIRATION_IN_HOURS = 24
+const RESET_PASSWORD_TOKEN_EXPIRATION_IN_HOURS = 720
 
 export default resolver.pipe(
   resolver.zod(UpdateEnquiry),

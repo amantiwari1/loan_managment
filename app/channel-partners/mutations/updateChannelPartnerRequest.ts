@@ -16,21 +16,7 @@ const UpdateEnquiry = z.object({
   request: z.enum(["PENDING", "APPROVED", "REJECTED", "SANCTIONED"]),
 })
 
-const CreateUser = z.object({
-  email: z
-    .string()
-    .email()
-    .transform((str) => str.toLowerCase().trim()),
-  password: z
-    .string()
-    .min(10)
-    .max(100)
-    .transform((str) => str.trim()),
-  name: z.string().max(50),
-  role: z.enum(["ADMIN", "USER", "STAFF", "PARTNER"]),
-})
-
-const RESET_PASSWORD_TOKEN_EXPIRATION_IN_HOURS = 24
+const RESET_PASSWORD_TOKEN_EXPIRATION_IN_HOURS = 720
 
 export default resolver.pipe(
   resolver.zod(UpdateEnquiry),

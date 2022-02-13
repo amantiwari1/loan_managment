@@ -186,13 +186,6 @@ const BankQuery = () => {
       render: (bank_query) => <p>{bank_query}</p>,
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      render: (status) => (
-        <Tag colorScheme={StatusData[status]?.color}>{StatusData[status]?.title}</Tag>
-      ),
-    },
-    {
       title: "Our Response",
       dataIndex: "our_response",
       render: (our_response) => <p>{our_response}</p>,

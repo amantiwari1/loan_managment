@@ -185,25 +185,11 @@ const CaseStatus = () => {
       render: (bank_name) => <p>{bank_name}</p>,
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      render: (status) => (
-        <Tag colorScheme={StatusData[status]?.color}>{StatusData[status]?.title}</Tag>
-      ),
-    },
-    {
-      title: "Response From Bank",
-      dataIndex: "response_from_bank",
-      render: (response_from_bank) => (
-        <Tag colorScheme={response_from_bank ? "green" : "red"}>
-          {response_from_bank ? "Yes" : "No"}
-        </Tag>
-      ),
-    },
-    {
       title: "Final Login",
       dataIndex: "final_login",
-      render: (final_login) => <p>{final_login}</p>,
+      render: (final_login) => (
+        <Tag colorScheme={final_login ? "green" : "red"}>{final_login ? "Yes" : "No"}</Tag>
+      ),
     },
     {
       title: "remark",

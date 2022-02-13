@@ -1,7 +1,7 @@
 import { paginate, resolver } from "blitz"
 import db, { Prisma } from "db"
 
-interface GetEnquiriesInput
+export interface GetEnquiriesInput
   extends Pick<Prisma.EnquiryFindManyArgs, "where" | "orderBy" | "skip" | "take"> {}
 
 export default resolver.pipe(

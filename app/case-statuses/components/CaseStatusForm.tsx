@@ -20,7 +20,7 @@ export function CaseStatusForm<S extends z.ZodType<any, any>>(props: FormProps<S
     <Form<S> {...props}>
       <LabeledTextField name="bank_name" label="Bank Name" placeholder="Name" />
       <LabeledTextField name="remark" label="Remark" placeholder="Name" />
-      <SwitchField name="response_from_bank" label="Final heading" />
+      <SwitchField name="final_login" label="Final Login" />
     </Form>
   )
 }

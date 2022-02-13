@@ -22,3 +22,11 @@ export const TransformationData = (staff: getUsersType, StaffEnquiry: EnquireUse
 
   return users1 ?? []
 }
+
+export const convertStringToKey = (str: string) => {
+  if (!str && str.length === 0 && typeof str !== "string") {
+    return ""
+  }
+
+  return str.toLowerCase().replaceAll(" ", "_").replaceAll("-", "_")
+}

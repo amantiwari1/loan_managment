@@ -11,6 +11,7 @@ import ProjectReport from "app/project-reports/components/ProjectReport"
 import SearchValuationReport from "app/search-valuation-reports/components/SeachValuationReport"
 import SanctionDisbursment from "app/sanction-disbursments/components/SanctionDisbursment"
 import BankQuery from "app/bank-queries/components/BankQuery"
+import Teaser from "app/teasers/components/Teaser"
 export const Enquiry = () => {
   const TabData = [
     {
@@ -19,7 +20,7 @@ export const Enquiry = () => {
     },
     {
       name: "Teaser",
-      components: Overview,
+      components: Teaser,
     },
     {
       name: "Logs",

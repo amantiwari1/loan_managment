@@ -24,6 +24,7 @@ const NewChannelPartnerPage: BlitzPage = () => {
             onSubmit={async (values) => {
               try {
                 await createChannelPartnerMutation(values)
+                setCompleted(true)
               } catch (error: any) {
                 if (error.code === "P2002" && error.meta?.target?.includes("client_email")) {
                   return { client_email: "This email is already being used" }
