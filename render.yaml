@@ -4,7 +4,7 @@ databases:
 
 services:
   - type: web
-    name: kredpartner
+    name: blitzapp
     env: node
     plan: free
     buildCommand: yarn --frozen-lockfile --prod=false && blitz build && blitz prisma migrate deploy
