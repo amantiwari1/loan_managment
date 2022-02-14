@@ -58,10 +58,7 @@ export const Enquiry = () => {
         <title>Enquiry </title>
       </Head>
 
-      <div className="flex space-x-2 items-center">
-        {/* <Avatar size="md" name={enquiry.client_name} />
-        <h1 className="text-2xl capitalize">{enquiry.client_name}</h1> */}
-      </div>
+      <div className="flex space-x-2 items-center"></div>
       <Divider />
       <Tabs isLazy variant="enclosed">
         <div className="overflow-scroll p-2">

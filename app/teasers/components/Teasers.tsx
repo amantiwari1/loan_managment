@@ -17,10 +17,10 @@ interface CustomRelationshipEnquiry {
   Teaser: any
 }
 const Teasers = () => {
+  const enquiryId = useParam("enquiryId", "number")
   const [createTeaserMutation] = useMutation(createTeaser)
   const [updateTeaserMutation] = useMutation(updateTeaser)
   const [isLoadingExport, setIsLoadingExport] = useState(false)
-  const enquiryId = useParam("enquiryId", "number")
   const [enquiry, { refetch }] = useQuery<
     (
       input: {
