@@ -4,6 +4,7 @@ import Layout from "app/core/layouts/Layout"
 import getUsers from "app/users/queries/getUsers"
 import { Table } from "antd"
 import { Button } from "app/core/components/Button"
+import Loading from "app/core/components/Loading"
 
 const ITEMS_PER_PAGE = 100
 
@@ -103,7 +104,7 @@ const UsersPage: BlitzPage = () => {
             <Button>Create User</Button>
           </Link>
         </div>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Loading />}>
           <UsersList />
         </Suspense>
       </div>

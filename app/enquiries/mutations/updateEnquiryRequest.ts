@@ -1,6 +1,7 @@
 import { generateToken, hash256, resolver, SecurePassword } from "blitz"
 import db from "db"
 import { z } from "zod"
+import getPredefinedDoc from "../data/predefined"
 
 function generatePassword() {
   var length = 8,
@@ -59,6 +60,10 @@ export default resolver.pipe(
           enquiryId: id,
           userId: user.id,
         },
+      })
+
+      await db.document.createMany({
+        data: getPredefinedDoc(id),
       })
 
       const token = generateToken(32)

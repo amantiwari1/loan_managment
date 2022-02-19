@@ -13,6 +13,8 @@ import getEnquiries from "app/enquiries/queries/getEnquiries"
 import { Suspense } from "react"
 import { Enquiry } from "@prisma/client"
 import { IoMdRefresh } from "react-icons/io"
+import Loading from "app/core/components/Loading"
+
 import {
   IconButton,
   PopoverArrow,
@@ -235,7 +237,7 @@ export const EnquiriesList = () => {
 const EnquiryRequestPage: BlitzPage = () => {
   return (
     <div>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<Loading />}>
         <EnquiriesList />
       </Suspense>
     </div>

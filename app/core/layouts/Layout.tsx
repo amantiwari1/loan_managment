@@ -2,6 +2,7 @@ import { Head, BlitzLayout, useRouter } from "blitz"
 import AuthLayout from "app/core/layouts/AuthLayout"
 import DashboardLayout from "./DashboardLayout"
 import { Suspense } from "react"
+import Loading from "../components/Loading"
 
 const Layout: BlitzLayout<{ title?: string; layout: "AuthLayout" | "DashboardLayout" }> = ({
   title,
@@ -16,7 +17,7 @@ const Layout: BlitzLayout<{ title?: string; layout: "AuthLayout" | "DashboardLay
       </Head>
       {layout === "AuthLayout" && <AuthLayout> {children} </AuthLayout>}
       {layout === "DashboardLayout" && (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Loading />}>
           <DashboardLayout>{children}</DashboardLayout>
         </Suspense>
       )}

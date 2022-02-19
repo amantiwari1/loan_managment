@@ -1,9 +1,6 @@
-import { Enquiry, File } from "@prisma/client"
-import { message, Table } from "antd"
+import { message } from "antd"
 import React from "react"
-
 import {
-  getAntiCSRFToken,
   getQueryKey,
   queryClient,
   useAuthenticatedSession,
@@ -14,24 +11,8 @@ import {
 } from "blitz"
 import getDocuments from "../queries/getDocuments"
 import { Button } from "app/core/components/Button"
-import { AddIcon, DeleteIcon, DownloadIcon, EditIcon } from "@chakra-ui/icons"
-import {
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  useDisclosure,
-  Drawer,
-  Tag,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-} from "@chakra-ui/react"
+import { AddIcon, DownloadIcon } from "@chakra-ui/icons"
+import { useDisclosure, Tag, Switch } from "@chakra-ui/react"
 import { DocumentForm } from "./DocumentForm"
 import createDocument from "../mutations/createDocument"
 import { FORM_ERROR } from "final-form"
@@ -40,91 +21,25 @@ import updateDocument from "../mutations/updateDocument"
 import deleteDocument from "../mutations/deleteDocument"
 import { CreateDocument } from "app/auth/validations"
 import getEnquiry from "app/enquiries/queries/getEnquiry"
-
-const StatusData = {
-  true: {
-    color: "green",
-    title: "Uploaded",
-  },
-  false: {
-    color: "red",
-    title: "No Upload",
-  },
-}
+import Table, { DateCell, DownloadCell, StatusPillCell } from "app/core/components/Table"
+import SwitchDocument from "../mutations/SwitchDocument"
+import { ActionComponent } from "app/core/components/ActionComponent"
+import DrawerForm from "app/core/components/DrawerForm"
 
 const AddNewButton = ({ onClick }) => {
   const session = useSession()
 
   return (
-    <div className="space-y-1 md:flex md:justify-between">
-      <div>
-        <p className="text-2xl font-light">Documents</p>
-      </div>
-
+    <div className="flex justify-between">
       {!["USER", "PARTNER"].includes(session.role as string) && (
-        <div className=" space-y-1 md:flex md:space-x-1  ">
-          <Button w={220} onClick={onClick} leftIcon={<AddIcon />}>
+        <div className=" flex items-center space-x-1  ">
+          <Button w={220} onClick={onClick} leftIcon={<AddIcon />} size="sm">
             Add New Document
           </Button>
-          <Button variant="outline" w={150}>
+          <Button variant="outline" w={150} size="sm">
             Send Intimation
           </Button>
         </div>
-      )}
-    </div>
-  )
-}
-
-const ActionComponent = ({ onEdit, onDelete, isDeleting, session }) => {
-  const [isAlertOpen, setIsAlertOpen] = React.useState(false)
-  const onAlertClose = () => setIsAlertOpen(false)
-  const firstField = React.useRef(null)
-
-  return (
-    <div className="flex space-x-4">
-      <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={firstField} onClose={onAlertClose}>
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete Document
-            </AlertDialogHeader>
-
-            <AlertDialogBody>
-              Are you sure? You can&apos;t undo this action afterwards.
-            </AlertDialogBody>
-
-            <AlertDialogFooter>
-              <Button ref={firstField} variant="outline" onClick={onAlertClose}>
-                Cancel
-              </Button>
-              <Button
-                colorScheme="red"
-                isLoading={isDeleting}
-                onClick={async () => {
-                  await onDelete()
-                  onAlertClose()
-                }}
-                ml={3}
-              >
-                Delete
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
-      <Button onClick={onEdit} variant="outline" leftIcon={<EditIcon />}>
-        Edit
-      </Button>
-      {["ADMIN", "STAFF"].includes(session.role) && (
-        <Button
-          onClick={() => {
-            setIsAlertOpen(true)
-          }}
-          colorScheme="red"
-          leftIcon={<DeleteIcon />}
-        >
-          Delete
-        </Button>
       )}
     </div>
   )
@@ -140,6 +55,7 @@ const Document = () => {
     }
   )
 
+  const [SwitchDocumentMutation, { isLoading: isLoadingSwitch }] = useMutation(SwitchDocument)
   const [createDocumentMutation] = useMutation(createDocument, {
     onSuccess() {
       message.success("Created Document")
@@ -177,13 +93,23 @@ const Document = () => {
       })
     },
   })
+  const session = useAuthenticatedSession()
 
-  const [data, { refetch, setQueryData }] = useQuery(
+  let where: any = {
+    enquiryId: enquiry.id,
+    is_public_user: true,
+  }
+
+  if (["ADMIN", "STAFF"].includes(session.role)) {
+    where = {
+      enquiryId: enquiry.id,
+    }
+  }
+
+  const [data, { refetch }] = useQuery(
     getDocuments,
     {
-      where: {
-        enquiryId: enquiry.id,
-      },
+      where,
     },
     {
       refetchOnWindowFocus: false,
@@ -200,60 +126,57 @@ const Document = () => {
     await refetch()
   }
 
-  const session = useAuthenticatedSession()
-
   const columns = [
     {
-      title: "Document",
-      dataIndex: "document_name",
-      key: "document_name",
-      render: (document_name) => <p>{document_name}</p>,
+      Header: "Document",
+      accessor: "document_name",
     },
     {
-      title: "Status",
-      dataIndex: "file",
-      render: (file: File) => (
-        <Tag colorScheme={StatusData[file?.id ? "true" : "false"]?.color}>
-          {StatusData[file?.id ? "true" : "false"]?.title}
-        </Tag>
+      Header: "Status",
+      accessor: "file",
+      Cell: StatusPillCell,
+    },
+    {
+      Header: "Upload on",
+      accessor: "updatedAt",
+      Cell: DateCell,
+    },
+    {
+      Header: "Download",
+      accessor: "file",
+      id: "id",
+      Cell: DownloadCell,
+    },
+    {
+      Header: "Show User",
+      accessor: "is_public_user",
+      Cell: ({ value, row }) => (
+        <Switch
+          defaultChecked={value}
+          isDisabled={isLoadingSwitch}
+          onChange={async (e) => {
+            await SwitchDocumentMutation({
+              id: row.original.id,
+              enquiryId,
+              is_public_user: e.target.checked,
+            })
+            await refetch()
+          }}
+        />
       ),
     },
     {
-      title: "Upload on",
-      dataIndex: "updatedAt",
-      key: "updatedAt",
-      render: (updatedAt) => <p>{new Date(updatedAt).toDateString()}</p>,
-    },
-    {
-      title: "Download",
-      dataIndex: "file",
-      key: "file",
-      render: (file: File) => {
-        return (
-          <>
-            {file?.name && (
-              <Button variant="outline" w={40} leftIcon={<DownloadIcon />}>
-                {file.name.substring(0, 6)}...{file.name.split(".").at(-1)}
-              </Button>
-            )}
-          </>
-        )
-      },
-    },
-    {
-      title: "Action",
-      dataIndex: "updatedAt",
-      width: 100,
-      render: (updatedAt, record) => (
+      Header: "Action",
+      Cell: ({ row }) => (
         <ActionComponent
           isDeleting={isLoading}
           session={session}
           onDelete={async () => {
-            await deleteDocumentMutation(record)
+            await deleteDocumentMutation(row.original)
             await onRefreshData()
           }}
           onEdit={() => {
-            setEdit(record)
+            setEdit(row.original)
             onOpen()
           }}
         />
@@ -261,65 +184,51 @@ const Document = () => {
     },
   ].slice(0, !["PARTNER"].includes(session.role as string) ? undefined : -1)
 
+  console.log("rendering")
   return (
     <div>
       <Table
-        scroll={{ x: "max-content" }}
-        title={() => <AddNewButton onClick={onOpen} />}
-        dataSource={data.documents}
+        rightRender={() => <AddNewButton onClick={onOpen} />}
+        title="Documents"
+        data={data.documents}
         columns={columns}
       />
 
-      <Drawer
+      <DrawerForm
         isOpen={isOpen}
-        size="lg"
-        placement="right"
-        initialFocusRef={firstField}
+        firstField={firstField}
         onClose={onClose}
+        title="Add New Document"
       >
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader borderBottomWidth="1px">Add New Document</DrawerHeader>
-
-          <DrawerBody>
-            <DocumentForm
-              id="document-form"
-              submitText="Create Document"
-              schema={CreateDocument}
-              initialValues={Edit}
-              onSubmit={async (values) => {
-                console.log(values)
-                try {
-                  if (values.id) {
-                    await updateDocumentMutation(values as any)
-                  } else {
-                    await createDocumentMutation({
-                      ...values,
-                      client_name: enquiry.client_name,
-                      enquiryId: enquiry.id,
-                    })
-                  }
-                  onClose()
-                } catch (error: any) {
-                  console.error(error)
-                  return {
-                    [FORM_ERROR]: error.toString(),
-                  }
-                } finally {
-                  await onRefreshData()
-                }
-              }}
-            />
-          </DrawerBody>
-
-          <DrawerFooter borderTopWidth="1px">
-            <Button variant="outline" mr={3} onClick={onClose}>
-              Cancel
-            </Button>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
+        <DocumentForm
+          id="document-form"
+          submitText="Create Document"
+          schema={CreateDocument}
+          initialValues={Edit}
+          onSubmit={async (values) => {
+            console.log(values)
+            try {
+              if (values.id) {
+                await updateDocumentMutation(values as any)
+              } else {
+                await createDocumentMutation({
+                  ...values,
+                  client_name: enquiry.client_name,
+                  enquiryId: enquiry.id,
+                })
+              }
+              onClose()
+            } catch (error: any) {
+              console.error(error)
+              return {
+                [FORM_ERROR]: error.toString(),
+              }
+            } finally {
+              await onRefreshData()
+            }
+          }}
+        />
+      </DrawerForm>
     </div>
   )
 }

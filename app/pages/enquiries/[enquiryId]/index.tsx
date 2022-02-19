@@ -12,6 +12,8 @@ import SearchValuationReport from "app/search-valuation-reports/components/Seach
 import SanctionDisbursment from "app/sanction-disbursments/components/SanctionDisbursment"
 import BankQuery from "app/bank-queries/components/BankQuery"
 import Teasers from "app/teasers/components/Teasers"
+import Loading from "app/core/components/Loading"
+
 export const Enquiry = () => {
   const TabData = [
     {
@@ -76,7 +78,7 @@ export const Enquiry = () => {
         <TabPanels>
           {TabData.map((item) => (
             <TabPanel key={item.name}>
-              <Suspense fallback={<div>Loading....</div>}>
+              <Suspense fallback={<Loading />}>
                 <item.components />
               </Suspense>
             </TabPanel>

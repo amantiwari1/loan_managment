@@ -132,7 +132,7 @@ const Sidebar = ({ children }) => {
     <div className="flex">
       <div>
         <div>
-          <ProSidebar breakPoint="md" toggled={toggled} className="">
+          <ProSidebar breakPoint="md" toggled={toggled} className="!min-w-[14rem] !w-[14rem]">
             {/* LOGO */}
             <div className="md:hidden text-2xl p-2 ml-auto" onClick={() => setToggled(false)}>
               <AiOutlineClose />
@@ -143,7 +143,7 @@ const Sidebar = ({ children }) => {
 
             <Menu>
               <MenuItem key="profile">
-                <div className="flex justify-end w-full items-center h-full pr-10">
+                <div className="">
                   <div>
                     <p className="text-xl font-semibold">{user?.name}</p>
                     <p className="text-xs text-gray-600">{user?.email}</p>

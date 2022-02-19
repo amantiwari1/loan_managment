@@ -7,6 +7,7 @@ import { Suspense } from "react"
 import { Enquiry } from "@prisma/client"
 import { Text } from "@chakra-ui/react"
 import { ColumnsType } from "antd/lib/table"
+import Loading from "app/core/components/Loading"
 
 const ITEMS_PER_PAGE = 100
 
@@ -102,7 +103,7 @@ export const EnquiriesList = () => {
 const EnquirySanctionedPage: BlitzPage = () => {
   return (
     <div>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<Loading />}>
         <EnquiriesList />
       </Suspense>
     </div>

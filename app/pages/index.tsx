@@ -1,7 +1,6 @@
 import { Link, BlitzPage, Routes, usePaginatedQuery, useRouter, useSession, useQuery } from "blitz"
 import Layout from "app/core/layouts/Layout"
 import { Card, Divider, message } from "antd"
-import { Table } from "antd"
 import getEnquiries from "app/enquiries/queries/getEnquiries"
 import { Suspense } from "react"
 import { Enquiry, User } from "@prisma/client"
@@ -11,6 +10,8 @@ import { IoMdRefresh } from "react-icons/io"
 import getEnquiriesCount from "app/enquiries/queries/getEnquiriesCount"
 import { Button } from "app/core/components/Button"
 import { BiUser } from "react-icons/bi"
+import Table from "app/core/components/Table"
+import Loading from "app/core/components/Loading"
 
 const ITEMS_PER_PAGE = 100
 
@@ -23,38 +24,36 @@ const Client_Service = {
   SUBSIDY_SCHEMES: "Subsidy Schemes",
 }
 
-const columns: ColumnsType<Enquiry> = [
+const columns = [
   {
-    title: "Client Name",
-    dataIndex: "client_name",
-    render: (text, data: Enquiry) => (
+    Header: "Client Name",
+    accessor: "client_name",
+    Cell: ({ value, row }) => (
       <div>
-        <Link href={Routes.ShowEnquiryPage({ enquiryId: data.id })}>
-          <a className="text-lg font-bold underline hover:text-blue-500">{text}</a>
+        <Link href={Routes.ShowEnquiryPage({ enquiryId: row.original.id })}>
+          <a className="text-lg font-bold underline hover:text-blue-500">{value}</a>
         </Link>
-        <p>{Client_Service[data.client_service]}</p>
+        <p>{Client_Service[row.original.client_service]}</p>
       </div>
     ),
   },
   {
-    title: "Amount",
-    dataIndex: "loan_amount",
-
-    key: "loan_amount",
-    render: (text) => <p>{text.toString()}</p>,
+    Header: "Amount",
+    accessor: "loan_amount",
+    Cell: ({ value }) => <p>{value.toString()}</p>,
   },
   {
-    title: "Channel Partner",
-
-    dataIndex: "users",
-    render: (users: any[]) => (
+    Header: "Channel Partner",
+    id: "id",
+    accessor: "users",
+    Cell: ({ value }) => (
       <Text fontWeight="medium" textTransform="capitalize">
         <div className="space-y-2 font-medium items-center">
-          {!users.filter((arr) => arr.user.role === "PARTNER").length && (
+          {!value.filter((arr) => arr.user.role === "PARTNER").length && (
             <Text fontWeight="medium">No Partner Selected</Text>
           )}
           <AvatarGroup size="md" max={3}>
-            {users
+            {value
               .filter((arr) => arr.user.role === "PARTNER")
               .map((arr, i) => (
                 <Tooltip key={i} label={arr.user.name}>
@@ -69,17 +68,16 @@ const columns: ColumnsType<Enquiry> = [
     ),
   },
   {
-    title: "STAFF",
-
-    dataIndex: "users",
-    render: (users: any[]) => (
+    Header: "STAFF",
+    accessor: "users",
+    Cell: ({ value }) => (
       <Text fontWeight="medium" textTransform="capitalize">
         <div className="space-y-2 font-medium items-center">
-          {!users.filter((arr) => arr.user.role === "STAFF").length && (
+          {!value.filter((arr) => arr.user.role === "STAFF").length && (
             <Text fontWeight="medium">No Staff Selected</Text>
           )}
           <AvatarGroup size="md" max={3}>
-            {users
+            {value
               .filter((arr) => arr.user.role === "STAFF")
               .map((arr, i) => (
                 <Tooltip key={i} label={arr.user.name}>
@@ -94,10 +92,9 @@ const columns: ColumnsType<Enquiry> = [
     ),
   },
   {
-    title: "Last Updated",
-    dataIndex: "updatedAt",
-    key: "updatedAt",
-    render: (updatedAt) => <p>{new Date(updatedAt).toDateString()}</p>,
+    Header: "Last Updated",
+    accessor: "updatedAt",
+    Cell: ({ value }) => <p>{new Date(value).toDateString()}</p>,
   },
 ]
 
@@ -169,24 +166,21 @@ export const EnquiriesList = () => {
       )}
       <div>
         <Table
-          scroll={{ x: "max-content" }}
           columns={columns}
-          dataSource={enquiries}
-          bordered
-          title={() => (
-            <div className="flex justify-between">
-              <Text fontWeight="bold">Active Enquiries</Text>
-              <IconButton
-                aria-label="Search database"
-                onClick={async () => {
-                  await refetch()
-                  message.success("Updated")
-                }}
-                variant="outline"
-                icon={<IoMdRefresh />}
-              />
-            </div>
+          data={enquiries}
+          rightRender={() => (
+            <IconButton
+              size="sm"
+              aria-label="Search database"
+              onClick={async () => {
+                await refetch()
+                message.success("Updated")
+              }}
+              variant="outline"
+              icon={<IoMdRefresh />}
+            />
           )}
+          title="Active Enquiries"
         />
       </div>
       {/* <button disabled={page === 0} onClick={goToPreviousPage}>
@@ -202,7 +196,7 @@ export const EnquiriesList = () => {
 const Home: BlitzPage = () => {
   return (
     <div>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<Loading />}>
         <EnquiriesList />
       </Suspense>
     </div>

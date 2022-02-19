@@ -7,6 +7,7 @@ import { ProfileUser } from "app/auth/validations"
 import { ProfileForm } from "app/users/components/ProfileForm"
 import getCurrentUser from "app/users/queries/getCurrentUser"
 import updateProfile from "app/users/mutations/updateProfile"
+import Loading from "app/core/components/Loading"
 
 export const EditUser = () => {
   const [user, { setQueryData }] = useQuery(getCurrentUser, null)
@@ -47,7 +48,7 @@ export const EditUser = () => {
 const ProfileUserEdit: BlitzPage = () => {
   return (
     <div className="max-w-5xl mx-auto">
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<Loading />}>
         <EditUser />
       </Suspense>
     </div>

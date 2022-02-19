@@ -3,6 +3,8 @@ import { Head, usePaginatedQuery, useRouter, BlitzPage, Routes, useMutation } fr
 import Layout from "app/core/layouts/Layout"
 import getChannelPartners from "app/channel-partners/queries/getChannelPartners"
 import { message, Table } from "antd"
+import Loading from "app/core/components/Loading"
+
 import {
   IconButton,
   Button,
@@ -195,7 +197,7 @@ const ChannelPartnersRequestPage: BlitzPage = () => {
       </Head>
 
       <div>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Loading />}>
           <ChannelPartnersList />
         </Suspense>
       </div>

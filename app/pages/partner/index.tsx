@@ -5,6 +5,7 @@ import getChannelPartners from "app/channel-partners/queries/getChannelPartners"
 import { message, Table } from "antd"
 import { IconButton, Text } from "@chakra-ui/react"
 import { IoMdRefresh } from "react-icons/io"
+import Loading from "app/core/components/Loading"
 
 const ITEMS_PER_PAGE = 100
 
@@ -97,7 +98,7 @@ const ChannelPartnersPage: BlitzPage = () => {
       </Head>
 
       <div>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Loading />}>
           <ChannelPartnersList />
         </Suspense>
       </div>

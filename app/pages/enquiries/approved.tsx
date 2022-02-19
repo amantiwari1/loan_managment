@@ -8,6 +8,7 @@ import { Enquiry } from "@prisma/client"
 import { IconButton, Text } from "@chakra-ui/react"
 import { ColumnsType } from "antd/lib/table"
 import { IoMdRefresh } from "react-icons/io"
+import Loading from "app/core/components/Loading"
 
 const ITEMS_PER_PAGE = 100
 
@@ -116,7 +117,7 @@ export const EnquiriesList = () => {
 const EnquiryApprovedPage: BlitzPage = () => {
   return (
     <div>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<Loading />}>
         <EnquiriesList />
       </Suspense>
     </div>

@@ -1,5 +1,11 @@
-import { Enquiry, File } from "@prisma/client"
-import { message, Table } from "antd"
+import { message } from "antd"
+import Table, {
+  CreateButtonTable,
+  DateCell,
+  DownloadCell,
+  StatusPillCell,
+} from "app/core/components/Table"
+
 import React from "react"
 import {
   getQueryKey,
@@ -12,23 +18,7 @@ import {
 } from "blitz"
 import { Button } from "app/core/components/Button"
 import { AddIcon, DeleteIcon, DownloadIcon, EditIcon } from "@chakra-ui/icons"
-import {
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  useDisclosure,
-  Drawer,
-  Tag,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-} from "@chakra-ui/react"
+import { useDisclosure, Tag } from "@chakra-ui/react"
 import { FORM_ERROR } from "final-form"
 import getLogs from "app/logs/queries/getLogs"
 import createSanctionDisbursment from "../mutations/createSanctionDisbursment"
@@ -37,88 +27,8 @@ import updateSanctionDisbursment from "../mutations/updateSanctionDisbursment"
 import { SanctionDisbursmentForm } from "./SanctionDisbursmentForm"
 import getSanctionDisbursments from "../queries/getSanctionDisbursments"
 import getEnquiry from "app/enquiries/queries/getEnquiry"
-
-const StatusData = {
-  true: {
-    color: "green",
-    title: "Uploaded",
-  },
-  false: {
-    color: "red",
-    title: "No Upload",
-  },
-}
-
-const AddNewButton = ({ onClick }) => {
-  const session = useSession()
-  return (
-    <div className="space-y-1 md:flex md:justify-between">
-      <div>
-        <p className="text-2xl font-light">Sanction Disbursment</p>
-      </div>
-      <div className="flex space-x-1">
-        {!["USER", "PARTNER"].includes(session.role as string) && (
-          <Button w={320} onClick={onClick} leftIcon={<AddIcon />}>
-            Add New Sanction Disbursment
-          </Button>
-        )}
-      </div>
-    </div>
-  )
-}
-
-const ActionComponent = ({ onEdit, onDelete, isDeleting }) => {
-  const [isAlertOpen, setIsAlertOpen] = React.useState(false)
-  const onAlertClose = () => setIsAlertOpen(false)
-  const firstField = React.useRef(null)
-
-  return (
-    <div className="flex space-x-4">
-      <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={firstField} onClose={onAlertClose}>
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete Sanction Disbursment
-            </AlertDialogHeader>
-
-            <AlertDialogBody>
-              Are you sure? You can&apos;t undo this action afterwards.
-            </AlertDialogBody>
-
-            <AlertDialogFooter>
-              <Button ref={firstField} variant="outline" onClick={onAlertClose}>
-                Cancel
-              </Button>
-              <Button
-                colorScheme="red"
-                isLoading={isDeleting}
-                onClick={async () => {
-                  await onDelete()
-                  onAlertClose()
-                }}
-                ml={3}
-              >
-                Delete
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
-      <Button onClick={onEdit} variant="outline" leftIcon={<EditIcon />}>
-        Edit
-      </Button>
-      <Button
-        onClick={() => {
-          setIsAlertOpen(true)
-        }}
-        colorScheme="red"
-        leftIcon={<DeleteIcon />}
-      >
-        Delete
-      </Button>
-    </div>
-  )
-}
+import DrawerForm from "app/core/components/DrawerForm"
+import { ActionComponent } from "app/core/components/ActionComponent"
 
 const SanctionDisbursment = () => {
   const enquiryId = useParam("enquiryId", "number")
@@ -183,55 +93,37 @@ const SanctionDisbursment = () => {
 
   const columns = [
     {
-      title: "Document",
-      dataIndex: "document",
-      key: "document",
-      render: (document) => <p>{document}</p>,
+      Header: "Document",
+      accessor: "document",
     },
     {
-      title: "Status",
-      dataIndex: "file",
-      render: (file: File) => (
-        <Tag colorScheme={StatusData[file?.id ? "true" : "false"]?.color}>
-          {StatusData[file?.id ? "true" : "false"]?.title}
-        </Tag>
-      ),
+      Header: "Status",
+      accessor: "file",
+      Cell: StatusPillCell,
     },
     {
-      title: "Download",
-      dataIndex: "file",
-      key: "file",
-      render: (file: File) => {
-        return (
-          <>
-            {file?.name && (
-              <Button variant="outline" w={40} leftIcon={<DownloadIcon />}>
-                {file.name.substring(0, 6)}...{file.name.split(".").at(-1)}
-              </Button>
-            )}
-          </>
-        )
-      },
+      Header: "Download",
+      accessor: "file",
+      id: "id",
+      Cell: DownloadCell,
     },
     {
-      title: "Upload on",
-      dataIndex: "updatedAt",
-      key: "updatedAt",
-      render: (updatedAt) => <p>{new Date(updatedAt).toDateString()}</p>,
+      Header: "Upload on",
+      accessor: "updatedAt",
+      Cell: DateCell,
     },
     {
-      title: "Action",
-      dataIndex: "updatedAt",
-      width: 100,
-      render: (updatedAt, record) => (
+      Header: "Action",
+      Cell: ({ row }) => (
         <ActionComponent
+          session={session}
           isDeleting={isLoading}
           onDelete={async () => {
-            await deleteSanctionDisbursmentMutation(record)
+            await deleteSanctionDisbursmentMutation(row.original)
             await onRefreshData()
           }}
           onEdit={() => {
-            setEdit(record)
+            setEdit(row.original)
             onOpen()
           }}
         />
@@ -242,67 +134,59 @@ const SanctionDisbursment = () => {
   return (
     <div>
       <Table
-        scroll={{ x: "max-content" }}
-        title={() => <AddNewButton onClick={onOpen} />}
-        dataSource={data.sanctionDisbursments}
+        title="Sanction Disbursment"
+        rightRender={() => (
+          <CreateButtonTable
+            session={session}
+            allowRoles={["ADMIN", "STAFF"]}
+            title="Add New Sanction Disbursment"
+            onClick={onOpen}
+          />
+        )}
+        data={data.sanctionDisbursments}
         columns={columns}
       />
 
-      <Drawer
+      <DrawerForm
         isOpen={isOpen}
-        size="lg"
-        placement="right"
-        initialFocusRef={firstField}
+        firstField={firstField}
         onClose={onClose}
+        title="Add Project Report"
       >
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader borderBottomWidth="1px">Add New Sanction Disbursment</DrawerHeader>
-
-          <DrawerBody>
-            <SanctionDisbursmentForm
-              submitText="Create Sanction Disbursment"
-              // TODO use a zod schema for form validation
-              //  - Tip: extract mutation's schema into a shared `validations.ts` file and
-              //         then import and use it here
-              // schema={CreateSanctionDisbursment}
-              initialValues={Edit}
-              onSubmit={async (values) => {
-                try {
-                  if (values.id) {
-                    await updateSanctionDisbursmentMutation({
-                      ...values,
-                      remark: values?.remark ? values?.remark : "",
-                    })
-                  } else {
-                    await createSanctionDisbursmentMutation({
-                      ...values,
-                      client_name: enquiry.client_name,
-                      enquiryId: enquiry.id,
-                      remark: values?.remark ? values?.remark : "",
-                    })
-                  }
-                  onClose()
-                } catch (error: any) {
-                  console.error(error)
-                  return {
-                    [FORM_ERROR]: error.toString(),
-                  }
-                } finally {
-                  await onRefreshData()
-                }
-              }}
-            />
-          </DrawerBody>
-
-          <DrawerFooter borderTopWidth="1px">
-            <Button variant="outline" mr={3} onClick={onClose}>
-              Cancel
-            </Button>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
+        <SanctionDisbursmentForm
+          submitText="Create Sanction Disbursment"
+          // TODO use a zod schema for form validation
+          //  - Tip: extract mutation's schema into a shared `validations.ts` file and
+          //         then import and use it here
+          // schema={CreateSanctionDisbursment}
+          initialValues={Edit}
+          onSubmit={async (values) => {
+            try {
+              if (values.id) {
+                await updateSanctionDisbursmentMutation({
+                  ...values,
+                  remark: values?.remark ? values?.remark : "",
+                })
+              } else {
+                await createSanctionDisbursmentMutation({
+                  ...values,
+                  client_name: enquiry.client_name,
+                  enquiryId: enquiry.id,
+                  remark: values?.remark ? values?.remark : "",
+                })
+              }
+              onClose()
+            } catch (error: any) {
+              console.error(error)
+              return {
+                [FORM_ERROR]: error.toString(),
+              }
+            } finally {
+              await onRefreshData()
+            }
+          }}
+        />
+      </DrawerForm>
     </div>
   )
 }

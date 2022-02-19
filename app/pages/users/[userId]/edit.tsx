@@ -7,6 +7,7 @@ import { UserForm, FORM_ERROR } from "app/users/components/UserForm"
 import { notification } from "antd"
 import { Button } from "app/core/components/Button"
 import deleteUser from "app/users/mutations/deleteUser"
+import Loading from "app/core/components/Loading"
 
 import dynamic from "next/dynamic"
 import { UpdateUser } from "app/auth/validations"
@@ -88,7 +89,7 @@ export const EditUser = () => {
 const EditUserPage: BlitzPage = () => {
   return (
     <div className="max-w-5xl mx-auto">
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<Loading />}>
         <EditUser />
       </Suspense>
     </div>
