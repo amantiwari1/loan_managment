@@ -34,6 +34,7 @@ export const LabeledTextField = forwardRef<HTMLInputElement, LabeledTextFieldPro
             <span>{label}</span>
             <Switch
               {...input}
+              value={input.value ?? false}
               defaultValue={input.value ?? false}
               defaultChecked={input.value ?? false}
               disabled={submitting}
