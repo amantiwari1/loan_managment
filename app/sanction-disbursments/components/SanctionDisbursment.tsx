@@ -3,6 +3,7 @@ import Table, {
   CreateButtonTable,
   DateCell,
   DownloadCell,
+  NumberCell,
   StatusPillCell,
 } from "app/core/components/Table"
 
@@ -29,6 +30,7 @@ import getSanctionDisbursments from "../queries/getSanctionDisbursments"
 import getEnquiry from "app/enquiries/queries/getEnquiry"
 import DrawerForm from "app/core/components/DrawerForm"
 import { ActionComponent } from "app/core/components/ActionComponent"
+import { client_service_options } from "app/common"
 
 const SanctionDisbursment = () => {
   const enquiryId = useParam("enquiryId", "number")
@@ -93,25 +95,52 @@ const SanctionDisbursment = () => {
 
   const columns = [
     {
-      Header: "Document",
-      accessor: "document",
+      Header: "Client Name",
+      accessor: "client_name",
     },
     {
-      Header: "Status",
-      accessor: "file",
-      Cell: StatusPillCell,
+      Header: "Product",
+      accessor: "product",
+      Cell: ({ value }) => <p>{client_service_options[value]}</p>,
     },
     {
-      Header: "Download",
-      accessor: "file",
-      id: "id",
-      Cell: DownloadCell,
+      Header: "Amount Sanctioned",
+      accessor: "amount_sanctioned",
+      Cell: NumberCell,
     },
     {
-      Header: "Upload on",
-      accessor: "updatedAt",
+      Header: "Date of Sanction",
+      accessor: "date_of_sanction",
       Cell: DateCell,
     },
+    {
+      Header: "Bank Name",
+      accessor: "bank_name",
+    },
+    {
+      Header: "Rate of Interest",
+      accessor: "rate_of_interest",
+    },
+    {
+      Header: "Tenure",
+      accessor: "tenure",
+    },
+    // {
+    //   Header: "Status",
+    //   accessor: "file",
+    //   Cell: StatusPillCell,
+    // },
+    // {
+    //   Header: "Download",
+    //   accessor: "file",
+    //   id: "id",
+    //   Cell: DownloadCell,
+    // },
+    // {
+    //   Header: "Upload on",
+    //   accessor: "updatedAt",
+    //   Cell: DateCell,
+    // },
     {
       Header: "Action",
       Cell: ({ row }) => (
@@ -161,6 +190,10 @@ const SanctionDisbursment = () => {
           // schema={CreateSanctionDisbursment}
           initialValues={Edit}
           onSubmit={async (values) => {
+            console.log(
+              "🚀 ~ file: SanctionDisbursment.tsx ~ line 216 ~ onSubmit={ ~ values",
+              values
+            )
             try {
               if (values.id) {
                 await updateSanctionDisbursmentMutation({
@@ -170,7 +203,7 @@ const SanctionDisbursment = () => {
               } else {
                 await createSanctionDisbursmentMutation({
                   ...values,
-                  client_name: enquiry.client_name,
+                  // client_name: enquiry.client_name,
                   enquiryId: enquiry.id,
                   remark: values?.remark ? values?.remark : "",
                 })

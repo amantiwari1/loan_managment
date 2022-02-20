@@ -1,6 +1,6 @@
 import { Form, FormProps } from "app/core/components/Form"
+import LabeledTextAreaField from "app/core/components/LabeledTextAreaField"
 import { LabeledTextField } from "app/core/components/LabeledTextField"
-import SelectField from "app/core/components/SelectField"
 import UploadFile from "app/core/components/UploadFile"
 import { useSession } from "blitz"
 
@@ -17,13 +17,19 @@ export function DocumentForm<S extends z.ZodType<any, any>>(props: FormProps<S>)
         label="Document Name"
         placeholder="Enter"
       />
+      <LabeledTextAreaField
+        disabled={["USER", "PARTNER"].includes(session.role)}
+        name="description"
+        label="Description"
+        placeholder="Enter"
+      />
+      <LabeledTextField
+        disabled={["USER", "PARTNER"].includes(session.role)}
+        name="remark"
+        label="Remark"
+        placeholder="Enter"
+      />
       <UploadFile />
-      {/* <SelectField
-        name="status"
-        label="status"
-        options={options}
-        placeholder="Select Client Service"
-      /> */}
     </Form>
   )
 }

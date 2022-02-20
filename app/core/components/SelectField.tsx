@@ -1,6 +1,7 @@
 import React, { forwardRef, ComponentPropsWithoutRef, PropsWithoutRef, useEffect } from "react"
 import { Field, useField, UseFieldConfig } from "react-final-form"
 import Select, { GroupBase, OptionsOrGroups } from "react-select"
+import WindowedSelect from "react-windowed-select"
 
 export interface SelectFieldProps {
   /** Field name. */
@@ -34,7 +35,7 @@ export const SelectField = ({
         <Field {...rest}>
           {(props) => (
             <div>
-              <Select
+              <WindowedSelect
                 placeholder={placeholder}
                 name={props.input.name}
                 value={{

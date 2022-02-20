@@ -25,6 +25,11 @@ export default resolver.pipe(
     if (input.final_login) {
       await db.bankQuery.create({
         data: {
+          CaseStatus: {
+            connect: {
+              id: caseStatus.id,
+            },
+          },
           bank_query: input.bank_name,
           enquiryId: input.enquiryId,
           our_response: "",

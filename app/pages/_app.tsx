@@ -11,6 +11,7 @@ import LoginForm from "app/auth/components/LoginForm"
 import "antd/dist/antd.css"
 import "app/core/styles/index.css"
 import "react-pro-sidebar/dist/css/styles.css"
+import "react-day-picker/lib/style.css"
 
 import { ChakraProvider } from "@chakra-ui/react"
 

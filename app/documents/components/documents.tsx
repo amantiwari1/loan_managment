@@ -132,6 +132,10 @@ const Document = () => {
       accessor: "document_name",
     },
     {
+      Header: "Description",
+      accessor: "description",
+    },
+    {
       Header: "Status",
       accessor: "file",
       Cell: StatusPillCell,
@@ -146,6 +150,10 @@ const Document = () => {
       accessor: "file",
       id: "id",
       Cell: DownloadCell,
+    },
+    {
+      Header: "Remark",
+      accessor: "remark",
     },
     {
       Header: "Show User",

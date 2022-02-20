@@ -1,5 +1,5 @@
 import { message } from "antd"
-import Table, { CreateButtonTable, DateCell } from "app/core/components/Table"
+import Table, { BankNameCell, CreateButtonTable, DateCell } from "app/core/components/Table"
 
 import React from "react"
 import {
@@ -87,6 +87,7 @@ const BankQuery = () => {
     {
       Header: "Bank Query",
       accessor: "bank_query",
+      Cell: BankNameCell,
     },
     {
       Header: "Our Response",

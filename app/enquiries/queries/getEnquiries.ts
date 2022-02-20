@@ -38,6 +38,14 @@ export default resolver.pipe(
             },
             orderBy,
             include: {
+              case_status: {
+                select: {
+                  bank_name: true,
+                },
+                where: {
+                  final_login: true,
+                },
+              },
               users: {
                 select: {
                   user: {
@@ -74,6 +82,14 @@ export default resolver.pipe(
           where,
           orderBy,
           include: {
+            case_status: {
+              select: {
+                bank_name: true,
+              },
+              where: {
+                final_login: true,
+              },
+            },
             users: {
               select: {
                 user: {

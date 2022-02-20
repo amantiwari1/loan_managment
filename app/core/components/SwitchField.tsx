@@ -21,12 +21,7 @@ export const LabeledTextField = forwardRef<HTMLInputElement, LabeledTextFieldPro
       input,
       meta: { touched, error, submitError, submitting },
     } = useField(name, {
-      initialValue: false,
-      parse:
-        props.type === "number"
-          ? (Number as any)
-          : // Converting `""` to `null` ensures empty values will be set to null in the DB
-            (v) => (v === "" ? null : v),
+      // initialValue: false,
       ...fieldProps,
     })
 
@@ -37,7 +32,14 @@ export const LabeledTextField = forwardRef<HTMLInputElement, LabeledTextFieldPro
         <FormLabel {...labelProps}>
           <div className="space-x-3">
             <span>{label}</span>
-            <Switch {...input} disabled={submitting} {...props} ref={ref} />
+            <Switch
+              {...input}
+              defaultValue={input.value ?? false}
+              defaultChecked={input.value ?? false}
+              disabled={submitting}
+              {...props}
+              ref={ref}
+            />
           </div>
         </FormLabel>
 

@@ -17,6 +17,7 @@ import { SortIcon, SortUpIcon, SortDownIcon } from "./Icon"
 import { Input, Tag, Text } from "@chakra-ui/react"
 import { AddIcon, DownloadIcon } from "@chakra-ui/icons"
 import { Button } from "./Button"
+import { list_of_bank } from "../data/bank"
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
@@ -110,7 +111,9 @@ const StatusData = {
   },
 }
 
+export const BankNameCell = ({ value }) => <p>{value ? list_of_bank[value] : "No Selected Bank"}</p>
 export const DateCell = ({ value }) => <p>{new Date(value).toDateString()}</p>
+export const NumberCell = ({ value }) => <p> ₹{parseInt(value.toString()).toLocaleString("hi")}</p>
 export const DownloadCell = ({ value }) => {
   return (
     <>
@@ -137,11 +140,7 @@ export const CreateButtonTable = ({ onClick, session, allowRoles, title }) => {
   )
 }
 export function StatusPillCell({ value }) {
-  return (
-    <Tag colorScheme={StatusData[value?.id ? "true" : "false"]?.color}>
-      {StatusData[value?.id ? "true" : "false"]?.title}
-    </Tag>
-  )
+  return <p>{value?.id ? new Date(value.updatedAt).toString() : "No Upload file"}</p>
 }
 
 function Table({ columns, data, title, rightRender }) {

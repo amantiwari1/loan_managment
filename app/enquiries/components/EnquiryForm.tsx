@@ -7,15 +7,8 @@ export { FORM_ERROR } from "app/core/components/Form"
 import Select from "react-select"
 import { Field } from "react-final-form"
 import SelectField from "app/core/components/SelectField"
+import { client_service_options_data } from "app/common"
 
-const client_service_options = [
-  { value: "HOME_LOAN", label: "Home Loan" },
-  { value: "MORTGAGE_LOAN", label: "Mortgage Loan" },
-  { value: "UNSECURED_LOAN", label: "Unsecured Loan" },
-  { value: "MSME_LOAN", label: "MSME Loan" },
-  { value: "STARTUP_LOAN", label: "Startup Loan" },
-  { value: "SUBSIDY_SCHEMES", label: "Subsidy Schemes" },
-]
 const client_qccupation_type_options = [
   { value: "SALARIED_INDIVIDUAL", label: "Salaried Individual" },
   { value: "INDIVIDUAL", label: "Individual" },
@@ -47,7 +40,7 @@ export function EnquiryForm<S extends z.ZodType<any, any>>(props: FormProps<S>) 
       <SelectField
         name="client_service"
         label="Client Service"
-        options={client_service_options}
+        options={client_service_options_data}
         placeholder="Select Client Service"
       />
       <SelectField

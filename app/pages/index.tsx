@@ -3,26 +3,37 @@ import Layout from "app/core/layouts/Layout"
 import { Card, Divider, message } from "antd"
 import getEnquiries from "app/enquiries/queries/getEnquiries"
 import { Suspense } from "react"
-import { Enquiry, User } from "@prisma/client"
 import { Avatar, AvatarGroup, IconButton, Text, Tooltip } from "@chakra-ui/react"
-import { ColumnsType } from "antd/lib/table"
 import { IoMdRefresh } from "react-icons/io"
 import getEnquiriesCount from "app/enquiries/queries/getEnquiriesCount"
 import { Button } from "app/core/components/Button"
-import { BiUser } from "react-icons/bi"
-import Table from "app/core/components/Table"
+import Table, { BankNameCell, NumberCell } from "app/core/components/Table"
 import Loading from "app/core/components/Loading"
+import {
+  client_occupations_type_options,
+  client_service_options,
+  exportToCSVWithColumn,
+} from "app/common"
+import { list_of_bank } from "app/core/data/bank"
+
+const TableColumn = {
+  id: "ID",
+  createdAt: "Created At",
+  updatedAt: "Updated At",
+  client_address: "Client Address",
+  client_email: "Client Email",
+  client_name: "Client Name",
+  client_qccupation_type: "Client Occupation Type",
+  client_service: "Client Service",
+  private_enquiry: "Private Enquiry",
+  client_mobile: "Client Mobile",
+  loan_amount: "Load Amount",
+  enquiry_request: "Rnquiry Request",
+  users: "User",
+  case_status: "APPLIED BANK NAME",
+}
 
 const ITEMS_PER_PAGE = 100
-
-const Client_Service = {
-  HOME_LOAN: "Home Loan",
-  MORTGAGE_LOAN: "Mortgage Loan",
-  UNSECURED_LOAN: "Unsecured Loan",
-  MSME_LOAN: "MSME Loan",
-  STARTUP_LOAN: "Startup Loan",
-  SUBSIDY_SCHEMES: "Subsidy Schemes",
-}
 
 const columns = [
   {
@@ -33,14 +44,28 @@ const columns = [
         <Link href={Routes.ShowEnquiryPage({ enquiryId: row.original.id })}>
           <a className="text-lg font-bold underline hover:text-blue-500">{value}</a>
         </Link>
-        <p>{Client_Service[row.original.client_service]}</p>
       </div>
     ),
   },
   {
+    Header: "Client Name",
+    accessor: "client_service",
+    Cell: ({ value }) => <p>{client_service_options[value]}</p>,
+  },
+  {
     Header: "Amount",
     accessor: "loan_amount",
-    Cell: ({ value }) => <p>{value.toString()}</p>,
+    Cell: NumberCell,
+  },
+  {
+    Header: "Applied Bank Name",
+    accessor: "case_status[0].bank_name",
+    Cell: BankNameCell,
+  },
+  {
+    Header: "Case Status",
+    // accessor: "loan_amount",
+    // Cell: NumberCell,
   },
   {
     Header: "Channel Partner",
@@ -68,7 +93,7 @@ const columns = [
     ),
   },
   {
-    Header: "STAFF",
+    Header: "Team Members",
     accessor: "users",
     Cell: ({ value }) => (
       <Text fontWeight="medium" textTransform="capitalize">
@@ -92,7 +117,7 @@ const columns = [
     ),
   },
   {
-    Header: "Last Updated",
+    Header: "Last Updated on",
     accessor: "updatedAt",
     Cell: ({ value }) => <p>{new Date(value).toDateString()}</p>,
   },
@@ -169,16 +194,39 @@ export const EnquiriesList = () => {
           columns={columns}
           data={enquiries}
           rightRender={() => (
-            <IconButton
-              size="sm"
-              aria-label="Search database"
-              onClick={async () => {
-                await refetch()
-                message.success("Updated")
-              }}
-              variant="outline"
-              icon={<IoMdRefresh />}
-            />
+            <div className="space-x-2">
+              <Button
+                size="sm"
+                variant="outline"
+                w={100}
+                onClick={() => {
+                  const ClearEnquires = enquiries.map((arr) => {
+                    return {
+                      ...arr,
+                      users: "",
+                      client_service: client_service_options[arr.client_service],
+                      client_qccupation_type:
+                        client_occupations_type_options[arr.client_qccupation_type],
+                      case_status:
+                        list_of_bank[arr.case_status[0]?.bank_name] ?? "No Selected Bank",
+                    }
+                  })
+                  exportToCSVWithColumn(ClearEnquires, "Active Enquires", TableColumn)
+                }}
+              >
+                Export CSV
+              </Button>
+              <IconButton
+                size="sm"
+                aria-label="Search database"
+                onClick={async () => {
+                  await refetch()
+                  message.success("Updated")
+                }}
+                variant="outline"
+                icon={<IoMdRefresh />}
+              />
+            </div>
           )}
           title="Active Enquiries"
         />

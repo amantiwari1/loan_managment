@@ -12,13 +12,13 @@ import {
 } from "blitz"
 import { Button } from "app/core/components/Button"
 import Table, {
+  BankNameCell,
   CreateButtonTable,
   DateCell,
   DownloadCell,
   StatusPillCell,
 } from "app/core/components/Table"
 
-import { AddIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons"
 import { useDisclosure, Tag } from "@chakra-ui/react"
 import { FORM_ERROR } from "final-form"
 import createCaseStatus from "../mutations/createCaseStatus"
@@ -92,6 +92,7 @@ const CaseStatus = () => {
     {
       Header: "Bank Name",
       accessor: "bank_name",
+      Cell: BankNameCell,
     },
     {
       Header: "Final Login",
@@ -146,12 +147,7 @@ const CaseStatus = () => {
         columns={columns}
       />
 
-      <DrawerForm
-        isOpen={isOpen}
-        firstField={firstField}
-        onClose={onClose}
-        title="Add Project Report"
-      >
+      <DrawerForm isOpen={isOpen} firstField={firstField} onClose={onClose} title="Add Case Status">
         <CaseStatusForm
           submitText="Create Case Status"
           // TODO use a zod schema for form validation

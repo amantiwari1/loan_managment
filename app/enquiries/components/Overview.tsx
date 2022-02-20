@@ -8,33 +8,12 @@ import { MdOutlineAlternateEmail } from "react-icons/md"
 import { FiUsers } from "react-icons/fi"
 
 import { Text } from "@chakra-ui/react"
-import { useMutation, useParam, useQuery, useSession } from "blitz"
-import getUsers from "app/users/queries/getUsers"
-import { Button } from "app/core/components/Button"
+import { useParam, useQuery, useSession } from "blitz"
 import getEnquiry from "../queries/getEnquiry"
 import PartnerSelect from "./PartnerSelect"
 import CustomerSelect from "./CustomerSelect"
 import StaffSelect from "./StaffSelect"
-
-const client_service_options = [
-  { value: "HOME_LOAN", label: "Home Loan" },
-  { value: "MORTGAGE_LOAN", label: "Mortgage Loan" },
-  { value: "UNSECURED_LOAN", label: "Unsecured Loan" },
-  { value: "MSME_LOAN", label: "MSME Loan" },
-  { value: "STARTUP_LOAN", label: "Startup Loan" },
-  { value: "SUBSIDY_SCHEMES", label: "Subsidy Schemes" },
-].reduce((obj, item) => Object.assign(obj, { [item.value]: item.label }), {})
-
-const client_qccupation_type_options = [
-  { value: "SALARIED_INDIVIDUAL", label: "Salaried Individual" },
-  { value: "INDIVIDUAL", label: "Individual" },
-  {
-    value: "SELF_EMPLOYED_INDIVIDUAL_OR_PROPRIETORSHIP",
-    label: "Self Employed Individual / Proprietorship",
-  },
-  { value: "PARTNERSHIP", label: "Partnership" },
-  { value: "COMPANY", label: "Company" },
-].reduce((obj, item) => Object.assign(obj, { [item.value]: item.label }), {})
+import { client_service_options, client_occupations_type_options } from "app/common"
 
 const Overview = () => {
   const enquiryId = useParam("enquiryId", "number")
@@ -64,7 +43,7 @@ const Overview = () => {
     },
     {
       name: "Client Occupation type",
-      content: client_qccupation_type_options[enquiry.client_qccupation_type],
+      content: client_occupations_type_options[enquiry.client_qccupation_type],
       icon: BsStar,
     },
     {

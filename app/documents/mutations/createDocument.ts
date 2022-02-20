@@ -5,6 +5,8 @@ import { z } from "zod"
 const CreateDocument = z.object({
   client_name: z.string(),
   document_name: z.string(),
+  description: z.string().default(""),
+  remark: z.string().default(""),
   enquiryId: z.number(),
   fileId: z.number().optional(),
 })

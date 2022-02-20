@@ -25,19 +25,29 @@ export default resolver.pipe(
     })
 
     if (data.final_login) {
-      await db.bankQuery.upsert({
-        where: {
-          id: caseStatus.bankQueryId,
-        },
-        create: {
-          bank_query: data.bank_name,
-          enquiryId: data.enquiryId,
-          our_response: "",
-        },
-        update: {
-          bank_query: data.bank_name,
-        },
-      })
+      if (caseStatus.bankQueryId) {
+        await db.bankQuery.update({
+          data: {
+            bank_query: data.bank_name,
+          },
+          where: {
+            id: caseStatus.bankQueryId,
+          },
+        })
+      } else {
+        await db.bankQuery.create({
+          data: {
+            CaseStatus: {
+              connect: {
+                id: caseStatus.id,
+              },
+            },
+            bank_query: data.bank_name,
+            enquiryId: data.enquiryId,
+            our_response: "",
+          },
+        })
+      }
     }
 
     await db.log.create({
