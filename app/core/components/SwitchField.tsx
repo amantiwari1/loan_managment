@@ -21,6 +21,7 @@ export const LabeledTextField = forwardRef<HTMLInputElement, LabeledTextFieldPro
       input,
       meta: { touched, error, submitError, submitting },
     } = useField(name, {
+      defaultValue: false,
       // initialValue: false,
       ...fieldProps,
     })
