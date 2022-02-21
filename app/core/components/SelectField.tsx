@@ -1,7 +1,7 @@
 import React, { forwardRef, ComponentPropsWithoutRef, PropsWithoutRef, useEffect } from "react"
 import { Field, useField, UseFieldConfig } from "react-final-form"
 import Select, { GroupBase, OptionsOrGroups } from "react-select"
-import WindowedSelect from "react-windowed-select"
+import WindowedSelect from "./react-windowed-select"
 
 export interface SelectFieldProps {
   /** Field name. */
@@ -42,7 +42,7 @@ export const SelectField = ({
                   value: props.input.value,
                   label: options.find((arr) => arr.value === props.input.value)?.label,
                 }}
-                onChange={(value) => props.input.onChange(value?.value)}
+                onChange={(value: any) => props.input.onChange(value?.value)}
                 options={options}
               />
             </div>
