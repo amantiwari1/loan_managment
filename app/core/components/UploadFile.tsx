@@ -9,7 +9,6 @@ import getFile from "app/file/queries/getFile"
 import deleteFile from "app/file/mutations/deleteFile"
 
 const UploadFile = () => {
-  console.log("Rendered")
   const enquiryId = useParam("enquiryId", "number")
   const [createFileMutation, { isLoading }] = useMutation(createFile)
   const [DeleteFileMutation, { isLoading: isLoadingDelete }] = useMutation(deleteFile)

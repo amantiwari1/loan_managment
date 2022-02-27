@@ -4,18 +4,35 @@ import { Button } from "app/core/components/Button"
 import getRelationshipEnquiry from "app/enquiries/queries/getRelationshipEnquiry"
 import { Ctx, useMutation, useParam, useQuery } from "blitz"
 import { FORM_ERROR } from "final-form"
-import jsPDF from "jspdf"
 import React, { useState } from "react"
 import { BiExport } from "react-icons/bi"
 import createTeaser from "../mutations/createTeaser"
 import updateTeaser from "../mutations/updateTeaser"
-import ExportToHtml from "./ExportToHtml"
 import { MSMETeaserForm } from "./MSMETeaserForm"
+import { RetailTeaserForm } from "./RetailTeaserForm"
+import pdfMake from "pdfmake/build/pdfmake.js"
+import pdfFonts from "pdfmake/build/vfs_fonts"
+import { MSMEJsonTable, RetailsJsonTable } from "./ConvertToTableData"
+import { MSMEMockData } from "../data"
+pdfMake.vfs = pdfFonts.pdfMake.vfs
+
+if (typeof window !== "undefined") {
+  pdfMake.fonts = {
+    DDIN: {
+      normal: `${window.location.origin}/trebuc.ttf`,
+      bold: `${window.location.origin}/trebucb.ttf`,
+      italics: `${window.location.origin}/trebuci.ttf`,
+    },
+  }
+}
+
 interface CustomRelationshipEnquiry {
   id: number
   // Teaser: Teaser
   Teaser: any
+  client_service: string
 }
+
 const Teasers = () => {
   const enquiryId = useParam("enquiryId", "number")
   const [createTeaserMutation] = useMutation(createTeaser)
@@ -39,6 +56,7 @@ const Teasers = () => {
       select: {
         id: true,
         Teaser: true,
+        client_service: true,
       },
     },
     {
@@ -46,15 +64,13 @@ const Teasers = () => {
     }
   )
   const GeneratePDF = (name: string) => {
-    setIsLoadingExport(true)
-    const doc = new jsPDF("p", "pt", "a4")
-    const element = document.getElementById("PDF_TEASER")
-    doc.html(element, {
-      callback: function (doc) {
-        doc.save(`MSME Teaser ${name} (kred Partner).pdf`)
-        setIsLoadingExport(false)
-      },
-    })
+    let data = {}
+    if (["HOME_LOAN", "MORTGAGE_LOAN"].includes(enquiry.client_service)) {
+      data = RetailsJsonTable(enquiry?.Teaser?.data)
+    } else {
+      data = MSMEJsonTable(enquiry?.Teaser?.data)
+    }
+    pdfMake.createPdf(data).open()
   }
 
   return (
@@ -71,36 +87,71 @@ const Teasers = () => {
           Export PDF
         </Button>
       </div>
-      <ExportToHtml data={(enquiry.Teaser?.data as any) ?? {}} />
-      <MSMETeaserForm
-        submitText="Save Teaser"
-        // TODO use a zod schema for form validation
-        // schema={CreateTeaser}
-        initialValues={(enquiry.Teaser?.data as any) ?? {}}
-        onSubmit={async (values) => {
-          try {
-            if (!enquiry?.Teaser?.id) {
-              const teaser = await createTeaserMutation({
-                data: values,
-                enquiryId: enquiryId,
-              })
-            } else {
-              await updateTeaserMutation({
-                id: enquiry.Teaser.id,
-                data: values,
-              })
-            }
-            refetch()
-          } catch (error: any) {
-            console.error(error)
-            return {
-              [FORM_ERROR]: error.toString(),
-            }
-          } finally {
-            message.success("Updated Teaser")
-          }
-        }}
-      />
+      {["HOME_LOAN", "MORTGAGE_LOAN"].includes(enquiry.client_service) ? (
+        <>
+          <RetailTeaserForm
+            submitText="Save Teaser"
+            // TODO use a zod schema for form validation
+            // schema={CreateTeaser}
+            initialValues={(enquiry.Teaser?.data as any) ?? {}}
+            onSubmit={async (values) => {
+              try {
+                if (!enquiry?.Teaser?.id) {
+                  const teaser = await createTeaserMutation({
+                    data: values,
+                    enquiryId: enquiryId,
+                  })
+                } else {
+                  await updateTeaserMutation({
+                    id: enquiry.Teaser.id,
+                    data: values,
+                  })
+                }
+                refetch()
+              } catch (error: any) {
+                console.error(error)
+                return {
+                  [FORM_ERROR]: error.toString(),
+                }
+              } finally {
+                message.success("Updated Teaser")
+              }
+            }}
+          />
+        </>
+      ) : (
+        <>
+          <MSMETeaserForm
+            submitText="Save Teaser"
+            // TODO use a zod schema for form validation
+            // schema={CreateTeaser}
+            initialValues={(enquiry.Teaser?.data as any) ?? MSMEMockData}
+            onSubmit={async (values) => {
+              try {
+                if (!enquiry?.Teaser?.id) {
+                  const teaser = await createTeaserMutation({
+                    data: values,
+                    enquiryId: enquiryId,
+                  })
+                } else {
+                  await updateTeaserMutation({
+                    id: enquiry.Teaser.id,
+                    data: values,
+                  })
+                }
+                refetch()
+              } catch (error: any) {
+                console.error(error)
+                return {
+                  [FORM_ERROR]: error.toString(),
+                }
+              } finally {
+                message.success("Updated Teaser")
+              }
+            }}
+          />
+        </>
+      )}
     </div>
   )
 }

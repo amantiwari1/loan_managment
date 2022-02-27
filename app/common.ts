@@ -27,12 +27,25 @@ export const convertStringToKey = (str: string) => {
   if (!str && str.length === 0 && typeof str !== "string") {
     return ""
   }
+  if (!str) {
+    return ""
+  }
 
-  return str.toLowerCase().replaceAll(" ", "_").replaceAll("-", "_")
+  if (typeof window !== "undefined") {
+    return str.toLowerCase().replaceAll(" ", "_").replaceAll("-", "_")
+  }
+  return str.toLowerCase().replace(/ /g, "_").replace(/-/g, "_")
 }
 
 const objectMap = (obj, fn) =>
   Object.fromEntries(Object.entries(obj).map(([k, v], i) => [k, fn(v, k, i)]))
+
+export const constructObject = (arr: { name: string }[]) => {
+  return arr.reduce((acc, val) => {
+    acc[convertStringToKey(val.name)] = val.name
+    return acc
+  }, {})
+}
 
 export const exportToCSVWithColumn = function (
   tableData: any[],

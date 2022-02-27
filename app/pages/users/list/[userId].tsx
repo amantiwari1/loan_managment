@@ -2,59 +2,41 @@ import { Suspense } from "react"
 import { Head, Link, useRouter, useParam, BlitzPage, Routes, usePaginatedQuery } from "blitz"
 import Layout from "app/core/layouts/Layout"
 import getUsers from "app/users/queries/getUsers"
-import { Table } from "antd"
 import { Button } from "app/core/components/Button"
 import Loading from "app/core/components/Loading"
+import Table, { DateCell } from "app/core/components/Table"
 
 const ITEMS_PER_PAGE = 100
 
-//   {
-//     id: 1,
-//     createdAt: "2021-12-31T15:57:52.557Z",
-//     updatedAt: "2021-12-31T17:59:37.727Z",
-//     name: null,
-//     email: "amantiwari78632@gmail.com",
-//     hashedPassword:
-//       "JGFyZ29uMmlkJHY9MTkkbT02NTUzNix0PTIscD0xJGVCanV6Y0FwQXZqbCthdE5qMWRBUnckcjdUc1dqNTYwZ01uaUZzdVpIbWZhd29DOXlLVEpGaVE3ck10M0kxVDJsQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-//     role: "ADMIN",
-//   }
-// ]
-
 const Columns = [
   {
-    title: "createdAt",
-    dataIndex: "createdAt",
-    key: "createdAt",
-    render: (text) => <a>{new Date(text).toDateString()}</a>,
+    Header: "createdAt",
+    accessor: "createdAt",
+    Cell: DateCell,
   },
   {
-    title: "updatedAt",
-    dataIndex: "updatedAt",
-    key: "updatedAt",
-    render: (text) => <a>{new Date(text).toDateString()}</a>,
+    Header: "updatedAt",
+    accessor: "updatedAt",
+    Cell: DateCell,
   },
   {
-    title: "Name",
-    dataIndex: "name",
-    key: "name",
-    render: (name) => <p>{name ? name : "No Name"}</p>,
+    Header: "Name",
+    accessor: "name",
+    Cell: ({ value }) => <p>{value ? value : "No Name"}</p>,
   },
   {
-    title: "Email",
-    dataIndex: "email",
-    key: "email",
+    Header: "Email",
+    accessor: "email",
   },
   {
-    title: "Role",
-    dataIndex: "role",
-    key: "role",
+    Header: "Role",
+    accessor: "role",
   },
   {
-    title: "Action",
-    dataIndex: "id",
-    key: "id",
-    render: (id) => (
-      <Link href={Routes.EditUserPage({ userId: id })}>
+    Header: "Action",
+    accessor: "id",
+    Cell: ({ value }) => (
+      <Link href={Routes.EditUserPage({ userId: value })}>
         <a className="text-blue-400"> Edit</a>
       </Link>
     ),
@@ -79,7 +61,7 @@ export const UsersList = () => {
 
   return (
     <div>
-      <Table scroll={{ x: "max-content" }} bordered columns={Columns} dataSource={users} />
+      <Table columns={Columns} data={users} title={`List of ${role}`} rightRender={() => {}} />
 
       <button disabled={page === 0} onClick={goToPreviousPage}>
         Previous

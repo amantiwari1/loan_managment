@@ -4,6 +4,7 @@ import { z } from "zod"
 import { validateZodSchema } from "blitz"
 import { Button } from "./Button"
 export { FORM_ERROR } from "final-form"
+import arrayMutators from "final-form-arrays"
 
 export interface FormProps<S extends z.ZodType<any, any>>
   extends Omit<PropsWithoutRef<JSX.IntrinsicElements["form"]>, "onSubmit"> {
@@ -26,6 +27,9 @@ export function Form<S extends z.ZodType<any, any>>({
 }: FormProps<S>) {
   return (
     <FinalForm
+      mutators={{
+        ...arrayMutators,
+      }}
       initialValues={initialValues}
       validate={validateZodSchema(schema)}
       onSubmit={onSubmit}

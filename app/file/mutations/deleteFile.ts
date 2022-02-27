@@ -8,7 +8,7 @@ const DeleteFile = z.object({
 
 export default resolver.pipe(
   resolver.zod(DeleteFile),
-  resolver.authorize(["ADMIN", "STAFF"]),
+  resolver.authorize(),
   async ({ id }, ctx) => {
     const file = await db.file.delete({ where: { id } })
 

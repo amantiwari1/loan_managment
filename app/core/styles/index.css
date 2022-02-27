@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 * {
-  font-family: "Cerebri Sans", sans-serif;
+  font-family: sans-serif !important;
 }
 
 .pro-sidebar-inner {

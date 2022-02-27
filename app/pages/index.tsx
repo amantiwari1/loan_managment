@@ -58,6 +58,10 @@ const columns = [
     Cell: NumberCell,
   },
   {
+    Header: "Location",
+    accessor: "client_address",
+  },
+  {
     Header: "Applied Bank Name",
     accessor: "case_status[0].bank_name",
     Cell: BankNameCell,
@@ -77,13 +81,13 @@ const columns = [
           {!value.filter((arr) => arr.user.role === "PARTNER").length && (
             <Text fontWeight="medium">No Partner Selected</Text>
           )}
-          <AvatarGroup size="md" max={3}>
+          <AvatarGroup size="xs" max={3}>
             {value
               .filter((arr) => arr.user.role === "PARTNER")
               .map((arr, i) => (
                 <Tooltip key={i} label={arr.user.name}>
                   <div>
-                    <Avatar name={arr.user.name} />
+                    <Avatar size="xs" name={arr.user.name} />
                   </div>
                 </Tooltip>
               ))}
@@ -101,13 +105,13 @@ const columns = [
           {!value.filter((arr) => arr.user.role === "STAFF").length && (
             <Text fontWeight="medium">No Staff Selected</Text>
           )}
-          <AvatarGroup size="md" max={3}>
+          <AvatarGroup size="xs" max={3}>
             {value
               .filter((arr) => arr.user.role === "STAFF")
               .map((arr, i) => (
                 <Tooltip key={i} label={arr.user.name}>
                   <div>
-                    <Avatar name={arr.user.name} />
+                    <Avatar size="xs" name={arr.user.name} />
                   </div>
                 </Tooltip>
               ))}

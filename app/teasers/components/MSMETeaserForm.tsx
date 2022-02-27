@@ -100,20 +100,19 @@ export function MSMETeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S
         />
 
         {MSMETeaseData.summary.slice(0, 5).map((item) => (
-          <>
+          <div key={convertStringToKey(item?.name)}>
             {item.name}
             <div className="grid grid-cols-2 md:grid-cols-4">
               {MSMETeaseData.year.map((arr, i) => (
                 <LabeledTextField
                   readOnly={readOnly}
-                  key={item.key + "." + arr.key}
-                  name={item.key + "." + arr.key}
-                  // label={arr.name}
+                  key={convertStringToKey(item?.name + "." + arr?.name)}
+                  name={convertStringToKey(item?.name + "." + arr?.name)}
                   placeholder={arr.name}
                 />
               ))}
             </div>
-          </>
+          </div>
         ))}
 
         <LabeledTextField
@@ -124,31 +123,30 @@ export function MSMETeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S
         />
 
         {MSMETeaseData.summary.slice(5).map((item) => (
-          <>
+          <div key={convertStringToKey(item?.name)}>
             {item.name}
             <div className="grid grid-cols-2 md:grid-cols-4">
               {MSMETeaseData.year.map((arr, i) => (
                 <LabeledTextField
                   readOnly={readOnly}
-                  key={item.key + "." + arr.key}
-                  name={item.key + "." + arr.key}
+                  key={convertStringToKey(item?.name + "." + arr?.name)}
+                  name={convertStringToKey(item?.name + "." + arr?.name)}
                   // label={arr.name}
                   placeholder={arr.name}
                 />
               ))}
             </div>
-          </>
+          </div>
         ))}
         <Divider />
 
         <h3 className="text-xl font-bold text-center mt-2">Existing Facilities</h3>
         <div className="grid md:grid-cols-2">
           {MSMETeaseData.ExistingFacilities.map((arr) => (
-            <>
+            <div key={convertStringToKey("Existing Facilities." + arr.name)}>
               {arr.options ? (
                 <SelectField
-                  key={convertStringToKey("Existing Facilities." + arr.key)}
-                  name={convertStringToKey("Existing Facilities." + arr.key)}
+                  name={convertStringToKey("Existing Facilities." + arr.name)}
                   label={arr.name}
                   placeholder={arr.name}
                   options={arr.options}
@@ -156,13 +154,12 @@ export function MSMETeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S
               ) : (
                 <LabeledTextField
                   readOnly={readOnly}
-                  key={convertStringToKey("Existing Facilities." + arr.key)}
-                  name={convertStringToKey("Existing Facilities." + arr.key)}
+                  name={convertStringToKey("Existing Facilities." + arr.name)}
                   label={arr.name}
                   placeholder={arr.name}
                 />
               )}
-            </>
+            </div>
           ))}
         </div>
         <Divider />

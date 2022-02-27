@@ -8,7 +8,7 @@ import {
   useMutation,
 } from "blitz"
 import Layout from "app/core/layouts/Layout"
-import { message, Table } from "antd"
+import { message } from "antd"
 import getEnquiries from "app/enquiries/queries/getEnquiries"
 import { Suspense } from "react"
 import { Enquiry } from "@prisma/client"
@@ -34,6 +34,7 @@ import { Button } from "app/core/components/Button"
 import updateEnquiryRequest from "app/enquiries/mutations/updateEnquiryRequest"
 import { BiRefresh } from "react-icons/bi"
 import createUser from "app/users/mutations/createUser"
+import Table, { DateCell, NumberCell } from "app/core/components/Table"
 function generatePassword() {
   var length = 8,
     charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
@@ -58,52 +59,45 @@ const Client_Service = {
 export const EnquiriesList = () => {
   const [updateEnquiryMutation, { isLoading }] = useMutation(updateEnquiryRequest)
 
-  const columns: ColumnsType<Enquiry> = [
+  const columns = [
     {
-      title: "Client Name",
-      dataIndex: "client_name",
-      render: (text, data: Enquiry) => (
+      Header: "Client Name",
+      accessor: "client_name",
+      Cell: ({ value, row }) => (
         <div>
-          <Link href={Routes.ShowEnquiryPage({ enquiryId: data.id })}>
-            <a className="text-lg font-bold">{text}</a>
+          <Link href={Routes.ShowEnquiryPage({ enquiryId: row.original.id })}>
+            <a className="text-lg font-bold">{value}</a>
           </Link>
-          <p>{Client_Service[data.client_service]}</p>
+          <p>{Client_Service[row.original.client_service]}</p>
         </div>
       ),
     },
     {
-      title: "Amount",
-      dataIndex: "loan_amount",
-
+      Header: "Amount",
+      accessor: "loan_amount",
       key: "loan_amount",
-      render: (text) => <p>{text.toString()}</p>,
+      Cell: NumberCell,
     },
     {
-      title: "Channel Partner",
-      dataIndex: "users",
-
-      render: (users: any[]) => (
+      Header: "Channel Partner",
+      accessor: "users",
+      Cell: ({ value }) => (
         <Text fontWeight="medium" textTransform="capitalize">
-          {users.length !== 0 ? users[0]?.user?.name ?? "Not Selected" : "Not Selected"}
+          {value.length !== 0 ? value[0]?.user?.name ?? "Not Selected" : "Not Selected"}
         </Text>
       ),
     },
-    // {
-    //   title: "Staff",
-    //   dataIndex: "staff",
-    //   render: (text) => <a>{text}</a>,
-    // },
     {
-      title: "Last Updated",
-      dataIndex: "updatedAt",
+      Header: "Last Updated",
+      accessor: "updatedAt",
       key: "updatedAt",
-      render: (updatedAt) => <p>{new Date(updatedAt).toDateString()}</p>,
+      Cell: DateCell,
     },
     {
-      title: "Actions",
-      dataIndex: "id",
+      Header: "Actions",
+      accessor: "id",
       key: "id",
-      render: (id, data) => (
+      Cell: ({ value }) => (
         <div className="space-x-5">
           <Popover>
             <PopoverTrigger>
@@ -127,7 +121,7 @@ export const EnquiriesList = () => {
                       isLoading={isLoading}
                       onClick={async () => {
                         const token: any = await updateEnquiryMutation({
-                          id: id,
+                          id: value,
                           enquiry_request: "APPROVED",
                         })
 
@@ -166,7 +160,7 @@ export const EnquiriesList = () => {
                       isLoading={isLoading}
                       onClick={async () => {
                         await updateEnquiryMutation({
-                          id: id,
+                          id: value,
                           enquiry_request: "REJECTED",
                         })
 
@@ -205,24 +199,20 @@ export const EnquiriesList = () => {
     <div>
       {!["USER", "PARTNER"].includes(session.role as string) && <div></div>}
       <Table
-        scroll={{ x: "max-content" }}
-        columns={columns}
-        dataSource={enquiries}
-        bordered
-        title={() => (
-          <div className="space-y-1 md:flex md:justify-between">
-            <Text fontWeight="bold">Request Enquiries</Text>
-            <IconButton
-              aria-label="Search database"
-              onClick={async () => {
-                await refetch()
-                message.success("Updated")
-              }}
-              variant="outline"
-              icon={<IoMdRefresh />}
-            />
-          </div>
+        rightRender={() => (
+          <IconButton
+            aria-label="Search database"
+            onClick={async () => {
+              await refetch()
+              message.success("Updated")
+            }}
+            variant="outline"
+            icon={<IoMdRefresh />}
+          />
         )}
+        columns={columns}
+        data={enquiries}
+        title="Request Enquiries"
       />
       {/* <button disabled={page === 0} onClick={goToPreviousPage}>
         Previous

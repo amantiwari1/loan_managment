@@ -12,11 +12,22 @@ const UpdateDocument = z.object({
 
 export default resolver.pipe(
   resolver.zod(UpdateDocument),
-  resolver.authorize(["ADMIN", "STAFF"]),
+  resolver.authorize(),
   async ({ id, ...data }, ctx) => {
-    // TODO: in multi-tenant app, you must add validation to ensure correct tenant
+    if (ctx.session.role === "USER" || ctx.session.role === "PARTNER") {
+      const document = await db.document.update({ where: { id }, data: { fileId: data.fileId } })
+      await db.log.create({
+        data: {
+          name: "Updated Document by",
+          type: "UPDATED",
+          enquiryId: data.enquiryId,
+          userId: ctx.session.userId,
+        },
+      })
 
-    const modified: any = { ...data, status: data.fileId ? "UPLOADED" : "NOT_UPLOAD" }
+      return document
+    }
+    const modified: any = { ...data }
     const document = await db.document.update({ where: { id }, data: modified })
     await db.log.create({
       data: {

@@ -9,7 +9,7 @@ const CreateFile = z.object({
 
 export default resolver.pipe(
   resolver.zod(CreateFile),
-  resolver.authorize(["ADMIN", "STAFF"]),
+  resolver.authorize(),
   async (input: any, ctx) => {
     const file = await db.file.create({ data: input })
 

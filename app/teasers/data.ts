@@ -1,65 +1,76 @@
 export const MSMETeaseData = {
+  AboutOccupationBusiness: [
+    {
+      name: "Name of Business",
+    },
+    {
+      name: "Constitution",
+    },
+    {
+      name: "Date of Incorporation",
+    },
+    {
+      name: "Nature of Business",
+    },
+  ],
+  AboutOccupationService: [
+    {
+      name: "Name of Employer and Address",
+    },
+    {
+      name: "Designation",
+    },
+    {
+      name: "Annual Income",
+    },
+  ],
   year: [
     {
-      key: "f_y_2018_2019",
-      name: "F.Y. 2018-19",
+      name: "FY 2018-19",
     },
     {
-      key: "f_y_2019_2020",
-      name: "F.Y. 2019-20",
+      name: "FY 2019-20",
     },
     {
-      key: "f_y_2020_2021",
-      name: "F.Y. 2020-21",
+      name: "FY 2020-21",
     },
     {
-      key: "f_y_2021_2022",
-      name: "F.Y. 2021-22",
+      name: "FY 2021-22",
     },
   ],
   summary: [
     {
       name: "Turnover",
-      key: "turnover",
     },
     {
       name: "Net Profit",
-      key: "net_profit",
     },
     {
       name: "Capital",
-      key: "capital",
     },
     {
       name: "Unsecured Loan",
-      key: "unsecured_loan",
     },
     {
       name: "Financial Charges",
-      key: "financial_charges",
     },
     {
       name: "House Property",
-      key: "house_property",
     },
     {
       name: "Business Income",
-      key: "business_income",
     },
     {
       name: "Other Income",
-      key: "other_income",
     },
     {
       name: "Gross Total Income",
-      key: "gross_total_income",
     },
   ],
 
   ExistingFacilities: [
     {
       name: "Type of Loan",
-      key: "type_of_loan",
       options: [
         { value: "HOME_LOAN", label: "Home Loan" },
         { value: "MORTGAGE_LOAN", label: "Mortgage Loan" },
@@ -71,55 +82,42 @@ export const MSMETeaseData = {
     },
     {
       name: "Applicant",
-      key: "applicant",
     },
     {
       name: "Co-Applicant",
-      key: "co_applicant",
     },
     {
       name: "Name of Bank",
-      key: "name_of_bank",
     },
     {
       name: "Sanction Amount",
-      key: "sanction_amount",
     },
     {
       name: "Period",
-      key: "period",
     },
     {
       name: "EMI Amount",
-      key: "emi_amount",
     },
     {
       name: "EMI Date",
-      key: "emi_date",
     },
     {
       name: "Current Outstanding",
-      key: "current_outstanding",
     },
     {
       name: "Collateral",
-      key: "collateral",
     },
     {
       name: "Owner of collateral",
-      key: "owner_of_collateral",
     },
     {
       name: "Market value of collateral",
-      key: "market_value_of_collateral",
     },
     {
       name: "EMI deducted from which account",
-      key: "emi_deducted_from_which_account",
     },
     {
       name: "If EMI Bounced, date and reason for the same",
-      key: "if_emi_bounced_date_and_reason_for_the_same",
     },
   ],
 
@@ -166,4 +164,109 @@ export const MSMETeaseData = {
       name: "Guarantee2",
     },
   ],
+}
+
+export const MSMEMockData = {
+  name: "",
+  constitution: "",
+  house_no: "",
+  street: "",
+  city: "",
+  pincode: "",
+  state: "",
+  Proprietorship: "",
+  nature_of_business: "",
+  Introduction: "",
+  about_the_key_persons: "",
+  Incorporation: "",
+  financial_summary: "",
+  turnover: {
+    fy_2018_19: "",
+    fy_2019_20: "",
+    fy_2020_21: "",
+    fy_2021_22: "",
+  },
+  net_profit: {
+    fy_2018_19: "",
+    fy_2019_20: "",
+    fy_2020_21: "",
+    fy_2021_22: "",
+  },
+  capital: {
+    fy_2018_19: "",
+    fy_2020_21: "",
+    fy_2021_22: "",
+    fy_2019_20: "",
+  },
+  unsecured_loan: {
+    fy_2018_19: "",
+    fy_2019_20: "",
+    fy_2020_21: "",
+    fy_2021_22: "",
+  },
+  financial_charges: {
+    fy_2018_19: "",
+    fy_2019_20: "",
+    fy_2020_21: "",
+    fy_2021_22: "",
+  },
+  financial_summary1: "",
+  house_property: {
+    fy_2018_19: "",
+    fy_2020_21: "",
+    fy_2021_22: "",
+    fy_2019_20: "",
+  },
+  business_income: {
+    fy_2018_19: "",
+    fy_2019_20: "",
+    fy_2020_21: "",
+    fy_2021_22: "",
+  },
+  other_income: {
+    fy_2018_19: "",
+    fy_2019_20: "",
+    fy_2020_21: "",
+    fy_2021_22: "",
+  },
+  gross_total_income: {
+    fy_2018_19: "",
+    fy_2019_20: "",
+    fy_2021_22: "",
+    fy_2020_21: "",
+  },
+  existing_facilities: {
+    type_of_loan: "",
+    applicant: "",
+    co_applicant: "",
+    name_of_bank: "",
+    sanction_amount: "",
+    period: "",
+    emi_amount: "",
+    emi_date: "",
+    current_outstanding: "",
+    collateral: "",
+    market_value_of_collateral: "",
+    emi_deducted_from_which_account: "",
+    "if_emi_bounced,_date_and_reason_for_the_same": "",
+    owner_of_collateral: "",
+  },
+  proposed_facilities: {
+    enhancement: "",
+    take_over_of_existing_facilities: "",
+    total: "",
+  },
+  security_offered: {
+    primary: "",
+    collateral: "",
+    address: "",
+    area: "",
+    property_type: "",
+    market_value: "",
+    property_owner: "",
+  },
+  guarantee: {
+    guarantee1: "",
+    guarantee2: "",
+  },
 }

@@ -56,7 +56,7 @@ export function EnquiryForm<S extends z.ZodType<any, any>>(props: FormProps<S>) 
         label="Loan Amount"
         placeholder="Enter a Loan Amount"
       />
-      <LabeledTextField name="client_address" label="Address" placeholder="Enter a Address" />
+      <LabeledTextField name="client_address" label="Location" placeholder="Enter a Location" />
       <Divider />
       <SwitchField name="private_enquiry" label="Private Enquiry" />
     </Form>

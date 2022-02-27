@@ -18,6 +18,8 @@ import { Input, Tag, Text } from "@chakra-ui/react"
 import { AddIcon, DownloadIcon } from "@chakra-ui/icons"
 import { Button } from "./Button"
 import { list_of_bank } from "../data/bank"
+import { Link, Routes } from "blitz"
+import { client_service_options_data } from "app/common"
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
@@ -110,6 +112,15 @@ const StatusData = {
     title: "No Upload",
   },
 }
+
+export const ClientNameCell = ({ value, row }) => (
+  <div>
+    <Link href={Routes.ShowEnquiryPage({ enquiryId: row.original.id })}>
+      <a className="text-lg font-bold">{value}</a>
+    </Link>
+    <p>{client_service_options_data[row.original.client_service]}</p>
+  </div>
+)
 
 export const BankNameCell = ({ value }) => <p>{value ? list_of_bank[value] : "No Selected Bank"}</p>
 export const DateCell = ({ value }) => <p>{new Date(value).toDateString()}</p>

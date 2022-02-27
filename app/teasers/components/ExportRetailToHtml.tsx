@@ -4,21 +4,7 @@ import React from "react"
 import { MSMETeaseData } from "../data"
 import logo from "public/logo.png"
 import { Image } from "blitz"
-
-export const Th = ({ children }) => {
-  return <th className=" border-[0.1px] border-black bg-gray-200">{children}</th>
-}
-export const Tr = ({ children }) => {
-  return <tr>{children}</tr>
-}
-export const Td = ({ children, className }: { children: React.ReactNode; className?: string }) => {
-  return <td className={" border-[0.1px] border-black " + className}>{children}</td>
-}
-export const Table = ({ children }) => {
-  return (
-    <table className="table-auto border-collapse text-[0.6rem] w-full !py-4 ">{children}</table>
-  )
-}
+import { Td, Table, Tr, Th } from "./ExportTable"
 
 const client_service_options = [
   { value: "HOME_LOAN", label: "Home Loan" },
@@ -29,19 +15,11 @@ const client_service_options = [
   { value: "SUBSIDY_SCHEMES", label: "Subsidy Schemes" },
 ].reduce((obj, item) => Object.assign(obj, { [item.value]: item.label }), {})
 
-const ExportToHtml = ({ data }: { data: MSMETeaserType }) => {
+const ExportRetailToHtml = ({ data }: { data: MSMETeaserType }) => {
   const tableData = [
     {
-      key_parameters: "Name",
+      key_parameters: "Name of Applicant",
       particulars: <p>{data?.name}</p>,
-    },
-    {
-      key_parameters: "Constitution",
-      particulars: <p>{data?.constitution}</p>,
-    },
-    {
-      key_parameters: "Proprietorship",
-      particulars: <p>{data?.Proprietorship}</p>,
     },
     {
       key_parameters: "Reg. Address",
@@ -52,16 +30,8 @@ const ExportToHtml = ({ data }: { data: MSMETeaserType }) => {
       ),
     },
     {
-      key_parameters: "Incorporation",
-      particulars: <p>{data?.Incorporation}</p>,
-    },
-    {
       key_parameters: "Nature of Business",
       particulars: <p>{data?.nature_of_business}</p>,
-    },
-    {
-      key_parameters: "Introduction",
-      particulars: <p>{data?.Introduction}</p>,
     },
     {
       key_parameters: "About the Key Persons",
@@ -155,110 +125,18 @@ const ExportToHtml = ({ data }: { data: MSMETeaserType }) => {
         </>
       ),
     },
-    {
-      key_parameters: "Proposed Facilities",
-      particulars: (
-        <>
-          <p>Proprietor __________ has availed the following Financial facilities:</p>
-          <Table>
-            <Tr>
-              <Th>
-                <p>S. No.</p>
-              </Th>
-              <Th>
-                <p>Nature of Facility</p>
-              </Th>
-              <Th>
-                <p>Amount In Lacs</p>
-              </Th>
-            </Tr>
-            {MSMETeaseData?.ProposedFacilities.map((arr, i) => (
-              <Tr key={convertStringToKey(arr?.name)}>
-                <Td>
-                  <p>{i + 1}.</p>
-                </Td>
-                <Td>
-                  <p>{arr?.name}</p>
-                </Td>
-                <Td>
-                  <p>
-                    {data?.proposed_facilities &&
-                      data?.proposed_facilities[convertStringToKey(arr?.name)]}
-                  </p>
-                </Td>
-              </Tr>
-            ))}
-          </Table>
-        </>
-      ),
-    },
-    {
-      key_parameters: "Security Offered",
-      particulars: (
-        <>
-          <p>The firm is offering the following security against the credit facility proposed :</p>
-          <h2>Primary: {data?.security_offered?.primary}</h2>
-          <h2>Collateral: {data?.security_offered?.collateral}</h2>
-          <Table>
-            <Tr>
-              <Th>
-                <p>S. No.</p>
-              </Th>
-              <Th>
-                <p>Nature of Facility</p>
-              </Th>
-              <Th>
-                <p>Amount In Lacs</p>
-              </Th>
-            </Tr>
-            {MSMETeaseData?.SecurityOffered.map((arr, i) => (
-              <Tr key={convertStringToKey(arr?.name)}>
-                <Td>
-                  <p>{i + 1}.</p>
-                </Td>
-                <Td>
-                  <p>{arr?.name}</p>
-                </Td>
-                <Td>
-                  <p>
-                    {data?.security_offered &&
-                      data?.security_offered[convertStringToKey(arr?.name)]}
-                  </p>
-                </Td>
-              </Tr>
-            ))}
-          </Table>
-        </>
-      ),
-    },
-    {
-      key_parameters: "Guarantee",
-      particulars: (
-        <>
-          <p className="underline font-bold">Personal Guarantee of the following persons: </p>
-
-          {MSMETeaseData?.Guarantee.map((arr, i) => (
-            <div key={convertStringToKey(arr?.name)}>
-              <p>
-                {i + 1}. {data?.guarantee && data?.guarantee[convertStringToKey(arr?.name)]}
-              </p>
-            </div>
-          ))}
-        </>
-      ),
-    },
   ]
 
   return (
-    <div className="hidden">
-      <div className="flex justify-center  w-[600px]" id="PDF_TEASER">
+    <div>
+      <div className="flex justify-center  w-[600px]">
         <div className="!text-xs w-[500px] mx-auto m-1 para-bottom">
-          <h4 className="text-center font-bold text-2xl my-2 pb-5">Teaser</h4>
           <div className="flex justify-end">
             <div className="max-w-[10rem]">
               <Image src={logo} alt="logo" />
             </div>
           </div>
+          <h4 className="text-center font-bold text-2xl my-2 pb-5">Teaser</h4>
           <div className="h-[800px]">
             <Table>
               <Tr>
@@ -343,4 +221,4 @@ const ExportToHtml = ({ data }: { data: MSMETeaserType }) => {
   )
 }
 
-export default ExportToHtml
+export default ExportRetailToHtml

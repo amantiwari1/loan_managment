@@ -1,66 +1,32 @@
 import { Link, BlitzPage, Routes, usePaginatedQuery, useRouter, useSession } from "blitz"
 import Layout from "app/core/layouts/Layout"
-import { Card, Divider, message, Tag } from "antd"
-import { Table } from "antd"
+import { message } from "antd"
 import getEnquiries from "app/enquiries/queries/getEnquiries"
 import { Suspense } from "react"
-import { Enquiry } from "@prisma/client"
 import { IconButton, Text } from "@chakra-ui/react"
-import { ColumnsType } from "antd/lib/table"
 import { IoMdRefresh } from "react-icons/io"
 import Loading from "app/core/components/Loading"
+import Table, { NumberCell, DateCell, ClientNameCell } from "app/core/components/Table"
 
 const ITEMS_PER_PAGE = 100
 
-const Client_Service = {
-  HOME_LOAN: "Home Loan",
-  MORTGAGE_LOAN: "Mortgage Loan",
-  UNSECURED_LOAN: "Unsecured Loan",
-  MSME_LOAN: "MSME Loan",
-  STARTUP_LOAN: "Startup Loan",
-  SUBSIDY_SCHEMES: "Subsidy Schemes",
-}
-
-const columns: ColumnsType<Enquiry> = [
+const columns = [
   {
-    title: "Client Name",
-    dataIndex: "client_name",
-    render: (text, data: Enquiry) => (
-      <div>
-        <Link href={Routes.ShowEnquiryPage({ enquiryId: data.id })}>
-          <a className="text-lg font-bold">{text}</a>
-        </Link>
-        <p>{Client_Service[data.client_service]}</p>
-      </div>
-    ),
+    Header: "Client Name",
+    accessor: "client_name",
+    Cell: ClientNameCell,
   },
   {
-    title: "Amount",
-    dataIndex: "loan_amount",
-
+    Header: "Amount",
+    accessor: "loan_amount",
     key: "loan_amount",
-    render: (text) => <p>{text.toString()}</p>,
+    Cell: NumberCell,
   },
   {
-    title: "Channel Partner",
-    dataIndex: "users",
-
-    render: (users: any[]) => (
-      <Text fontWeight="medium" textTransform="capitalize">
-        {users.length !== 0 ? users[0]?.user?.name ?? "Not Selected" : "Not Selected"}
-      </Text>
-    ),
-  },
-  // {
-  //   title: "Staff",
-  //   dataIndex: "staff",
-  //   render: (text) => <a>{text}</a>,
-  // },
-  {
-    title: "Last Updated",
-    dataIndex: "updatedAt",
+    Header: "Last Updated",
+    accessor: "updatedAt",
     key: "updatedAt",
-    render: (updatedAt) => <p>{new Date(updatedAt).toDateString()}</p>,
+    Cell: DateCell,
   },
 ]
 
@@ -85,24 +51,20 @@ export const EnquiriesList = () => {
     <div>
       {!["USER", "PARTNER"].includes(session.role as string) && <div></div>}
       <Table
-        scroll={{ x: "max-content" }}
-        columns={columns}
-        dataSource={enquiries}
-        bordered
-        title={() => (
-          <div className="space-y-1 md:flex md:justify-between">
-            <Text fontWeight="bold">Approved Enquiries</Text>
-            <IconButton
-              aria-label="Search database"
-              onClick={async () => {
-                await refetch()
-                message.success("Updated")
-              }}
-              variant="outline"
-              icon={<IoMdRefresh />}
-            />
-          </div>
+        rightRender={() => (
+          <IconButton
+            aria-label="Search database"
+            onClick={async () => {
+              await refetch()
+              message.success("Updated")
+            }}
+            variant="outline"
+            icon={<IoMdRefresh />}
+          />
         )}
+        columns={columns}
+        data={enquiries}
+        title="Approved Enquiries"
       />
       {/* <button disabled={page === 0} onClick={goToPreviousPage}>
         Previous
