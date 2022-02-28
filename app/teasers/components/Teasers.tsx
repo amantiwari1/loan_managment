@@ -77,7 +77,7 @@ const Teasers = () => {
     <div className="max-w-5xl mx-auto">
       <div className="flex justify-end">
         <Button
-          onClick={() => GeneratePDF((enquiry.Teaser?.data?.name as any) ?? "")}
+          onClick={() => GeneratePDF(" ")}
           variant="outline"
           className="ml-auto"
           leftIcon={<BiExport />}
@@ -125,7 +125,7 @@ const Teasers = () => {
             submitText="Save Teaser"
             // TODO use a zod schema for form validation
             // schema={CreateTeaser}
-            initialValues={(enquiry.Teaser?.data as any) ?? MSMEMockData}
+            initialValues={(enquiry.Teaser?.data as any) ?? {}}
             onSubmit={async (values) => {
               try {
                 if (!enquiry?.Teaser?.id) {

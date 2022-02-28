@@ -58,6 +58,14 @@ const ProposedHeaderText = ProposedHeader.map((arr) => {
 
 export const MSMETableData = (data, ordereddata) => {
   return ordereddata.flatMap((arr, index) => {
+    if (!data) {
+      return []
+    }
+
+    console.log(
+      "🚀 ~ file: ConvertToTableData.tsx ~ line 61 ~ returnordereddata.flatMap ~ arr",
+      arr
+    )
     // ADDRESS
     if (arr.key === "reg_address") {
       return [
@@ -76,21 +84,67 @@ export const MSMETableData = (data, ordereddata) => {
 
     // financial_summary
     if (arr.key === "financial_summary") {
-      // year
       let years = MSMETeaseData.summary.slice(0, 5).map((arr) => {
-        const preData3 = Object.values(data[convertStringToKey(arr.name)]).map((arr) => [
-          { text: arr, fontSize: FONT_SIZE },
-        ])
+        if (!data[convertStringToKey(arr.name)]) {
+          return [{ text: arr.name, fontSize: FONT_SIZE, bold: true }, ...["-", "-", "-", "-"]]
+        }
+
+        console.log(
+          "🚀 ~ file: ConvertToTableData.tsx ~ line 92 ~ years ~ data[convertStringToKey(arr.name)]",
+          data[convertStringToKey(arr.name)]
+        )
+
+        const datavalue = Object.values(data[convertStringToKey(arr.name)])
+        console.log("🚀 ~ file: ConvertToTableData.tsx ~ line 90 ~ years ~ datavalue", datavalue)
+        const preData3 = datavalue.map((arr) => {
+          return { text: arr, fontSize: FONT_SIZE }
+        })
+        console.log("🚀 ~ file: ConvertToTableData.tsx ~ line 92 ~ years ~ preData3", preData3)
+
+        console.log(
+          "🚀 ~ file: ConvertToTableData.tsx ~ line 95 ~ years ~ preData3.length",
+          preData3.length
+        )
+        if (preData3.length < 4) {
+          const filledNeeded = Array(4 - preData3.length).fill("-")
+          console.log(
+            "🚀 ~ file: ConvertToTableData.tsx ~ line 96 ~ years ~ filledNeeded",
+            filledNeeded
+          )
+          filledNeeded.forEach((arr) => {
+            preData3.push(arr)
+          })
+        }
+
+        console.log(
+          "🚀 ~ file: ConvertToTableData.tsx ~ line 99 ~ filledNeeded.forEach ~ preData3",
+          preData3
+        )
+
         return [{ text: arr.name, fontSize: FONT_SIZE, bold: true }, ...preData3]
       })
+      console.log("🚀 ~ file: ConvertToTableData.tsx ~ line 102 ~ years ~ years", years)
 
       // half year
       const halfYear = MSMETeaseData.summary.slice(5).map((arr) => {
+        if (!data[convertStringToKey(arr.name)]) {
+          return [{ text: arr.name, fontSize: FONT_SIZE, bold: true }, ...["-", "-", "-", "-"]]
+        }
+
         const preData3 = Object.values(data[convertStringToKey(arr.name)]).map((arr) => [
           { text: arr, fontSize: FONT_SIZE },
         ])
+
+        if (preData3.length !== 5) {
+          const filledNeeded = Array(5 - preData3.length).fill("-")
+          filledNeeded.forEach((arr) => {
+            preData3.push(arr)
+          })
+        }
+
         return [{ text: arr.name, fontSize: FONT_SIZE, bold: true }, ...preData3]
       })
+      console.log("🚀 ~ file: ConvertToTableData.tsx ~ line 123 ~ halfYear ~ halfYear", halfYear)
 
       return [
         [
@@ -98,7 +152,7 @@ export const MSMETableData = (data, ordereddata) => {
           { text: arr.name, fontSize: FONT_SIZE, bold: true },
           [
             {
-              text: `M/s. ${data["financial_summary"]} (ITR details) :`,
+              text: `M/s. ${data["financial_summary"] ?? "___________"} (ITR details) :`,
               fontSize: FONT_SIZE,
               bold: true,
               margin: [10, 10, 10, 10],
@@ -121,7 +175,7 @@ export const MSMETableData = (data, ordereddata) => {
               },
             },
             {
-              text: `Mr./Mrs. ${data["financial_summary1"]}`,
+              text: `Mr./Mrs. ${data["financial_summary1"] ?? "___________"}`,
               fontSize: FONT_SIZE,
               bold: true,
               margin: [10, 10, 10, 10],
@@ -149,6 +203,7 @@ export const MSMETableData = (data, ordereddata) => {
     }
 
     // NULL
+
     if (!data[arr.key] || (data[arr.key] && data[arr.key].length === 0)) {
       return []
     }
@@ -301,6 +356,7 @@ export const MSMETableData = (data, ordereddata) => {
 }
 
 export const MSMEJsonTable = (datas) => {
+  console.log("🚀 ~ file: ConvertToTableData.tsx ~ line 350 ~ MSMEJsonTable ~ datas", datas)
   const preData = MSMETableData(datas, OrderedData)
   const data = {
     background: function (currentPage, pageSize) {

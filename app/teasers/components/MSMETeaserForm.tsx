@@ -9,6 +9,7 @@ import { z } from "zod"
 import { MSMETeaseData } from "../data"
 export { FORM_ERROR } from "app/core/components/Form"
 import SelectField from "app/core/components/SelectField"
+import SwitchField from "app/core/components/SwitchField"
 
 export function MSMETeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S>) {
   const [readOnly, setReadOnly] = useState(true)
@@ -141,6 +142,8 @@ export function MSMETeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S
         <Divider />
 
         <h3 className="text-xl font-bold text-center mt-2">Existing Facilities</h3>
+        <SwitchField name="is_existing_facilities" label="is Existing Facilities?" />
+
         <div className="grid md:grid-cols-2">
           {MSMETeaseData.ExistingFacilities.map((arr) => (
             <div key={convertStringToKey("Existing Facilities." + arr.name)}>
