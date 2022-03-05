@@ -37,7 +37,7 @@ export const Enquiry = () => {
       components: ProjectReport,
     },
     {
-      name: "Case Status",
+      name: "Bank finalization",
       components: CaseStatus,
     },
     {

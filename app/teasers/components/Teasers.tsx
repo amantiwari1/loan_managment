@@ -64,20 +64,30 @@ const Teasers = () => {
     }
   )
   const GeneratePDF = (name: string) => {
-    let data = {}
-    if (["HOME_LOAN", "MORTGAGE_LOAN"].includes(enquiry.client_service)) {
-      data = RetailsJsonTable(enquiry?.Teaser?.data)
-    } else {
-      data = MSMEJsonTable(enquiry?.Teaser?.data)
+    try {
+      if (!enquiry?.Teaser?.data) {
+        message.error("Failed to export pdf due to incomplete form")
+        return
+      }
+
+      if (["HOME_LOAN", "MORTGAGE_LOAN"].includes(enquiry.client_service)) {
+        const data = RetailsJsonTable(enquiry?.Teaser?.data)
+        pdfMake.createPdf(data).download(`Retail Teaser ${enquiryId}`)
+      } else {
+        const data = MSMEJsonTable(enquiry?.Teaser?.data)
+        pdfMake.createPdf(data).download(`MSME Teaser ${enquiryId}`)
+      }
+    } catch (err) {
+      message.error("Failed to export pdf due to incomplete form")
+      console.log("🚀 ~ file: Teasers.tsx ~ line 82 ~ GeneratePDF ~ err", err)
     }
-    pdfMake.createPdf(data).open()
   }
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="flex justify-end">
+      <div className="flex justify-center">
         <Button
-          onClick={() => GeneratePDF(" ")}
+          onClick={() => GeneratePDF("")}
           variant="outline"
           className="ml-auto"
           leftIcon={<BiExport />}
@@ -89,6 +99,7 @@ const Teasers = () => {
       </div>
       {["HOME_LOAN", "MORTGAGE_LOAN"].includes(enquiry.client_service) ? (
         <>
+          <p className="text-2xl text-center">Retail Teaser</p>
           <RetailTeaserForm
             submitText="Save Teaser"
             // TODO use a zod schema for form validation
@@ -121,6 +132,7 @@ const Teasers = () => {
         </>
       ) : (
         <>
+          <p className="text-2xl text-center">MSME Teaser</p>
           <MSMETeaserForm
             submitText="Save Teaser"
             // TODO use a zod schema for form validation

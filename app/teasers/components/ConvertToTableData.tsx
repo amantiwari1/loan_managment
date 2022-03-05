@@ -62,10 +62,6 @@ export const MSMETableData = (data, ordereddata) => {
       return []
     }
 
-    console.log(
-      "🚀 ~ file: ConvertToTableData.tsx ~ line 61 ~ returnordereddata.flatMap ~ arr",
-      arr
-    )
     // ADDRESS
     if (arr.key === "reg_address") {
       return [
@@ -95,11 +91,9 @@ export const MSMETableData = (data, ordereddata) => {
         )
 
         const datavalue = Object.values(data[convertStringToKey(arr.name)])
-        console.log("🚀 ~ file: ConvertToTableData.tsx ~ line 90 ~ years ~ datavalue", datavalue)
         const preData3 = datavalue.map((arr) => {
           return { text: arr, fontSize: FONT_SIZE }
         })
-        console.log("🚀 ~ file: ConvertToTableData.tsx ~ line 92 ~ years ~ preData3", preData3)
 
         console.log(
           "🚀 ~ file: ConvertToTableData.tsx ~ line 95 ~ years ~ preData3.length",
@@ -107,23 +101,13 @@ export const MSMETableData = (data, ordereddata) => {
         )
         if (preData3.length < 4) {
           const filledNeeded = Array(4 - preData3.length).fill("-")
-          console.log(
-            "🚀 ~ file: ConvertToTableData.tsx ~ line 96 ~ years ~ filledNeeded",
-            filledNeeded
-          )
           filledNeeded.forEach((arr) => {
             preData3.push(arr)
           })
         }
 
-        console.log(
-          "🚀 ~ file: ConvertToTableData.tsx ~ line 99 ~ filledNeeded.forEach ~ preData3",
-          preData3
-        )
-
         return [{ text: arr.name, fontSize: FONT_SIZE, bold: true }, ...preData3]
       })
-      console.log("🚀 ~ file: ConvertToTableData.tsx ~ line 102 ~ years ~ years", years)
 
       // half year
       const halfYear = MSMETeaseData.summary.slice(5).map((arr) => {
@@ -144,7 +128,6 @@ export const MSMETableData = (data, ordereddata) => {
 
         return [{ text: arr.name, fontSize: FONT_SIZE, bold: true }, ...preData3]
       })
-      console.log("🚀 ~ file: ConvertToTableData.tsx ~ line 123 ~ halfYear ~ halfYear", halfYear)
 
       return [
         [
@@ -356,7 +339,6 @@ export const MSMETableData = (data, ordereddata) => {
 }
 
 export const MSMEJsonTable = (datas) => {
-  console.log("🚀 ~ file: ConvertToTableData.tsx ~ line 350 ~ MSMEJsonTable ~ datas", datas)
   const preData = MSMETableData(datas, OrderedData)
   const data = {
     background: function (currentPage, pageSize) {
