@@ -4,10 +4,18 @@ import { LabeledTextField } from "app/core/components/LabeledTextField"
 import { Form, FORM_ERROR } from "app/core/components/Form"
 import { ResetPassword } from "app/auth/validations"
 import welcomePassword from "../mutations/welcomePassword"
+import logout from "../mutations/logout"
 import logo from "public/logo.png"
+import { useEffect } from "react"
 const WelcomePasswordPage: BlitzPage = () => {
   const query = useRouterQuery()
   const [welcomePasswordMutation, { isSuccess }] = useMutation(welcomePassword)
+  const [logoutPasswordMutation] = useMutation(logout)
+
+  useEffect(() => {
+    logoutPasswordMutation()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <div>

@@ -27,7 +27,9 @@ const NewUserPage: BlitzPage = () => {
         onSubmit={async (values) => {
           try {
             const token = await createUserMutation(values)
-            router.push(Routes.ResultUserPage({ token }))
+            const resetUrl = `${window.location.origin}/welcome-password?token=${token}`
+
+            router.push(Routes.ResultUserPage({ token: resetUrl }))
           } catch (error: any) {
             if (error.code === "P2002" && error.meta?.target?.includes("email")) {
               return { email: "This email is already being used" }

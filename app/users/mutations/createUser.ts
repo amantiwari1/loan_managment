@@ -46,7 +46,6 @@ export default resolver.pipe(
       },
     })
 
-    const resetUrl = `${origin}/welcome-password?token=${token}`
-    return resetUrl
+    return token
   }
 )

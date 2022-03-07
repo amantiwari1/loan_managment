@@ -39,15 +39,15 @@ const CaseStatus = () => {
       message.success("Created Case")
     },
     onError() {
-      message.error("Failed to Create CaseStatus")
+      message.error("Failed to Create")
     },
   })
   const [updateCaseStatusMutation] = useMutation(updateCaseStatus, {
     onSuccess() {
-      message.success("Updated CaseStatus")
+      message.success("Updated ")
     },
     onError() {
-      message.error("Failed to Updated CaseStatus")
+      message.error("Failed to Updated ")
     },
   })
   const [deleteCaseStatusMutation, { isLoading }] = useMutation(deleteCaseStatus, {
@@ -138,18 +138,23 @@ const CaseStatus = () => {
           <CreateButtonTable
             session={session}
             allowRoles={["ADMIN", "STAFF"]}
-            title="Add New Case status"
+            title="Add New"
             onClick={onOpen}
           />
         )}
-        title="Case status"
+        title="Bank finalization"
         data={data.caseStatuses}
         columns={columns}
       />
 
-      <DrawerForm isOpen={isOpen} firstField={firstField} onClose={onClose} title="Add Case Status">
+      <DrawerForm
+        isOpen={isOpen}
+        firstField={firstField}
+        onClose={onClose}
+        title="Add bank finalization"
+      >
         <CaseStatusForm
-          submitText="Create Case Status"
+          submitText="Create bank finalization"
           // TODO use a zod schema for form validation
           //  - Tip: extract mutation's schema into a shared `validations.ts` file and
           //         then import and use it here

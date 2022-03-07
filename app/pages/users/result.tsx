@@ -11,7 +11,7 @@ const ResultUserPage: BlitzPage = () => {
       <Result
         status="success"
         title="Successfully Invited User"
-        subTitle={token.token}
+        subTitle={<a href={token.token as string}>{token.token}</a>}
         extra={[
           <Button
             key="console"
