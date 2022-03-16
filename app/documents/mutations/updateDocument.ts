@@ -6,8 +6,8 @@ const UpdateDocument = z.object({
   id: z.number(),
   document_name: z.string(),
   enquiryId: z.number(),
-  status: z.enum(["UPLOADED", "NOT_UPLOAD"]),
-  fileId: z.number().nullish(),
+  remark: z.string().default(""),
+  file: z.array(z.object({ id: z.number() })).optional(),
 })
 
 export default resolver.pipe(
@@ -15,7 +15,14 @@ export default resolver.pipe(
   resolver.authorize(),
   async ({ id, ...data }, ctx) => {
     if (ctx.session.role === "USER" || ctx.session.role === "PARTNER") {
-      const document = await db.document.update({ where: { id }, data: { fileId: data.fileId } })
+      const document = await db.document.update({
+        where: { id },
+        data: {
+          file: {
+            connect: data.file.map((arr) => ({ id: arr.id })),
+          },
+        },
+      })
       await db.log.create({
         data: {
           name: "Updated Document by",
@@ -27,8 +34,17 @@ export default resolver.pipe(
 
       return document
     }
-    const modified: any = { ...data }
-    const document = await db.document.update({ where: { id }, data: modified })
+    const document = await db.document.update({
+      where: { id },
+      data: {
+        document_name: data.document_name,
+        remark: data.remark,
+        enquiryId: data.enquiryId,
+        file: {
+          connect: data.file.map((arr) => ({ id: arr.id })),
+        },
+      },
+    })
     await db.log.create({
       data: {
         name: "Updated Document by",
