@@ -7,7 +7,7 @@ import { Avatar, AvatarGroup, IconButton, Text, Tooltip } from "@chakra-ui/react
 import { IoMdRefresh } from "react-icons/io"
 import getEnquiriesCount from "app/enquiries/queries/getEnquiriesCount"
 import { Button } from "app/core/components/Button"
-import Table, { BankNameCell, NumberCell } from "app/core/components/Table"
+import Table, { BankNameCell, NumberCell, StatusCaseDashboardCell } from "app/core/components/Table"
 import Loading from "app/core/components/Loading"
 import {
   client_occupations_type_options,
@@ -68,8 +68,9 @@ const columns = [
   },
   {
     Header: "Case Status",
-    // accessor: "loan_amount",
-    // Cell: NumberCell,
+    accessor: "case_status[0].bank_name",
+    id: "case_status",
+    Cell: StatusCaseDashboardCell,
   },
   {
     Header: "Channel Partner",

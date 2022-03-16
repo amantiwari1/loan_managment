@@ -1,7 +1,7 @@
 import { Form, FormProps } from "app/core/components/Form"
 import LabeledTextAreaField from "app/core/components/LabeledTextAreaField"
 import { LabeledTextField } from "app/core/components/LabeledTextField"
-import UploadFile from "app/core/components/UploadFile"
+import MultiUploadFile from "app/core/components/MultiUploadFile"
 import { useSession } from "blitz"
 
 import { z } from "zod"
@@ -29,7 +29,7 @@ export function DocumentForm<S extends z.ZodType<any, any>>(props: FormProps<S>)
         label="Remark"
         placeholder="Enter"
       />
-      <UploadFile />
+      <MultiUploadFile />
     </Form>
   )
 }

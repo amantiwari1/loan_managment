@@ -122,6 +122,9 @@ export const ClientNameCell = ({ value, row }) => (
   </div>
 )
 
+export const StatusCaseDashboardCell = ({ value }) => (
+  <p>{value ? "Case status completed" : "Pending case status"}</p>
+)
 export const BankNameCell = ({ value }) => <p>{value ? list_of_bank[value] : "No Selected Bank"}</p>
 export const DateCell = ({ value }) => <p>{new Date(value).toDateString()}</p>
 export const NumberCell = ({ value }) => <p> ₹{parseInt(value.toString()).toLocaleString("hi")}</p>
@@ -136,6 +139,26 @@ export const DownloadCell = ({ value }) => {
         <p>No Upload file</p>
       )}
     </>
+  )
+}
+
+export const DownloadMultiCell = ({ value }) => {
+  return (
+    <div className="space-y-2">
+      {value && value.length ? (
+        <div className="space-y-2">
+          {value.map((arr, key) => (
+            <div key={key}>
+              <Button variant="outline" w={40} leftIcon={<DownloadIcon />}>
+                {arr.name.substring(0, 6)}...{arr.name.split(".").at(-1)}
+              </Button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p>No Upload file</p>
+      )}
+    </div>
   )
 }
 

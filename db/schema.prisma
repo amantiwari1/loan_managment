@@ -88,10 +88,11 @@ model File {
   updatedAt             DateTime                @updatedAt
   key                   String
   name                  String
-  Document              Document[]
   ProjectReport         ProjectReport[]
   SanctionDisbursment   SanctionDisbursment[]
   SearchValuationReport SearchValuationReport[]
+  Document              Document?               @relation(fields: [documentId], references: [id])
+  documentId            Int?
 }
 
 model Log {
@@ -115,9 +116,8 @@ model Document {
   description    String?
   enquiryId      Int?
   status         StatusType @default(NOT_UPLOAD)
-  fileId         Int?
   Enquiry        Enquiry?   @relation(fields: [enquiryId], references: [id])
-  file           File?      @relation(fields: [fileId], references: [id])
+  file           File[]
   is_public_user Boolean    @default(false)
 }
 

@@ -1,29 +1,28 @@
-import {
-  Link,
-  useRouter,
-  useMutation,
-  BlitzPage,
-  Routes,
-  formatZodError,
-  validateZodSchema,
-} from "blitz"
+import { useRouter, useMutation, BlitzPage, Routes, useParam } from "blitz"
 import Layout from "app/core/layouts/Layout"
 import createUser from "app/users/mutations/createUser"
 import { UserForm, FORM_ERROR } from "app/users/components/UserForm"
 import { CreateUser } from "app/auth/validations"
+import { useRouterQuery } from "blitz"
 
 const NewUserPage: BlitzPage = () => {
   const router = useRouter()
+  const query: any = useRouterQuery()
+
   const [createUserMutation] = useMutation(createUser)
 
   return (
     <div className="max-w-5xl mx-auto">
       <h1>Create New User</h1>
-
       <UserForm
         submitText="Invite User"
         schema={CreateUser}
-        initialValues={{ email: "", password: "", name: "", role: "USER" }}
+        initialValues={{
+          email: "",
+          password: "",
+          name: "",
+          role: query.role ? query.role.toUpperCase() : "USER",
+        }}
         onSubmit={async (values) => {
           try {
             const token = await createUserMutation(values)

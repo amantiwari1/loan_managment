@@ -74,6 +74,7 @@ export const UsersList = () => {
 }
 
 const UsersPage: BlitzPage = () => {
+  const role = useParam("userId", "string")
   return (
     <>
       <Head>
@@ -82,7 +83,7 @@ const UsersPage: BlitzPage = () => {
 
       <div>
         <div className="max-w-xs my-4 ml-auto">
-          <Link href={Routes.NewUserPage()}>
+          <Link href={Routes.NewUserPage({ role })}>
             <Button>Create User</Button>
           </Link>
         </div>

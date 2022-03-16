@@ -8,14 +8,25 @@ const CreateDocument = z.object({
   description: z.string().default(""),
   remark: z.string().default(""),
   enquiryId: z.number(),
-  fileId: z.number().optional(),
+  file: z.array(z.object({ id: z.number() })).optional(),
 })
 
 export default resolver.pipe(
   resolver.zod(CreateDocument),
   resolver.authorize(["ADMIN", "STAFF"]),
-  async (input: any, ctx) => {
-    const document = await db.document.create({ data: input })
+  async (input, ctx) => {
+    const document = await db.document.create({
+      data: {
+        client_name: input.client_name,
+        document_name: input.document_name,
+        description: input.description,
+        remark: input.remark,
+        enquiryId: input.enquiryId,
+        file: {
+          connect: input.file.map((arr) => ({ id: arr.id })),
+        },
+      },
+    })
 
     await db.log.create({
       data: {

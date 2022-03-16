@@ -10,7 +10,6 @@ import { MSMETeaseData } from "../data"
 export { FORM_ERROR } from "app/core/components/Form"
 import SelectField from "app/core/components/SelectField"
 import { FieldArray } from "react-final-form-arrays"
-import { Field } from "react-final-form"
 
 export function RetailTeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S>) {
   const [readOnly, setReadOnly] = useState(true)

@@ -21,13 +21,23 @@ import updateDocument from "../mutations/updateDocument"
 import deleteDocument from "../mutations/deleteDocument"
 import { CreateDocument } from "app/auth/validations"
 import getEnquiry from "app/enquiries/queries/getEnquiry"
-import Table, { DateCell, DownloadCell, StatusPillCell } from "app/core/components/Table"
+import Table, { DateCell, DownloadMultiCell, StatusPillCell } from "app/core/components/Table"
 import SwitchDocument from "../mutations/SwitchDocument"
 import { ActionComponent } from "app/core/components/ActionComponent"
 import DrawerForm from "app/core/components/DrawerForm"
+import sendIntimation from "../mutations/sendIntimation"
+import { client_service_options } from "app/common"
 
-const AddNewButton = ({ onClick }) => {
+const AddNewButton = ({ onClick, enquiry }: { onClick: () => void; enquiry: any }) => {
   const session = useSession()
+  const [SendIntimationMutation, { isLoading: isLoadingSendIntimation }] = useMutation(
+    sendIntimation,
+    {
+      onSuccess: () => {
+        message.success("sent Intimation")
+      },
+    }
+  )
 
   return (
     <div className="flex justify-between">
@@ -36,7 +46,24 @@ const AddNewButton = ({ onClick }) => {
           <Button w={220} onClick={onClick} leftIcon={<AddIcon />} size="sm">
             Add New Document
           </Button>
-          <Button variant="outline" w={150} size="sm">
+          <Button
+            variant="outline"
+            w={150}
+            size="sm"
+            isLoading={isLoadingSendIntimation}
+            disabled={isLoadingSendIntimation}
+            onClick={() => {
+              if (enquiry.customer.user.email || enquiry.partner[0].user.email) {
+                SendIntimationMutation({
+                  name: enquiry.customer.user.name ?? enquiry.partner[0].user.name ?? "",
+                  email: enquiry.customer.user.email ?? enquiry.partner[0].user.email ?? "",
+                  product: client_service_options[enquiry.client_service],
+                })
+              } else {
+                message.error("Please select Co Applicant")
+              }
+            }}
+          >
             Send Intimation
           </Button>
         </div>
@@ -56,6 +83,7 @@ const Document = () => {
   )
 
   const [SwitchDocumentMutation, { isLoading: isLoadingSwitch }] = useMutation(SwitchDocument)
+
   const [createDocumentMutation] = useMutation(createDocument, {
     onSuccess() {
       message.success("Created Document")
@@ -149,7 +177,7 @@ const Document = () => {
       Header: "Download",
       accessor: "file",
       id: "id",
-      Cell: DownloadCell,
+      Cell: DownloadMultiCell,
     },
     {
       Header: "Remark",
@@ -192,11 +220,10 @@ const Document = () => {
     },
   ].slice(0, !["PARTNER"].includes(session.role as string) ? undefined : -1)
 
-  console.log("rendering")
   return (
     <div>
       <Table
-        rightRender={() => <AddNewButton onClick={onOpen} />}
+        rightRender={() => <AddNewButton onClick={onOpen} enquiry={enquiry} />}
         title="Documents"
         data={data.documents}
         columns={columns}

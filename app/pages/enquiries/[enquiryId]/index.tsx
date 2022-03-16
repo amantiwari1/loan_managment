@@ -13,8 +13,11 @@ import SanctionDisbursment from "app/sanction-disbursments/components/SanctionDi
 import BankQuery from "app/bank-queries/components/BankQuery"
 import Teasers from "app/teasers/components/Teasers"
 import Loading from "app/core/components/Loading"
+import getEnquiry from "app/enquiries/queries/getEnquiry"
 
 export const Enquiry = () => {
+  const enquiryId = useParam("enquiryId", "number")
+  const [enquiry, { refetch }] = useQuery(getEnquiry, { id: enquiryId })
   const TabData = [
     {
       name: "Overview",
@@ -52,7 +55,7 @@ export const Enquiry = () => {
       name: "Sanction & Disbursment",
       components: SanctionDisbursment,
     },
-  ]
+  ].slice(0, enquiry.enquiry_request === "APPROVED" ? 9 : 1)
 
   return (
     <>

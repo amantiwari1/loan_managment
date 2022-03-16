@@ -2,7 +2,7 @@ import { Link, useRouter, useMutation, BlitzPage, Routes, useSession } from "bli
 import Layout from "app/core/layouts/Layout"
 import createEnquiry from "app/enquiries/mutations/createEnquiry"
 import { EnquiryForm, FORM_ERROR } from "app/enquiries/components/EnquiryForm"
-import { Divider } from "antd"
+import { Divider, message } from "antd"
 import { CreateEnquiry } from "app/auth/validations"
 
 const NewEnquiryPage: BlitzPage = () => {
@@ -16,16 +16,16 @@ const NewEnquiryPage: BlitzPage = () => {
       <Divider />
       <EnquiryForm
         submitText="Create Enquiry"
-        // TODO use a zod schema for form validation
-        //  - Tip: extract mutation's schema into a shared `validations.ts` file and
-        //         then import and use it here
         schema={CreateEnquiry}
-        // initialValues={{}}
-        onSubmit={async (values) => {
+        onSubmit={async (values: any) => {
+          if (!values.isVerifiedPhone) {
+            message.error("Please verify your phone number")
+            return
+          }
           try {
-            const enquiry = await createEnquiryMutation(values)
+            await createEnquiryMutation(values)
             if (session.role === "ADMIN") {
-              router.push(Routes.ShowEnquiryPage({ enquiryId: enquiry.id }))
+              router.push(Routes.EnquiryRequestPage())
             }
           } catch (error: any) {
             if (error.code === "P2002" && error.meta?.target?.includes("client_email")) {
@@ -39,12 +39,6 @@ const NewEnquiryPage: BlitzPage = () => {
           } catch (error: any) {}
         }}
       />
-
-      {/* <p>
-        <Link href={Routes.EnquiriesPage()}>
-          <a>Enquiries</a>
-        </Link>
-      </p> */}
     </div>
   )
 }

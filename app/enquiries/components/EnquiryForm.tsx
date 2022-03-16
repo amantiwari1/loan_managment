@@ -8,6 +8,7 @@ import Select from "react-select"
 import { Field } from "react-final-form"
 import SelectField from "app/core/components/SelectField"
 import { client_service_options_data } from "app/common"
+import LabeledPhoneField from "app/core/components/LabeledPhoneField"
 
 const client_qccupation_type_options = [
   { value: "SALARIED_INDIVIDUAL", label: "Salaried Individual" },
@@ -24,12 +25,13 @@ export function EnquiryForm<S extends z.ZodType<any, any>>(props: FormProps<S>) 
   return (
     <Form<S> {...props}>
       <LabeledTextField name="client_name" label="Client Name" placeholder="Enter a Client Name" />
-      <LabeledTextField
+      <LabeledPhoneField
         type="number"
         name="client_mobile"
         label="Client Mobile"
         placeholder="Enter a Client Mobile"
       />
+
       <LabeledTextField
         type="email"
         name="client_email"

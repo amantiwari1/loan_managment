@@ -63,65 +63,77 @@ const Overview = () => {
     },
   ]
 
+  const MessageRequest = {
+    PENDING: "This enquiry is pending approved request  ",
+    REJECTED: "This enquiry is rejected",
+    SANCTIONED: "This enquiry is sanctioned",
+  }
+
   return (
     <Card title="Enquiry Overview">
-      <div className="grid md:grid-cols-2 gap-5">
-        <div>
-          {data.map((item, i) => (
-            <div key={i}>
-              <div className="flex space-x-2 items-center">
-                <div>
-                  <div className="bg-blue-200 text-blue-500 text-xl p-2 rounded-full">
-                    <item.icon />
+      {enquiry.enquiry_request === "APPROVED" ? (
+        <div className="grid md:grid-cols-2 gap-5">
+          <div>
+            {data.map((item, i) => (
+              <div key={i}>
+                <div className="flex space-x-2 items-center">
+                  <div>
+                    <div className="bg-blue-200 text-blue-500 text-xl p-2 rounded-full">
+                      <item.icon />
+                    </div>
+                  </div>
+                  <div>
+                    <Text fontWeight="medium">{item.content}</Text>
+                    <Text
+                      fontSize="sm"
+                      fontWeight="medium"
+                      color="gray.500"
+                      textTransform="capitalize"
+                    >
+                      {item.name}
+                    </Text>
                   </div>
                 </div>
-                <div>
-                  <Text fontWeight="medium">{item.content}</Text>
-                  <Text
-                    fontSize="sm"
-                    fontWeight="medium"
-                    color="gray.500"
-                    textTransform="capitalize"
-                  >
-                    {item.name}
-                  </Text>
-                </div>
+                <Divider />
               </div>
-              <Divider />
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
 
-        <div>
-          {["USER", "PARTNER"].includes(session.role as string) ? (
-            <></>
-          ) : (
-            <div className="space-y-5">
-              <PartnerSelect
-                enquiry={enquiry}
-                refetch={refetch}
-                PartnerEnquiry={enquiry?.partner?.map((arr) => {
-                  return {
-                    label: arr.user.name,
-                    value: arr.user.id,
-                  }
-                })}
-              />
-              <CustomerSelect enquiry={enquiry} refetch={refetch} />
-              <StaffSelect
-                enquiry={enquiry}
-                refetch={refetch}
-                StaffEnquiry={enquiry?.staff?.map((arr) => {
-                  return {
-                    label: arr.user.name,
-                    value: arr.user.id,
-                  }
-                })}
-              />
-            </div>
-          )}
+          <div>
+            {["USER", "PARTNER"].includes(session.role as string) ? (
+              <></>
+            ) : (
+              <div className="space-y-5">
+                <PartnerSelect
+                  enquiry={enquiry}
+                  refetch={refetch}
+                  PartnerEnquiry={enquiry?.partner?.map((arr) => {
+                    return {
+                      label: arr.user.name,
+                      value: arr.user.id,
+                    }
+                  })}
+                />
+                <CustomerSelect enquiry={enquiry} refetch={refetch} />
+                <StaffSelect
+                  enquiry={enquiry}
+                  refetch={refetch}
+                  StaffEnquiry={enquiry?.staff?.map((arr) => {
+                    return {
+                      label: arr.user.name,
+                      value: arr.user.id,
+                    }
+                  })}
+                />
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div>
+          <p>{MessageRequest[enquiry.enquiry_request]}</p>
+        </div>
+      )}
     </Card>
   )
 }
