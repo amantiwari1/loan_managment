@@ -5,8 +5,8 @@ export const getExtension = (fname: string) => {
   return fname.slice(((fname.lastIndexOf(".") - 1) >>> 0) + 2)
 }
 
-export const getFileName = (enquiryId: number, fileName: string) => {
-  return `${enquiryId}/${uuidv4()}_${new Date().getTime()}.${getExtension(fileName)}`
+export const getFileName = (enquiryId: number, folder: string, fileName: string) => {
+  return `${enquiryId}/${folder}/${uuidv4()}_${new Date().getTime()}.${getExtension(fileName)}`
 }
 
 export const TransformationData = (staff: getUsersType, StaffEnquiry: EnquireUserInterface[]) => {

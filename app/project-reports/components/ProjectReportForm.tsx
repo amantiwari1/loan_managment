@@ -9,7 +9,7 @@ export function ProjectReportForm<S extends z.ZodType<any, any>>(props: FormProp
   return (
     <Form<S> {...props}>
       <LabeledTextField name="label" label="Label" placeholder="Name" />
-      <UploadFile />
+      <UploadFile name="ProjectReport" />
 
       <LabeledTextField name="remark" label="Remark" placeholder="Name" />
     </Form>

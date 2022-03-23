@@ -14,54 +14,51 @@ import { Field } from "react-final-form"
 import GetPreSignUrl from "app/documents/mutations/GetPreSignUrl"
 import { message } from "antd"
 import axios from "axios"
+import DeleteKeyFromSpace from "app/documents/mutations/DeleteKeyFromSpace"
 
-const MultiUploadFile = () => {
+const MultiUploadFile = ({ name }: { name: string }) => {
   const enquiryId = useParam("enquiryId", "number")
   const [createFileMutation, { isLoading }] = useMutation(createMultiFile)
   const [DeleteFileMutation, { isLoading: isLoadingDelete }] = useMutation(deleteFile)
   const [GetPreSignUrlMutation, { isLoading: isLoadingUrl }] = useMutation(GetPreSignUrl)
+  const [DeleteKeyFromSpaceMutation, { isLoading: isLoadingDeleteUrl }] =
+    useMutation(DeleteKeyFromSpace)
   const [isUploading, setIsUploading] = useState(false)
   const { input } = useField<File[]>("file", {})
 
   const ref = React.useRef<HTMLInputElement>()
 
-  const removeFile = async (id: number) => {
+  const removeFile = async (id: number, key: string) => {
+    await DeleteKeyFromSpaceMutation({ key: key })
     await DeleteFileMutation({ id: id })
     input.onChange(input.value.filter((arr) => arr.id !== id))
-    // fileNameInput.onChange(null)
   }
 
   const uploadFile: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
     setIsUploading(true)
     const files = []
     for (let i = 0; i < e.target.files.length; i++) {
-      const key = encodeURIComponent(getFileName(enquiryId, e.target.files[i].name))
+      const key = getFileName(enquiryId, name, e.target.files[i].name)
       files.push({
         key: key,
         name: e.target.files[i].name,
       })
-      // const url = await GetPreSignUrlMutation({ key: key })
-      // const formData = new FormData()
-      // Object.entries({ file: e.target.files[i] }).forEach(([key, value]: any) => {
-      //   formData.append(key, value)
-      // })
-      // if (url) {
-      //   axios
-      //     .post(url, formData)
-      //     .then((res) => {
-      //       if (res.data.upload.ok) {
-      //         console.log("Uploaded successfully!")
-      //       } else {
-      //         console.error("Upload failed.")
-      //       }
-      //     })
-      //     .catch((err) => {
-      //       message.error("failed to upload file")
-      //       console.log(err)
-      //     })
-      // } else {
-      //   message.error("failed to upload file")
-      // }
+      const url = await GetPreSignUrlMutation({ key: key })
+      const formData = new FormData()
+      Object.entries({ file: e.target.files[i] }).forEach(([key, value]: any) => {
+        formData.append(key, value)
+      })
+      if (url) {
+        await axios
+          .put(url, formData)
+          .then(() => message.success("uploaded file successfully"))
+          .catch((err) => {
+            message.error("failed to upload file")
+            console.log(err)
+          })
+      } else {
+        message.error("failed to upload file")
+      }
     }
 
     const fileId = await createFileMutation({ files: files })
@@ -77,7 +74,7 @@ const MultiUploadFile = () => {
             <div className="flex justify-between items-center max-w-sm mx-auto mt-1" key={key}>
               <p>{i.name}</p>
               <IconButton
-                onClick={() => removeFile(i.id)}
+                onClick={() => removeFile(i.id, i.key)}
                 aria-label="delete"
                 icon={<AiFillDelete />}
                 colorScheme="red"
@@ -103,6 +100,7 @@ const MultiUploadFile = () => {
           {(isLoading || isUploading) && <Progress size="xs" isIndeterminate />}
           <input
             multiple
+            disabled={isUploading}
             type="file"
             accept="application/pdf"
             ref={ref}

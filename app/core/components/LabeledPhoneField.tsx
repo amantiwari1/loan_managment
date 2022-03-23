@@ -57,7 +57,6 @@ export const LabeledPhoneField = forwardRef<HTMLInputElement, LabeledPhoneFieldP
 
     const onSignInSubmit = async () => {
       const phone = input.value
-      console.log("🚀 ~ file: LabeledPhoneField.tsx ~ line 56 ~ onSignInSubmit ~ phone", phone)
 
       if (!phone || phone.toString().length !== 10) {
         return "await trigger('phone')"

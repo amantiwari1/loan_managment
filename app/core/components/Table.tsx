@@ -18,8 +18,9 @@ import { Input, Tag, Text } from "@chakra-ui/react"
 import { AddIcon, DownloadIcon } from "@chakra-ui/icons"
 import { Button } from "./Button"
 import { list_of_bank } from "../data/bank"
-import { Link, Routes } from "blitz"
+import { Link, Routes, useMutation } from "blitz"
 import { client_service_options_data } from "app/common"
+import DownloadPreSignUrl from "app/documents/mutations/DownloadPreSignUrl"
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
@@ -129,10 +130,21 @@ export const BankNameCell = ({ value }) => <p>{value ? list_of_bank[value] : "No
 export const DateCell = ({ value }) => <p>{new Date(value).toDateString()}</p>
 export const NumberCell = ({ value }) => <p> ₹{parseInt(value.toString()).toLocaleString("hi")}</p>
 export const DownloadCell = ({ value }) => {
+  const [DownloadPreSignUrlMutation, { isLoading: isLoadingUrl }] = useMutation(DownloadPreSignUrl)
+
   return (
     <>
       {value?.name ? (
-        <Button variant="outline" w={40} leftIcon={<DownloadIcon />}>
+        <Button
+          variant="outline"
+          w={40}
+          onClick={async () => {
+            const url = await DownloadPreSignUrlMutation({ key: value.key })
+            download(url, value.name)
+          }}
+          isLoading={isLoadingUrl}
+          leftIcon={<DownloadIcon />}
+        >
           {value.name.substring(0, 6)}...{value.name.split(".").at(-1)}
         </Button>
       ) : (
@@ -142,14 +154,37 @@ export const DownloadCell = ({ value }) => {
   )
 }
 
+function download(url: string, filename: string) {
+  fetch(url)
+    .then((response) => response.blob())
+    .then((blob) => {
+      const link = document.createElement("a")
+      link.href = URL.createObjectURL(blob)
+      link.download = filename
+      link.click()
+    })
+    .catch(console.error)
+}
+
 export const DownloadMultiCell = ({ value }) => {
+  const [DownloadPreSignUrlMutation, { isLoading: isLoadingUrl }] = useMutation(DownloadPreSignUrl)
+
   return (
     <div className="space-y-2">
       {value && value.length ? (
         <div className="space-y-2">
           {value.map((arr, key) => (
             <div key={key}>
-              <Button variant="outline" w={40} leftIcon={<DownloadIcon />}>
+              <Button
+                variant="outline"
+                w={40}
+                onClick={async () => {
+                  const url = await DownloadPreSignUrlMutation({ key: arr.key })
+                  download(url, arr.name)
+                }}
+                isLoading={isLoadingUrl}
+                leftIcon={<DownloadIcon />}
+              >
                 {arr.name.substring(0, 6)}...{arr.name.split(".").at(-1)}
               </Button>
             </div>

@@ -1,6 +1,6 @@
 import { resolver } from "blitz"
 import { z } from "zod"
-import { PutObjectCommand, PutObjectCommandInput } from "@aws-sdk/client-s3"
+import { GetObjectCommand, GetObjectCommandInput } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { s3Client } from "app/core/S3client"
 
@@ -12,14 +12,13 @@ export default resolver.pipe(
   resolver.zod(CreateDocument),
   resolver.authorize(),
   async (input, ctx) => {
-    const bucketParams: PutObjectCommandInput = {
+    const bucketParams: GetObjectCommandInput = {
       Bucket: "kredpartner",
       Key: input.key,
-      ContentType: "application/pdf",
     }
 
     try {
-      const url = await getSignedUrl(s3Client, new PutObjectCommand(bucketParams), {
+      const url = await getSignedUrl(s3Client, new GetObjectCommand(bucketParams), {
         expiresIn: 5 * 60,
       })
       return url

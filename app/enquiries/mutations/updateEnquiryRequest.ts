@@ -1,5 +1,6 @@
 import { generateToken, hash256, resolver, SecurePassword } from "blitz"
-import db from "db"
+import db, { Enquiry } from "db"
+import { InviteUserMailer } from "mailers/InviteUserMailer"
 import { z } from "zod"
 import getPredefinedDoc from "../data/predefined"
 
@@ -37,7 +38,7 @@ export default resolver.pipe(
   resolver.zod(UpdateEnquiry),
   resolver.authorize(["ADMIN"]),
   async ({ id, enquiry_request }) => {
-    const enquiry = await db.enquiry.update({
+    const enquiry: Enquiry = await db.enquiry.update({
       where: { id },
       data: { enquiry_request: enquiry_request },
     })
@@ -72,7 +73,6 @@ export default resolver.pipe(
       expiresAt.setHours(expiresAt.getHours() + RESET_PASSWORD_TOKEN_EXPIRATION_IN_HOURS)
 
       await db.token.deleteMany({ where: { type: "INVITE_PASSWORD", userId: user.id } })
-      // 5. Save this new token in the database.
       await db.token.create({
         data: {
           user: { connect: { id: user.id } },
@@ -84,6 +84,12 @@ export default resolver.pipe(
       })
 
       const resetUrl = `${origin}/welcome-password?token=${token}`
+      await InviteUserMailer({
+        to: user.email,
+        name: user.name,
+        product: enquiry.client_service,
+        url: resetUrl,
+      }).send()
       return resetUrl
     }
     return enquiry

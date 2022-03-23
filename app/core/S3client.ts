@@ -1,6 +1,6 @@
-import { S3 } from "@aws-sdk/client-s3"
+import { S3, S3ClientConfig } from "@aws-sdk/client-s3"
 
-const options = {
+const options: S3ClientConfig = {
   endpoint: "https://sgp1.digitaloceanspaces.com",
   region: "us-east-1",
   credentials: {

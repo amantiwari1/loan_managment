@@ -76,6 +76,8 @@ export const CreateProjectReport = z.object({
 export const CreateDocument = z.object({
   id,
   document_name: z.string().min(3).max(50),
+  remark: z.string().nullable().optional().default(" "),
+  description: z.string().nullable().optional().default(" "),
   status,
 })
 

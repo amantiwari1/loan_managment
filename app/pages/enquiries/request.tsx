@@ -120,14 +120,12 @@ export const EnquiriesList = () => {
                     <Button
                       isLoading={isLoading}
                       onClick={async () => {
-                        const token: any = await updateEnquiryMutation({
+                        const enquiry = await updateEnquiryMutation({
                           id: value,
                           enquiry_request: "APPROVED",
                         })
 
-                        router.push(Routes.ResultUserPage({ token }))
-
-                        await refetch()
+                        router.push(Routes.ShowEnquiryPage({ enquiryId: enquiry.id }))
                       }}
                       w={50}
                     >

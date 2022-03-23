@@ -1,4 +1,5 @@
 import { generateToken, hash256, resolver, SecurePassword } from "blitz"
+import { InviteUserMailer } from "mailers/InviteUserMailer"
 import db from "db"
 import { z } from "zod"
 
@@ -17,12 +18,12 @@ const CreateUser = z.object({
 })
 
 const RESET_PASSWORD_TOKEN_EXPIRATION_IN_HOURS = 720
+const origin = process.env.APP_ORIGIN || process.env.BLITZ_DEV_SERVER_ORIGIN
 
 export default resolver.pipe(
   resolver.zod(CreateUser),
   resolver.authorize("ADMIN"),
   async ({ email, password, role, name }, ctx) => {
-    const origin = process.env.APP_ORIGIN || process.env.BLITZ_DEV_SERVER_ORIGIN
     const hashedPassword = await SecurePassword.hash(password.trim())
     const user = await db.user.create({
       data: { email: email.toLowerCase().trim(), hashedPassword, role, name },

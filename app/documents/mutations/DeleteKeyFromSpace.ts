@@ -1,7 +1,6 @@
 import { resolver } from "blitz"
 import { z } from "zod"
-import { PutObjectCommand, PutObjectCommandInput } from "@aws-sdk/client-s3"
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
+import { DeleteObjectCommand, DeleteObjectCommandInput } from "@aws-sdk/client-s3"
 import { s3Client } from "app/core/S3client"
 
 const CreateDocument = z.object({
@@ -12,17 +11,14 @@ export default resolver.pipe(
   resolver.zod(CreateDocument),
   resolver.authorize(),
   async (input, ctx) => {
-    const bucketParams: PutObjectCommandInput = {
+    const bucketParams: DeleteObjectCommandInput = {
       Bucket: "kredpartner",
       Key: input.key,
-      ContentType: "application/pdf",
     }
 
     try {
-      const url = await getSignedUrl(s3Client, new PutObjectCommand(bucketParams), {
-        expiresIn: 5 * 60,
-      })
-      return url
+      const data = await s3Client.send(new DeleteObjectCommand(bucketParams))
+      return data
     } catch (err) {
       console.log("Error", err)
     }

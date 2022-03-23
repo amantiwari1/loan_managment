@@ -1,7 +1,7 @@
 import { useMutation, BlitzPage } from "blitz"
 import createEnquiry from "app/enquiries/mutations/createEnquiry"
 import { EnquiryForm, FORM_ERROR } from "app/enquiries/components/EnquiryForm"
-import { Divider, Result } from "antd"
+import { Divider, message, Result } from "antd"
 import { CreateEnquiry } from "app/auth/validations"
 import { useState } from "react"
 import { SmileOutlined } from "@ant-design/icons"
@@ -21,7 +21,11 @@ const NewPublicEnquiryPage: BlitzPage = () => {
           <EnquiryForm
             submitText="Apply"
             schema={CreateEnquiry}
-            onSubmit={async (values) => {
+            onSubmit={async (values: any) => {
+              if (!values.isVerifiedPhone) {
+                message.error("Please verify your phone number")
+                return
+              }
               try {
                 await createEnquiryMutation(values)
                 setCompleted(true)

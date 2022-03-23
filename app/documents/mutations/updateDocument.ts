@@ -6,7 +6,8 @@ const UpdateDocument = z.object({
   id: z.number(),
   document_name: z.string(),
   enquiryId: z.number(),
-  remark: z.string().default(""),
+  description: z.string().nullable().optional().default(" "),
+  remark: z.string().nullable().optional().default(" "),
   file: z.array(z.object({ id: z.number() })).optional(),
 })
 

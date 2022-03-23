@@ -18,6 +18,8 @@ const UpdateEnquiry = z.object({
 
 const RESET_PASSWORD_TOKEN_EXPIRATION_IN_HOURS = 720
 
+const origin = process.env.APP_ORIGIN || process.env.BLITZ_DEV_SERVER_ORIGIN
+
 export default resolver.pipe(
   resolver.zod(UpdateEnquiry),
   resolver.authorize(["ADMIN"]),
@@ -28,7 +30,6 @@ export default resolver.pipe(
     })
 
     if (request === "APPROVED") {
-      const origin = process.env.APP_ORIGIN || process.env.BLITZ_DEV_SERVER_ORIGIN
       const hashedPassword = await SecurePassword.hash(generatePassword().trim())
       const user = await db.user.create({
         data: {

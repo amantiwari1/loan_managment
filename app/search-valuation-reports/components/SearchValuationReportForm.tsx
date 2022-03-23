@@ -18,7 +18,7 @@ export function SearchValuationReportForm<S extends z.ZodType<any, any>>(props: 
   return (
     <Form<S> {...props}>
       <LabeledTextField name="document" label="Document" placeholder="Name" />
-      <UploadFile />
+      <UploadFile name="SearchValuationReport" />
     </Form>
   )
 }

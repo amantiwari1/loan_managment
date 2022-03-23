@@ -3,7 +3,7 @@ import createChannelPartner from "app/channel-partners/mutations/createChannelPa
 import { ChannelPartnerForm, FORM_ERROR } from "app/channel-partners/components/ChannelPartnerForm"
 import { CreateChannelPartner } from "app/auth/validations"
 import { useState } from "react"
-import { Divider, Result } from "antd"
+import { Divider, message, Result } from "antd"
 
 import { SmileOutlined } from "@ant-design/icons"
 const NewChannelPartnerPage: BlitzPage = () => {
@@ -21,7 +21,11 @@ const NewChannelPartnerPage: BlitzPage = () => {
           <ChannelPartnerForm
             submitText="Partner with Us"
             schema={CreateChannelPartner}
-            onSubmit={async (values) => {
+            onSubmit={async (values: any) => {
+              if (!values.isVerifiedPhone) {
+                message.error("Please verify your phone number")
+                return
+              }
               try {
                 await createChannelPartnerMutation(values)
                 setCompleted(true)
