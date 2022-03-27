@@ -125,7 +125,7 @@ export const EnquiriesList = () => {
                           enquiry_request: "APPROVED",
                         })
 
-                        router.push(Routes.ShowEnquiryPage({ enquiryId: value.original.id }))
+                        router.push(Routes.ShowEnquiryPage({ enquiryId: value }))
                       }}
                       w={50}
                     >

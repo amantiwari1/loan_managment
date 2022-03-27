@@ -58,7 +58,7 @@ const getPredefinedDoc = (enquiryId: number) => {
       client_name: "",
       enquiryId,
       document_name: arr,
-      is_public_user: false,
+      is_public_user: true,
     }
   })
 }

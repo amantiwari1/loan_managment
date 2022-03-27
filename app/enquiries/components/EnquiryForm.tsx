@@ -4,11 +4,10 @@ import { LabeledTextField } from "app/core/components/LabeledTextField"
 import SwitchField from "app/core/components/SwitchField"
 import { z } from "zod"
 export { FORM_ERROR } from "app/core/components/Form"
-import Select from "react-select"
-import { Field } from "react-final-form"
 import SelectField from "app/core/components/SelectField"
 import { client_service_options_data } from "app/common"
 import LabeledPhoneField from "app/core/components/LabeledPhoneField"
+import LabeledCurrencyTextField from "app/core/components/LabeledCurrencyTextField"
 
 const client_qccupation_type_options = [
   { value: "SALARIED_INDIVIDUAL", label: "Salaried Individual" },
@@ -52,7 +51,7 @@ export function EnquiryForm<S extends z.ZodType<any, any>>(props: FormProps<S>) 
         placeholder="Select Client Service"
       />
 
-      <LabeledTextField
+      <LabeledCurrencyTextField
         type="number"
         name="loan_amount"
         label="Loan Amount"

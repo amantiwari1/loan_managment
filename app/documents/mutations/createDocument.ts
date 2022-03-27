@@ -23,7 +23,7 @@ export default resolver.pipe(
         remark: input.remark,
         enquiryId: input.enquiryId,
         file: {
-          connect: input.file.map((arr) => ({ id: arr.id })),
+          connect: input.file ? input.file.map((arr) => ({ id: arr.id })) : [],
         },
       },
     })
