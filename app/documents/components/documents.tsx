@@ -43,7 +43,7 @@ const AddNewButton = ({ onClick, enquiry }: { onClick: () => void; enquiry: any 
     <div className="flex justify-between">
       {!["USER", "PARTNER"].includes(session.role as string) && (
         <div className=" flex items-center space-x-1  ">
-          <Button w={220} onClick={onClick} leftIcon={<AddIcon />} size="sm">
+          <Button w={180} onClick={onClick} leftIcon={<AddIcon />} size="sm">
             Add New Document
           </Button>
           <Button
@@ -241,7 +241,6 @@ const Document = () => {
           schema={CreateDocument}
           initialValues={Edit}
           onSubmit={async (values) => {
-            console.log(values)
             try {
               if (values.id) {
                 await updateDocumentMutation(values as any)

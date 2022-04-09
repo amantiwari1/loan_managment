@@ -66,11 +66,11 @@ export const Enquiry = () => {
       <div className="flex space-x-2 items-center"></div>
       <Divider />
       <Tabs isLazy variant="enclosed">
-        <div className="overflow-scroll p-2">
+        <div className="overflow-scroll md:overflow-auto p-2">
           <TabList bg="white">
             {TabData.map((item) => (
               <Tab key={item.name}>
-                <Text fontWeight="medium" className="whitespace-nowrap">
+                <Text fontWeight="medium" fontSize="sm" className="whitespace-nowrap">
                   {item.name}
                 </Text>
               </Tab>

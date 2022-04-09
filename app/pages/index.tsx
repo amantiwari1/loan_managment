@@ -1,14 +1,18 @@
-import { Link, BlitzPage, Routes, usePaginatedQuery, useRouter, useSession, useQuery } from "blitz"
+import {
+  Link,
+  BlitzPage,
+  Routes,
+  useSession,
+  invokeWithMiddleware,
+  GetServerSideProps,
+} from "blitz"
 import Layout from "app/core/layouts/Layout"
 import { Card, Divider, message } from "antd"
 import getEnquiries from "app/enquiries/queries/getEnquiries"
-import { Suspense } from "react"
 import { Avatar, AvatarGroup, IconButton, Text, Tooltip } from "@chakra-ui/react"
-import { IoMdRefresh } from "react-icons/io"
 import getEnquiriesCount from "app/enquiries/queries/getEnquiriesCount"
 import { Button } from "app/core/components/Button"
 import Table, { BankNameCell, NumberCell, StatusCaseDashboardCell } from "app/core/components/Table"
-import Loading from "app/core/components/Loading"
 import {
   client_occupations_type_options,
   client_service_options,
@@ -34,6 +38,32 @@ const TableColumn = {
 }
 
 const ITEMS_PER_PAGE = 100
+export const getServerSideProps: GetServerSideProps = async ({ query, req, res }) => {
+  const page = Number(query.page) || 0
+
+  const count = await invokeWithMiddleware(getEnquiriesCount, {}, { req, res })
+
+  const { enquiries } = await invokeWithMiddleware(
+    getEnquiries,
+    {
+      orderBy: { id: "asc" },
+      skip: ITEMS_PER_PAGE * page,
+      take: ITEMS_PER_PAGE,
+      where: {
+        enquiry_request: "APPROVED",
+      },
+    },
+    { req, res }
+  )
+  const enquiries1 = JSON.parse(
+    JSON.stringify(
+      enquiries,
+      (key, value) => (typeof value === "bigint" ? value.toString() : value) // return everything else unchanged
+    )
+  )
+
+  return { props: { count, enquiries: enquiries1 } }
+}
 
 const columns = [
   {
@@ -128,20 +158,7 @@ const columns = [
   },
 ]
 
-export const EnquiriesList = () => {
-  const router = useRouter()
-
-  const [count] = useQuery(getEnquiriesCount, {})
-  const page = Number(router.query.page) || 0
-  const [{ enquiries, hasMore }, { refetch }] = usePaginatedQuery(getEnquiries, {
-    orderBy: { id: "asc" },
-    skip: ITEMS_PER_PAGE * page,
-    take: ITEMS_PER_PAGE,
-    where: {
-      enquiry_request: "APPROVED",
-    },
-  })
-
+export const EnquiriesList = ({ count, enquiries }) => {
   const cardData = [
     {
       name: "TOTAL ENQUIRIES",
@@ -221,7 +238,7 @@ export const EnquiriesList = () => {
               >
                 Export CSV
               </Button>
-              <IconButton
+              {/* <IconButton
                 size="sm"
                 aria-label="Search database"
                 onClick={async () => {
@@ -230,7 +247,7 @@ export const EnquiriesList = () => {
                 }}
                 variant="outline"
                 icon={<IoMdRefresh />}
-              />
+              /> */}
             </div>
           )}
           title="Active Enquiries"
@@ -246,12 +263,10 @@ export const EnquiriesList = () => {
   )
 }
 
-const Home: BlitzPage = () => {
+const Home: BlitzPage<any> = ({ count, enquiries }) => {
   return (
     <div>
-      <Suspense fallback={<Loading />}>
-        <EnquiriesList />
-      </Suspense>
+      <EnquiriesList count={count} enquiries={enquiries} />
     </div>
   )
 }

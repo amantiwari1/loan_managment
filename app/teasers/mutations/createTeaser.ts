@@ -8,7 +8,6 @@ const CreateTeaser = z.object({
 })
 
 export default resolver.pipe(resolver.zod(CreateTeaser), resolver.authorize(), async (input) => {
-  console.log("🚀 ~ file: createTeaser.ts ~ line 11 ~ resolver.pipe ~ input", input)
   const teaser = await db.teaser.create({ data: input })
 
   return teaser

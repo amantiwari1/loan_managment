@@ -51,8 +51,6 @@ export const EditUser = () => {
           schema={UpdateUser}
           initialValues={{ ...user } as any}
           onSubmit={async (values) => {
-            console.log(values)
-
             try {
               const updated = await updateUserMutation({
                 id: user.id,

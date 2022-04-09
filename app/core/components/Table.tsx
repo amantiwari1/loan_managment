@@ -201,7 +201,7 @@ export const CreateButtonTable = ({ onClick, session, allowRoles, title }) => {
   return (
     <div>
       {allowRoles.includes(session.role as string) && (
-        <Button w={320} onClick={onClick} leftIcon={<AddIcon />}>
+        <Button onClick={onClick} leftIcon={<AddIcon />}>
           {title}
         </Button>
       )}
@@ -248,17 +248,19 @@ function Table({ columns, data, title, rightRender }) {
 
   // Render the UI for your table
   return (
-    <>
-      {/* table */}
-      <div className="mt-2 flex flex-col">
-        <div className=" overflow-x-auto ">
-          <div className="py-2 align-middle inline-block min-w-full">
-            <div className="shadow overflow-hidden border-b bg-white border-gray-200 sm:rounded-lg">
+    <div>
+      <div className="mt-2">
+        <div className="">
+          <div className="py-2">
+            {/* Title */}
+            <div className="shadow border-b bg-white border-gray-200 sm:rounded-lg">
               <div className="flex justify-between items-center p-2 px-3">
                 <p className="text-xl font-bold">{title}</p>
                 {rightRender()}
               </div>
-              <div className="sm:flex sm:gap-x-2">
+
+              {/* SEARCH */}
+              <div className="flex gap-x-2">
                 <GlobalFilter
                   preGlobalFilteredRows={preGlobalFilteredRows}
                   globalFilter={state.globalFilter}
@@ -274,75 +276,79 @@ function Table({ columns, data, title, rightRender }) {
                   )
                 )}
               </div>
-              <table
-                {...getTableProps()}
-                className=" divide-y table-auto border-collapse w-full divide-gray-200"
-              >
-                <thead className="bg-gray-50">
-                  {headerGroups.map((headerGroup, key) => (
-                    <tr {...headerGroup.getHeaderGroupProps()} key={key}>
-                      {headerGroup.headers.map((column, key) => (
-                        // Add the sorting props to control sorting. For this example
-                        // we can add them into the header props
-                        <th
-                          scope="col"
-                          key={key}
-                          className="group border px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                          {...column.getHeaderProps(column.getSortByToggleProps())}
-                        >
-                          <div className="flex items-center space-x-1">
-                            <p>{column.render("Header")}</p>
-                            {/* Add a sort direction indicator */}
-                            <span>
-                              {column.isSorted ? (
-                                column.isSortedDesc ? (
-                                  <SortDownIcon className="w-2 h-4 text-gray-400" />
+
+              {/* TABLE */}
+              <div className="overflow-x-auto ">
+                <table
+                  {...getTableProps()}
+                  className="divide-y  w-full overflow-x-auto border-collapse  divide-gray-200"
+                >
+                  <thead className="bg-gray-50">
+                    {headerGroups.map((headerGroup, key) => (
+                      <tr {...headerGroup.getHeaderGroupProps()} key={key}>
+                        {headerGroup.headers.map((column, key) => (
+                          // Add the sorting props to control sorting. For this example
+                          // we can add them into the header props
+                          <th
+                            scope="col"
+                            key={key}
+                            className="group border px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            {...column.getHeaderProps(column.getSortByToggleProps())}
+                          >
+                            <div className="flex items-center space-x-1">
+                              <p>{column.render("Header")}</p>
+                              {/* Add a sort direction indicator */}
+                              <span>
+                                {column.isSorted ? (
+                                  column.isSortedDesc ? (
+                                    <SortDownIcon className="w-2 h-4 text-gray-400" />
+                                  ) : (
+                                    <SortUpIcon className="w-2 h-4 text-gray-400" />
+                                  )
                                 ) : (
-                                  <SortUpIcon className="w-2 h-4 text-gray-400" />
-                                )
-                              ) : (
-                                <SortIcon className="w-2 h-4 text-gray-400 " />
-                              )}
-                            </span>
-                          </div>
-                        </th>
-                      ))}
-                    </tr>
-                  ))}
-                </thead>
-                <tbody {...getTableBodyProps()} className="bg-white  divide-y divide-gray-200">
-                  {page.map((row, i) => {
-                    // new
-                    prepareRow(row)
-                    return (
-                      <tr
-                        className={
-                          i % 2 === 0 ? "hover:bg-gray-100" : "bg-gray-50 hover:bg-gray-100"
-                        }
-                        key={i}
-                        {...row.getRowProps()}
-                      >
-                        {row.cells.map((cell, key) => {
-                          return (
-                            <td
-                              key={key}
-                              {...cell.getCellProps()}
-                              className="px-6 py-1 border whitespace-nowrap"
-                              role="cell"
-                            >
-                              {cell.column.Cell.name === "defaultRenderer" ? (
-                                <div className="text-sm text-gray-500">{cell.render("Cell")}</div>
-                              ) : (
-                                cell.render("Cell")
-                              )}
-                            </td>
-                          )
-                        })}
+                                  <SortIcon className="w-2 h-4 text-gray-400 " />
+                                )}
+                              </span>
+                            </div>
+                          </th>
+                        ))}
                       </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+                    ))}
+                  </thead>
+                  <tbody {...getTableBodyProps()} className="bg-white divide-y divide-gray-200">
+                    {page.map((row, i) => {
+                      // new
+                      prepareRow(row)
+                      return (
+                        <tr
+                          className={
+                            i % 2 === 0 ? "hover:bg-gray-100" : "bg-gray-50 hover:bg-gray-100"
+                          }
+                          key={i}
+                          {...row.getRowProps()}
+                        >
+                          {row.cells.map((cell, key) => {
+                            return (
+                              <td
+                                key={key}
+                                {...cell.getCellProps()}
+                                className="px-6 py-1 border whitespace-nowrap"
+                                role="cell"
+                              >
+                                {cell.column.Cell.name === "defaultRenderer" ? (
+                                  <div className="text-sm text-gray-500">{cell.render("Cell")}</div>
+                                ) : (
+                                  cell.render("Cell")
+                                )}
+                              </td>
+                            )
+                          })}
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -413,7 +419,7 @@ function Table({ columns, data, title, rightRender }) {
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

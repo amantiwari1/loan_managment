@@ -31,3 +31,8 @@
 .para-bottom h2 {
   @apply !pb-3 ml-2;
 }
+
+.pro-menu-item.active,
+.link_nav_bar.active {
+  @apply !text-gray-900 !font-semibold;
+}

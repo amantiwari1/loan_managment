@@ -9,7 +9,7 @@ import {
 import React, { useState } from "react"
 import Link from "next/link"
 import logo from "public/logo.png"
-import { Image, Routes, useMutation, useQuery, useSession } from "blitz"
+import { Image, Routes, useMutation, useQuery, useRouter, useSession } from "blitz"
 import logout from "app/auth/mutations/logout"
 import { ProSidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar"
 import { Divider } from "@chakra-ui/react"
@@ -31,6 +31,7 @@ const sidebar_data_2 = [
     name: "Enquiries",
     icon: FormOutlined,
     role: ["STAFF"],
+    link: "/enquiries",
     sidebar_data: [
       {
         name: "Add a New Enquiry",
@@ -43,6 +44,7 @@ const sidebar_data_2 = [
     name: "Enquiries",
     icon: FormOutlined,
     role: ["ADMIN"],
+    link: "/enquiries",
     sidebar_data: [
       {
         name: "Add a New Enquiry",
@@ -75,7 +77,7 @@ const sidebar_data_2 = [
     name: "Users",
     icon: UserOutlined,
     role: ["ADMIN"],
-
+    link: "/users",
     sidebar_data: [
       {
         name: "Add a new user",
@@ -107,6 +109,7 @@ const sidebar_data_2 = [
   {
     name: "Channel Partner",
     icon: PieChartOutlined,
+    link: "/partner",
     role: ["ADMIN"],
     sidebar_data: [
       {
@@ -126,13 +129,14 @@ const sidebar_data_2 = [
 const Sidebar = ({ children }) => {
   const [logoutMutation] = useMutation(logout)
   const session = useSession()
+  const router = useRouter()
   const [toggled, setToggled] = useState(false)
   const [user] = useQuery(getCurrentUser, null)
   return (
-    <div className="flex">
-      <div>
+    <div className="md:grid md:grid-cols-12">
+      <div className="md:col-span-3 lg:col-span-2">
         <div>
-          <ProSidebar breakPoint="md" toggled={toggled} className="!min-w-[14rem] !w-[14rem]">
+          <ProSidebar breakPoint="md" toggled={toggled} className="!min-w-full !w-full">
             {/* LOGO */}
             <div className="md:hidden text-2xl p-2 ml-auto" onClick={() => setToggled(false)}>
               <AiOutlineClose />
@@ -151,8 +155,17 @@ const Sidebar = ({ children }) => {
                 </div>
               </MenuItem>
               {sidebar_data.map((item) => (
-                <MenuItem key={item.link} icon={<item.icon />} onClick={() => setToggled(false)}>
-                  <Link href={item.link}>{item.name}</Link>
+                <MenuItem
+                  active={router.pathname === item.link}
+                  key={item.link}
+                  icon={<item.icon />}
+                  onClick={() => setToggled(false)}
+                >
+                  <Link href={item.link}>
+                    <div className={router.pathname === item.link ? "link_nav_bar active" : ""}>
+                      {item.name}
+                    </div>
+                  </Link>
                 </MenuItem>
               ))}
               {sidebar_data_2.map((item) => (
@@ -161,7 +174,13 @@ const Sidebar = ({ children }) => {
                     <SubMenu key={item.name} icon={<item.icon />} title={item.name}>
                       {item.sidebar_data.map((item) => (
                         <MenuItem key={item.link} onClick={() => setToggled(false)}>
-                          <Link href={item.link}>{item.name}</Link>
+                          <Link href={item.link}>
+                            <div
+                              className={router.pathname === item.link ? "link_nav_bar active" : ""}
+                            >
+                              {item.name}
+                            </div>
+                          </Link>
                         </MenuItem>
                       ))}
                     </SubMenu>
@@ -184,7 +203,7 @@ const Sidebar = ({ children }) => {
           </ProSidebar>
         </div>
       </div>
-      <div className="w-full h-full bg-[#f9fbfd] min-h-screen">
+      <div className="w-full h-full bg-[#f9fbfd] min-h-screen  md:col-span-9 lg:col-span-10">
         <div className="md:hidden flex space-x-1">
           <div className=" text-2xl pt-3 px-4" onClick={() => setToggled(true)}>
             <FaBars />

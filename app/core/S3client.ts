@@ -9,5 +9,4 @@ const options: S3ClientConfig = {
   },
 }
 
-console.log(options)
 export const s3Client = new S3(options)

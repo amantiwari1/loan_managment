@@ -92,8 +92,6 @@ const PartnerSelect = ({
                 <div className="w-[40rem]">
                   <Select
                     onChange={(data) => {
-                      console.log(data)
-                      console.log(Partner)
                       setPartner((prevArr) => [...prevArr, data])
                       setOptions((prevArr) => prevArr.filter((arr) => arr.value !== data.value))
                       setSelected(null)
