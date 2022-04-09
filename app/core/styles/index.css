@@ -34,5 +34,5 @@
 
 .pro-menu-item.active,
 .link_nav_bar.active {
-  @apply !text-gray-900 !font-semibold;
+  @apply text-[#91b841] !font-semibold;
 }

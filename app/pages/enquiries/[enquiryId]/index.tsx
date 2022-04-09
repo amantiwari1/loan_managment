@@ -1,7 +1,16 @@
 import { Suspense } from "react"
 import { Head, Link, useRouter, useQuery, useParam, BlitzPage, useMutation, Routes } from "blitz"
 import Layout from "app/core/layouts/Layout"
-import { Avatar, Tab, Tabs, TabList, TabPanel, TabPanels, Text } from "@chakra-ui/react"
+import {
+  Avatar,
+  Tab,
+  Tabs,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Text,
+  useColorModeValue,
+} from "@chakra-ui/react"
 import { Divider } from "antd"
 import Overview from "app/enquiries/components/Overview"
 import Log from "app/logs/components/log"
@@ -65,7 +74,7 @@ export const Enquiry = () => {
 
       <div className="flex space-x-2 items-center"></div>
       <Divider />
-      <Tabs isLazy variant="enclosed">
+      <Tabs colorScheme="green" isLazy variant="enclosed">
         <div className="overflow-scroll md:overflow-auto p-2">
           <TabList bg="white">
             {TabData.map((item) => (
