@@ -4,7 +4,7 @@ import getEnquiries from "app/enquiries/queries/getEnquiries"
 import { Suspense } from "react"
 import { Enquiry } from "@prisma/client"
 import { Text } from "@chakra-ui/react"
-import { ColumnsType } from "antd/lib/table"
+
 import Loading from "app/core/components/Loading"
 import Table, { NumberCell, DateCell, ClientNameCell } from "app/core/components/Table"
 

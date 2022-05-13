@@ -28,13 +28,13 @@ import {
   Portal,
   Text,
 } from "@chakra-ui/react"
-import { ColumnsType } from "antd/lib/table"
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons"
 import { Button } from "app/core/components/Button"
 import updateEnquiryRequest from "app/enquiries/mutations/updateEnquiryRequest"
 import { BiRefresh } from "react-icons/bi"
 import createUser from "app/users/mutations/createUser"
 import Table, { DateCell, NumberCell } from "app/core/components/Table"
+import { toast } from "../_app"
 function generatePassword() {
   var length = 8,
     charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
