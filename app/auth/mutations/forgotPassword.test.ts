@@ -1,7 +1,6 @@
 import { hash256, Ctx } from "blitz"
 import forgotPassword from "./forgotPassword"
 import db from "db"
-import previewEmail from "preview-email"
 
 beforeEach(async () => {
   await db.$reset()
@@ -23,6 +22,7 @@ describe("forgotPassword mutation", () => {
     // Create test user
     const user = await db.user.create({
       data: {
+        role: "ADMIN",
         email: "user@example.com",
         tokens: {
           // Create old token to ensure it's deleted
@@ -53,6 +53,5 @@ describe("forgotPassword mutation", () => {
     expect(token.sentTo).toBe(user.email)
     expect(token.hashedToken).toBe(hash256(generatedToken))
     expect(token.expiresAt > new Date()).toBe(true)
-    expect(previewEmail).toBeCalled()
   })
 })

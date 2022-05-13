@@ -163,7 +163,7 @@ const Sidebar = ({ children }) => {
                   icon={<item.icon />}
                   onClick={() => setToggled(false)}
                 >
-                  <Link href={item.link}>
+                  <Link href={item.link} passHref={true}>
                     <div className={router.pathname === item.link ? "link_nav_bar active" : ""}>
                       {item.name}
                     </div>
@@ -176,7 +176,7 @@ const Sidebar = ({ children }) => {
                     <SubMenu key={item.name} icon={<item.icon />} title={item.name}>
                       {item.sidebar_data.map((item) => (
                         <MenuItem key={item.link} onClick={() => setToggled(false)}>
-                          <Link href={item.link}>
+                          <Link href={item.link} passHref={true}>
                             <div
                               className={router.pathname === item.link ? "link_nav_bar active" : ""}
                             >
