@@ -4,6 +4,7 @@ import createEnquiry from "app/enquiries/mutations/createEnquiry"
 import { EnquiryForm, FORM_ERROR } from "app/enquiries/components/EnquiryForm"
 import { Divider } from "@chakra-ui/react"
 import { CreateEnquiry } from "app/auth/validations"
+import { toast } from "../_app"
 
 const NewEnquiryPage: BlitzPage = () => {
   const router = useRouter()

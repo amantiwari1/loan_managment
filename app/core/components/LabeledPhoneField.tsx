@@ -6,6 +6,7 @@ import { FormControl, FormLabel } from "@chakra-ui/form-control"
 import { auth } from "../firebase"
 import { Button } from "./Button"
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth"
+import { toast } from "app/pages/_app"
 
 function isPhoneNumberValid(phoneNumber: string) {
   const pattern = /^\+[0-9\s\-\(\)]+$/

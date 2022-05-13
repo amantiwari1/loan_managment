@@ -30,6 +30,12 @@ import {
   PopoverCloseButton,
   PopoverBody,
   Text,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
 } from "@chakra-ui/react"
 import { FORM_ERROR } from "final-form"
 import getLogs from "app/logs/queries/getLogs"
@@ -50,54 +56,64 @@ export const CreateButtonTable = ({ onClick, session, allowRoles, title }) => {
 
   const [updateEnquiryMutation, { isLoading }] = useMutation(updateEnquiryRequest)
   const enquiryId = useParam("enquiryId", "number")
+  const [isAlertOpen, setIsAlertOpen] = React.useState(false)
 
+  const onAlertClose = () => setIsAlertOpen(false)
+  const onAlertOpen = () => setIsAlertOpen(true)
+
+  const firstField = React.useRef(null)
   return (
-    <div className="">
-      {allowRoles.includes(session.role as string) && (
-        <Button onClick={onClick} leftIcon={<AddIcon />}>
-          {title}
-        </Button>
-      )}
+    <div className="flex gap-5">
       <div>
-        <Popover>
-          <PopoverTrigger>
-            <Button
-              variant="outline"
-              isLoading={isLoading}
-              aria-label="Accept"
-              colorScheme="Customblue"
-            >
-              Close Enquiry
-            </Button>
-          </PopoverTrigger>
-          <Portal>
-            <PopoverContent>
-              <PopoverArrow />
-              <PopoverHeader>Confirmation</PopoverHeader>
-              <PopoverCloseButton />
-              <PopoverBody>
-                <Text>Are you sure you want to approve this enquiry?</Text>
-                <div className="flex justify-end mr-2 mt-1">
-                  <Button
-                    isLoading={isLoading}
-                    onClick={async () => {
-                      await updateEnquiryMutation({
-                        id: enquiryId,
-                        enquiry_request: "SANCTIONED",
-                      })
-
-                      router.push(Routes.ShowEnquiryPage({ enquiryId: enquiryId }))
-                    }}
-                    w={50}
-                  >
-                    Yes
-                  </Button>
-                </div>
-              </PopoverBody>
-            </PopoverContent>
-          </Portal>
-        </Popover>
+        {allowRoles.includes(session.role as string) && (
+          <Button onClick={onClick} leftIcon={<AddIcon />}>
+            {title}
+          </Button>
+        )}
       </div>
+      <Button
+        onClick={onAlertOpen}
+        variant="outline"
+        isLoading={isLoading}
+        colorScheme="Customblue"
+      >
+        Close Enquiry
+      </Button>
+      <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={firstField} onClose={onAlertClose}>
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Delete Document
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              Are you sure you want to close this enquiry? You can&apos;t undo this action
+              afterwards.
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button size="sm" ref={firstField} variant="outline" onClick={onAlertClose}>
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                colorScheme="red"
+                isLoading={isLoading}
+                onClick={async () => {
+                  await updateEnquiryMutation({
+                    id: enquiryId,
+                    enquiry_request: "SANCTIONED",
+                  })
+                  onAlertClose()
+                }}
+                ml={3}
+              >
+                Delete
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </div>
   )
 }

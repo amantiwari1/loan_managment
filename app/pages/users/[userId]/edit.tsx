@@ -9,12 +9,8 @@ import { Button } from "app/core/components/Button"
 import deleteUser from "app/users/mutations/deleteUser"
 import Loading from "app/core/components/Loading"
 
-import dynamic from "next/dynamic"
 import { UpdateUser } from "app/auth/validations"
 import { toast } from "app/pages/_app"
-const Popconfirm = dynamic(() => import("antd/lib/popconfirm"), {
-  ssr: false,
-})
 
 const options = {
   USER: "Customer",

@@ -47,7 +47,12 @@ export const EnquiriesList = () => {
   return (
     <div>
       {!["USER", "PARTNER"].includes(session.role as string) && <div></div>}
-      <Table rightRender={() => {}} columns={columns} data={enquiries} title="Rejected Enquiries" />
+      <Table
+        rightRender={() => {}}
+        columns={columns}
+        data={enquiries}
+        title="Sanctioned Enquiries"
+      />
       {/* <button disabled={page === 0} onClick={goToPreviousPage}>
         Previous
       </button>
