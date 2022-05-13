@@ -19,11 +19,16 @@ import { AddIcon, DeleteIcon, DownloadIcon } from "@chakra-ui/icons"
 import { Button } from "./Button"
 import { list_of_bank } from "../data/bank"
 import { getQueryKey, Link, queryClient, Routes, useMutation, useParam } from "blitz"
-import { client_service_options_data, fileNameSplit, getFileName } from "app/common"
+import {
+  client_service_options,
+  client_service_options_data,
+  fileNameSplit,
+  getFileName,
+} from "app/common"
 import DownloadPreSignUrl from "app/documents/mutations/DownloadPreSignUrl"
 import createMultiFile from "app/file/mutations/createMultiFile"
 import axios from "axios"
-import { message } from "antd"
+
 import GetPreSignUrl from "app/documents/mutations/GetPreSignUrl"
 import className from "classnames"
 import getDocuments from "app/documents/queries/getDocuments"
@@ -31,6 +36,7 @@ import { PulseLoader } from "react-spinners"
 import deleteFile from "app/file/mutations/deleteFile"
 import DeleteKeyFromSpace from "app/documents/mutations/DeleteKeyFromSpace"
 import createMultiFileWithEnquiryId from "app/file/mutations/createMultiFileWithEnquiryId"
+import { toast } from "app/pages/_app"
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
@@ -124,14 +130,17 @@ const StatusData = {
   },
 }
 
-export const ClientNameCell = ({ value, row }) => (
-  <div>
-    <Link href={Routes.ShowEnquiryPage({ enquiryId: row.original.id })}>
-      <a className="text-lg font-bold">{value}</a>
-    </Link>
-    <p>{client_service_options_data[row.original.client_service]}</p>
-  </div>
-)
+export const ClientNameCell = ({ value, row }) => {
+  const ServiceValue = client_service_options[row.original.client_service]
+  return (
+    <div>
+      <Link href={Routes.ShowEnquiryPage({ enquiryId: row.original.id })}>
+        <a className="text-lg font-bold">{value}</a>
+      </Link>
+      <p>{ServiceValue}</p>
+    </div>
+  )
+}
 
 export const StatusCaseDashboardCell = ({ value }) => (
   <p>{value ? "Case status completed" : "Pending case status"}</p>
@@ -203,7 +212,7 @@ const DownloadButton = ({ name, keys, id, fileType }) => {
         {name.substring(0, 6)}...{fileType}
       </Button>
       <IconButton
-        colorScheme="blue"
+        colorScheme="Customblue"
         aria-label="Delete File"
         size="xs"
         onClick={() => removeFile(id, keys)}
@@ -214,7 +223,7 @@ const DownloadButton = ({ name, keys, id, fileType }) => {
   )
 }
 
-const onRefreshDocumentData = async (enquiryId) => {
+export const onRefreshDocumentData = async (enquiryId) => {
   const queryKey = getQueryKey(getDocuments, {
     where: {
       enquiryId: enquiryId,
@@ -270,11 +279,19 @@ export const DownloadMultiCell = ({
       if (url) {
         await axios.put(url, formData).catch((err) => {
           isFailedUpload = true
-          message.error("failed to upload file")
+          toast({
+            title: "Failed to Upload file.",
+            status: "error",
+            isClosable: true,
+          })
           console.log(err)
         })
       } else {
-        message.error("failed to upload file")
+        toast({
+          title: "Failed to Upload file.",
+          status: "error",
+          isClosable: true,
+        })
       }
     }
 
@@ -313,12 +330,12 @@ export const DownloadMultiCell = ({
             type="file"
             accept=".doc,.docx,.pdf,.txt,.xls,.csv,.xlsx"
             onChange={uploadFile}
-            className="w-full  mx-auto max-w-sm block text-slate-500
-          file:mr-4 file:py-2 file:px-4
+            className="w-full  mx-auto max-w-sm block text-white
+          file:mr-4 file:py-1 file:px-2
           file:rounded-md file:border-0
           file:outline-green-900
           file:text-sm 
-          file:bg-green-50 file:text-green-700
+          file:bg-green-50 file:text-blue-400
           hover:file:bg-green-100
           "
           />

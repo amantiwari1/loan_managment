@@ -1,5 +1,5 @@
 import { Enquiry } from "@prisma/client"
-import { Card, Divider } from "antd"
+import { Divider } from "@chakra-ui/react"
 import React, { useState } from "react"
 import Select from "react-select"
 import { BiEdit, BiMap, BiRupee, BiUser } from "react-icons/bi"
@@ -7,7 +7,7 @@ import { BsStar, BsTelephone } from "react-icons/bs"
 import { MdOutlineAlternateEmail } from "react-icons/md"
 import { FiUsers } from "react-icons/fi"
 
-import { Text } from "@chakra-ui/react"
+import { Box, Heading, Text } from "@chakra-ui/react"
 import { useParam, useQuery, useSession } from "blitz"
 import getEnquiry from "../queries/getEnquiry"
 import PartnerSelect from "./PartnerSelect"
@@ -76,7 +76,12 @@ const Overview = () => {
   }
 
   return (
-    <Card title="Enquiry Overview">
+    <Box backgroundColor="white" p={5}>
+      <Heading as="h4" size="md">
+        Enquiry Overview
+      </Heading>
+
+      <Divider my={4} />
       {enquiry.enquiry_request === "APPROVED" ? (
         <div className="grid md:grid-cols-2 gap-5">
           <div>
@@ -84,7 +89,7 @@ const Overview = () => {
               <div key={i}>
                 <div className="flex space-x-2 items-center">
                   <div>
-                    <div className="bg-blue-200 text-blue-500 text-xl p-2 rounded-full">
+                    <div className="bg-green-200 text-blue-500 text-xl p-2 rounded-full">
                       <item.icon />
                     </div>
                   </div>
@@ -100,7 +105,7 @@ const Overview = () => {
                     </Text>
                   </div>
                 </div>
-                <Divider />
+                <Divider my={4} />
               </div>
             ))}
           </div>
@@ -140,7 +145,7 @@ const Overview = () => {
           <p>{MessageRequest[enquiry.enquiry_request]}</p>
         </div>
       )}
-    </Card>
+    </Box>
   )
 }
 

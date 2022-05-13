@@ -2,7 +2,6 @@ import { Suspense } from "react"
 import { Head, usePaginatedQuery, useRouter, BlitzPage, Routes, useMutation } from "blitz"
 import Layout from "app/core/layouts/Layout"
 import getChannelPartners from "app/channel-partners/queries/getChannelPartners"
-import { message, Table } from "antd"
 import Loading from "app/core/components/Loading"
 
 import {
@@ -21,6 +20,8 @@ import {
 import { IoMdRefresh } from "react-icons/io"
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons"
 import updateChannelPartnerRequest from "app/channel-partners/mutations/updateChannelPartnerRequest"
+import { toast } from "../_app"
+import Table from "app/core/components/Table"
 
 const ITEMS_PER_PAGE = 100
 
@@ -42,40 +43,30 @@ export const ChannelPartnersList = () => {
 
   const columns = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-      render: (name) => <p>{name}</p>,
+      Header: "Name",
+      accessor: "name",
     },
     {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-      render: (name) => <p>{name}</p>,
+      Header: "Email",
+      accessor: "email",
     },
     {
-      title: "Company",
-      dataIndex: "company",
-      key: "company",
-      render: (name) => <p>{name}</p>,
+      Header: "Company",
+      accessor: "company",
     },
     {
-      title: "Phone",
-      dataIndex: "phone",
-      key: "phone",
-      render: (name) => <p>{name.toString()}</p>,
+      Header: "Phone",
+      accessor: "phone",
+      render: ({ value }) => <p>{value.toString()}</p>,
     },
     {
-      title: "City",
-      dataIndex: "city",
-      key: "city",
-      render: (name) => <p>{name}</p>,
+      Header: "City",
+      accessor: "city",
     },
     {
-      title: "Actions",
-      dataIndex: "id",
-      key: "id",
-      render: (id, data) => (
+      Header: "Actions",
+      accessor: "id",
+      render: ({ value }) => (
         <div className="space-x-5">
           <Popover>
             <PopoverTrigger>
@@ -83,7 +74,7 @@ export const ChannelPartnersList = () => {
                 aria-label="Accept"
                 variant="outline"
                 isLoading={isLoading}
-                colorScheme="green"
+                colorScheme="Customgreen"
                 icon={<CheckIcon />}
               />
             </PopoverTrigger>
@@ -99,7 +90,7 @@ export const ChannelPartnersList = () => {
                       isLoading={isLoading}
                       onClick={async () => {
                         const token: any = await updatePartnerMutation({
-                          id: id,
+                          id: value,
                           request: "APPROVED",
                         })
 
@@ -136,7 +127,7 @@ export const ChannelPartnersList = () => {
                       isLoading={isLoading}
                       onClick={async () => {
                         await updatePartnerMutation({
-                          id: id,
+                          id: value,
                           request: "REJECTED",
                         })
 
@@ -159,32 +150,25 @@ export const ChannelPartnersList = () => {
   return (
     <div>
       <Table
-        scroll={{ x: "max-content" }}
+        title="Channel Partner Request"
         columns={columns}
-        dataSource={channelPartners}
-        bordered
-        title={() => (
-          <div className="space-y-1 md:flex md:justify-between">
-            <Text fontWeight="bold">Channel Partner Request</Text>
-            <IconButton
-              aria-label="Search database"
-              onClick={async () => {
-                await refetch()
-                message.success("Updated")
-              }}
-              variant="outline"
-              icon={<IoMdRefresh />}
-            />
-          </div>
+        data={channelPartners}
+        rightRender={() => (
+          <IconButton
+            aria-label="Search database"
+            onClick={async () => {
+              await refetch()
+              toast({
+                title: "Updated",
+                status: "success",
+                isClosable: true,
+              })
+            }}
+            variant="outline"
+            icon={<IoMdRefresh />}
+          />
         )}
       />
-
-      {/* <button disabled={page === 0} onClick={goToPreviousPage}>
-        Previous
-      </button>
-      <button disabled={!hasMore} onClick={goToNextPage}>
-        Next
-      </button> */}
     </div>
   )
 }

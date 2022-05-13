@@ -1,4 +1,3 @@
-import { message } from "antd"
 import React from "react"
 import {
   getQueryKey,
@@ -26,6 +25,7 @@ import Table, {
   DownloadCell,
   StatusPillCell,
 } from "app/core/components/Table"
+import { toast } from "app/pages/_app"
 
 const ProjectReport = () => {
   const enquiryId = useParam("enquiryId", "number")
@@ -38,26 +38,50 @@ const ProjectReport = () => {
   )
   const [createProjectReportMutation] = useMutation(createProjectReport, {
     onSuccess() {
-      message.success("Created Case")
+      toast({
+        title: "Created",
+        status: "success",
+        isClosable: true,
+      })
     },
     onError() {
-      message.error("Failed to Create ProjectReport")
+      toast({
+        title: "Failed to Create.",
+        status: "error",
+        isClosable: true,
+      })
     },
   })
   const [updateProjectReportMutation] = useMutation(updateProjectReport, {
     onSuccess() {
-      message.success("Updated ProjectReport")
+      toast({
+        title: "Updated",
+        status: "success",
+        isClosable: true,
+      })
     },
     onError() {
-      message.error("Failed to Updated ProjectReport")
+      toast({
+        title: "Failed to Updated",
+        status: "error",
+        isClosable: true,
+      })
     },
   })
   const [deleteProjectReportMutation, { isLoading }] = useMutation(deleteProjectReport, {
     onSuccess() {
-      message.success("Deleted ProjectReport")
+      toast({
+        title: "Deleted",
+        status: "success",
+        isClosable: true,
+      })
     },
     onError() {
-      message.error("Failed to Delete ProjectReport")
+      toast({
+        title: "Failed to Delete.",
+        status: "success",
+        isClosable: true,
+      })
     },
   })
   const [Edit, setEdit] = React.useState<any>({

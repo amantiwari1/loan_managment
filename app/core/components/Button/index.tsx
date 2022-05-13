@@ -6,5 +6,5 @@ const theme = {
 }
 
 export const Button: ComponentWithAs<"button", ButtonProps> = ({ ...rest }) => {
-  return <BaseButton w="full" size="sm" colorScheme="blue" {...rest} />
+  return <BaseButton w="full" size="sm" colorScheme="Customblue" {...rest} />
 }

@@ -4,13 +4,14 @@ import Layout from "app/core/layouts/Layout"
 import getUser from "app/users/queries/getUser"
 import updateUser from "app/users/mutations/updateUser"
 import { UserForm, FORM_ERROR } from "app/users/components/UserForm"
-import { notification } from "antd"
+
 import { Button } from "app/core/components/Button"
 import deleteUser from "app/users/mutations/deleteUser"
 import Loading from "app/core/components/Loading"
 
 import dynamic from "next/dynamic"
 import { UpdateUser } from "app/auth/validations"
+import { toast } from "app/pages/_app"
 const Popconfirm = dynamic(() => import("antd/lib/popconfirm"), {
   ssr: false,
 })
@@ -58,7 +59,12 @@ export const EditUser = () => {
               })
               await setQueryData(updated)
 
-              notification.success({ type: "success", message: "Updated User" })
+              toast({
+                title: "Updated User",
+                status: "success",
+                isClosable: true,
+              })
+
               router.push(Routes.UsersPage({ userId: values.role }))
             } catch (error: any) {
               console.error(error)

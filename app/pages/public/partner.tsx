@@ -3,9 +3,11 @@ import createChannelPartner from "app/channel-partners/mutations/createChannelPa
 import { ChannelPartnerForm, FORM_ERROR } from "app/channel-partners/components/ChannelPartnerForm"
 import { CreateChannelPartner } from "app/auth/validations"
 import { useState } from "react"
-import { Divider, message, Result } from "antd"
+import { Divider } from "@chakra-ui/react"
 
-import { SmileOutlined } from "@ant-design/icons"
+import { Box, Heading } from "@chakra-ui/react"
+import { CheckCircleIcon } from "@chakra-ui/icons"
+import { toast } from "../_app"
 const NewChannelPartnerPage: BlitzPage = () => {
   const [createChannelPartnerMutation] = useMutation(createChannelPartner)
   const [completed, setCompleted] = useState(false)
@@ -13,17 +15,26 @@ const NewChannelPartnerPage: BlitzPage = () => {
   return (
     <div className="max-w-xl mx-auto p-5">
       {completed ? (
-        <Result icon={<SmileOutlined />} title="Thank you for Applying" />
+        <Box textAlign="center" py={10} px={6}>
+          <CheckCircleIcon boxSize={"50px"} color={"green.500"} />
+          <Heading as="h2" size="xl" mt={6} mb={2}>
+            Thank you for Applying
+          </Heading>
+        </Box>
       ) : (
         <>
           <h1 className="text-3xl font-medium text-center">Partner with Us</h1>
-          <Divider />
+          <Divider my={4} />
           <ChannelPartnerForm
             submitText="Partner with Us"
             schema={CreateChannelPartner}
             onSubmit={async (values: any) => {
               if (!values.isVerifiedPhone) {
-                message.error("Please verify your phone number")
+                toast({
+                  title: "Please verify your phone number.",
+                  status: "error",
+                  isClosable: true,
+                })
                 return
               }
               try {

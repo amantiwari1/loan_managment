@@ -1,10 +1,8 @@
-import { Enquiry } from "@prisma/client"
-import { Card } from "antd"
 import React from "react"
-import { useParam, useQuery, useSession } from "blitz"
+import { useParam, useQuery } from "blitz"
 import getLogs from "../queries/getLogs"
-import { Timeline } from "antd"
 import getEnquiry from "app/enquiries/queries/getEnquiry"
+import { Box, Heading } from "@chakra-ui/react"
 
 const TimelineColor = {
   CREATED: "green",
@@ -28,18 +26,22 @@ const Log = () => {
   })
   return (
     <div>
-      <Card title="Enquiry Logs">
-        <Timeline>
+      <Box backgroundColor="white" p={5}>
+        <Heading as="h4" size="md">
+          Enquiry logs
+        </Heading>
+
+        <div>
           {data.logs
             .slice(0)
             .reverse()
             .map((item) => (
-              <Timeline.Item color={TimelineColor[item.type]} key={item.id}>
+              <Box key={item.id} my={2} color={TimelineColor[item.type]}>
                 {item.name} {item.User?.name} - {new Date(item.createdAt).toLocaleString()}
-              </Timeline.Item>
+              </Box>
             ))}
-        </Timeline>
-      </Card>
+        </div>
+      </Box>
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import { Enquiry } from "@prisma/client"
-import { message } from "antd"
+
 import React from "react"
 import {
   getQueryKey,
@@ -30,6 +30,7 @@ import getLogs from "../../logs/queries/getLogs"
 import getEnquiry from "app/enquiries/queries/getEnquiry"
 import DrawerForm from "app/core/components/DrawerForm"
 import { ActionComponent } from "app/core/components/ActionComponent"
+import { toast } from "app/pages/_app"
 
 const CaseStatus = () => {
   const enquiryId = useParam("enquiryId", "number")
@@ -42,26 +43,50 @@ const CaseStatus = () => {
   )
   const [createCaseStatusMutation] = useMutation(createCaseStatus, {
     onSuccess() {
-      message.success("Created Case")
+      toast({
+        title: "Created",
+        status: "success",
+        isClosable: true,
+      })
     },
     onError() {
-      message.error("Failed to Create")
+      toast({
+        title: "Failed to Create.",
+        status: "error",
+        isClosable: true,
+      })
     },
   })
   const [updateCaseStatusMutation] = useMutation(updateCaseStatus, {
     onSuccess() {
-      message.success("Updated ")
+      toast({
+        title: "Updated",
+        status: "success",
+        isClosable: true,
+      })
     },
     onError() {
-      message.error("Failed to Updated ")
+      toast({
+        title: "Failed to Updated",
+        status: "error",
+        isClosable: true,
+      })
     },
   })
   const [deleteCaseStatusMutation, { isLoading }] = useMutation(deleteCaseStatus, {
     onSuccess() {
-      message.success("Deleted CaseStatus")
+      toast({
+        title: "Deleted",
+        status: "success",
+        isClosable: true,
+      })
     },
     onError() {
-      message.error("Failed to Delete CaseStatus")
+      toast({
+        title: "Failed to Delete.",
+        status: "success",
+        isClosable: true,
+      })
     },
   })
   const [Edit, setEdit] = React.useState<any>({

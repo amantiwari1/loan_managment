@@ -1,5 +1,5 @@
 import { Teaser } from "@prisma/client"
-import { message } from "antd"
+
 import { Button } from "app/core/components/Button"
 import getRelationshipEnquiry from "app/enquiries/queries/getRelationshipEnquiry"
 import { Ctx, useMutation, useParam, useQuery } from "blitz"
@@ -14,6 +14,7 @@ import pdfMake from "pdfmake/build/pdfmake.js"
 import pdfFonts from "pdfmake/build/vfs_fonts"
 import { MSMEJsonTable, RetailsJsonTable } from "./ConvertToTableData"
 import { MSMEMockData } from "../data"
+import { toast } from "app/pages/_app"
 pdfMake.vfs = pdfFonts.pdfMake.vfs
 
 if (typeof window !== "undefined") {
@@ -66,7 +67,11 @@ const Teasers = () => {
   const GeneratePDF = (name: string) => {
     try {
       if (!enquiry?.Teaser?.data) {
-        message.error("Failed to export pdf due to incomplete form")
+        toast({
+          title: "Failed to export pdf due to incomplete form.",
+          status: "error",
+          isClosable: true,
+        })
         return
       }
 
@@ -78,8 +83,11 @@ const Teasers = () => {
         pdfMake.createPdf(data).download(`MSME Teaser ${enquiryId}`)
       }
     } catch (err) {
-      message.error("Failed to export pdf due to incomplete form")
-      console.log("🚀 ~ file: Teasers.tsx ~ line 82 ~ GeneratePDF ~ err", err)
+      toast({
+        title: "Failed to export pdf due to incomplete form.",
+        status: "error",
+        isClosable: true,
+      })
     }
   }
 
@@ -125,7 +133,11 @@ const Teasers = () => {
                   [FORM_ERROR]: error.toString(),
                 }
               } finally {
-                message.success("Updated Teaser")
+                toast({
+                  title: "Updated",
+                  status: "success",
+                  isClosable: true,
+                })
               }
             }}
           />
@@ -158,7 +170,11 @@ const Teasers = () => {
                   [FORM_ERROR]: error.toString(),
                 }
               } finally {
-                message.success("Updated Teaser")
+                toast({
+                  title: "Updated",
+                  status: "success",
+                  isClosable: true,
+                })
               }
             }}
           />

@@ -1,6 +1,4 @@
-import { message } from "antd"
 import Table, {
-  CreateButtonTable,
   DateCell,
   DownloadCell,
   NumberCell,
@@ -11,15 +9,28 @@ import React from "react"
 import {
   getQueryKey,
   queryClient,
+  Routes,
   useAuthenticatedSession,
   useMutation,
   useParam,
   useQuery,
+  useRouter,
   useSession,
 } from "blitz"
 import { Button } from "app/core/components/Button"
-import { AddIcon, DeleteIcon, DownloadIcon, EditIcon } from "@chakra-ui/icons"
-import { useDisclosure, Tag } from "@chakra-ui/react"
+import { AddIcon } from "@chakra-ui/icons"
+import {
+  useDisclosure,
+  Popover,
+  PopoverTrigger,
+  Portal,
+  PopoverContent,
+  PopoverArrow,
+  PopoverHeader,
+  PopoverCloseButton,
+  PopoverBody,
+  Text,
+} from "@chakra-ui/react"
 import { FORM_ERROR } from "final-form"
 import getLogs from "app/logs/queries/getLogs"
 import createSanctionDisbursment from "../mutations/createSanctionDisbursment"
@@ -31,6 +42,65 @@ import getEnquiry from "app/enquiries/queries/getEnquiry"
 import DrawerForm from "app/core/components/DrawerForm"
 import { ActionComponent } from "app/core/components/ActionComponent"
 import { client_service_options } from "app/common"
+import updateEnquiryRequest from "app/enquiries/mutations/updateEnquiryRequest"
+import { toast } from "app/pages/_app"
+
+export const CreateButtonTable = ({ onClick, session, allowRoles, title }) => {
+  const router = useRouter()
+
+  const [updateEnquiryMutation, { isLoading }] = useMutation(updateEnquiryRequest)
+  const enquiryId = useParam("enquiryId", "number")
+
+  return (
+    <div className="">
+      {allowRoles.includes(session.role as string) && (
+        <Button onClick={onClick} leftIcon={<AddIcon />}>
+          {title}
+        </Button>
+      )}
+      <div>
+        <Popover>
+          <PopoverTrigger>
+            <Button
+              variant="outline"
+              isLoading={isLoading}
+              aria-label="Accept"
+              colorScheme="Customblue"
+            >
+              Close Enquiry
+            </Button>
+          </PopoverTrigger>
+          <Portal>
+            <PopoverContent>
+              <PopoverArrow />
+              <PopoverHeader>Confirmation</PopoverHeader>
+              <PopoverCloseButton />
+              <PopoverBody>
+                <Text>Are you sure you want to approve this enquiry?</Text>
+                <div className="flex justify-end mr-2 mt-1">
+                  <Button
+                    isLoading={isLoading}
+                    onClick={async () => {
+                      await updateEnquiryMutation({
+                        id: enquiryId,
+                        enquiry_request: "SANCTIONED",
+                      })
+
+                      router.push(Routes.ShowEnquiryPage({ enquiryId: enquiryId }))
+                    }}
+                    w={50}
+                  >
+                    Yes
+                  </Button>
+                </div>
+              </PopoverBody>
+            </PopoverContent>
+          </Portal>
+        </Popover>
+      </div>
+    </div>
+  )
+}
 
 const SanctionDisbursment = () => {
   const enquiryId = useParam("enquiryId", "number")
@@ -43,28 +113,52 @@ const SanctionDisbursment = () => {
   )
   const [createSanctionDisbursmentMutation] = useMutation(createSanctionDisbursment, {
     onSuccess() {
-      message.success("Created Case")
+      toast({
+        title: "Created",
+        status: "success",
+        isClosable: true,
+      })
     },
     onError() {
-      message.error("Failed to Create SanctionDisbursment")
+      toast({
+        title: "Failed to Create.",
+        status: "error",
+        isClosable: true,
+      })
     },
   })
   const [updateSanctionDisbursmentMutation] = useMutation(updateSanctionDisbursment, {
     onSuccess() {
-      message.success("Updated SanctionDisbursment")
+      toast({
+        title: "Updated",
+        status: "success",
+        isClosable: true,
+      })
     },
     onError() {
-      message.error("Failed to Updated SanctionDisbursment")
+      toast({
+        title: "Failed to Updated",
+        status: "error",
+        isClosable: true,
+      })
     },
   })
   const [deleteSanctionDisbursmentMutation, { isLoading }] = useMutation(
     deleteSanctionDisbursment,
     {
       onSuccess() {
-        message.success("Deleted Sanction Disbursment")
+        toast({
+          title: "Deleted",
+          status: "success",
+          isClosable: true,
+        })
       },
       onError() {
-        message.error("Failed to Delete Sanction Disbursment")
+        toast({
+          title: "Failed to Delete.",
+          status: "error",
+          isClosable: true,
+        })
       },
     }
   )
@@ -131,22 +225,6 @@ const SanctionDisbursment = () => {
       Header: "Tenure",
       accessor: "tenure",
     },
-    // {
-    //   Header: "Status",
-    //   accessor: "file",
-    //   Cell: StatusPillCell,
-    // },
-    // {
-    //   Header: "Download",
-    //   accessor: "file",
-    //   id: "id",
-    //   Cell: DownloadCell,
-    // },
-    // {
-    //   Header: "Upload on",
-    //   accessor: "updatedAt",
-    //   Cell: DateCell,
-    // },
     {
       Header: "Action",
       Cell: ({ row }) => (
@@ -196,10 +274,6 @@ const SanctionDisbursment = () => {
           // schema={CreateSanctionDisbursment}
           initialValues={Edit}
           onSubmit={async (values) => {
-            console.log(
-              "🚀 ~ file: SanctionDisbursment.tsx ~ line 216 ~ onSubmit={ ~ values",
-              values
-            )
             try {
               if (values.id) {
                 await updateSanctionDisbursmentMutation({

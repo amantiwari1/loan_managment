@@ -8,7 +8,7 @@ import {
   useMutation,
 } from "blitz"
 import Layout from "app/core/layouts/Layout"
-import { message } from "antd"
+
 import getEnquiries from "app/enquiries/queries/getEnquiries"
 import { Suspense } from "react"
 import { Enquiry } from "@prisma/client"
@@ -105,7 +105,7 @@ export const EnquiriesList = () => {
                 aria-label="Accept"
                 variant="outline"
                 isLoading={isLoading}
-                colorScheme="green"
+                colorScheme="Customgreen"
                 icon={<CheckIcon />}
               />
             </PopoverTrigger>
@@ -120,7 +120,7 @@ export const EnquiriesList = () => {
                     <Button
                       isLoading={isLoading}
                       onClick={async () => {
-                        const enquiry = await updateEnquiryMutation({
+                        await updateEnquiryMutation({
                           id: value,
                           enquiry_request: "APPROVED",
                         })
@@ -190,9 +190,6 @@ export const EnquiriesList = () => {
 
   const session = useSession()
 
-  // const goToPreviousPage = () => router.push({ query: { page: page - 1 } })
-  // const goToNextPage = () => router.push({ query: { page: page + 1 } })
-
   return (
     <div>
       {!["USER", "PARTNER"].includes(session.role as string) && <div></div>}
@@ -202,7 +199,11 @@ export const EnquiriesList = () => {
             aria-label="Search database"
             onClick={async () => {
               await refetch()
-              message.success("Updated")
+              toast({
+                title: "Updated",
+                status: "success",
+                isClosable: true,
+              })
             }}
             variant="outline"
             icon={<IoMdRefresh />}
@@ -212,12 +213,6 @@ export const EnquiriesList = () => {
         data={enquiries}
         title="Request Enquiries"
       />
-      {/* <button disabled={page === 0} onClick={goToPreviousPage}>
-        Previous
-      </button>
-      <button disabled={!hasMore} onClick={goToNextPage}>
-        Next
-      </button> */}
     </div>
   )
 }

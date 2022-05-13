@@ -1,9 +1,9 @@
 import { Link, BlitzPage, Routes, usePaginatedQuery, useRouter, useSession, useQuery } from "blitz"
 import Layout from "app/core/layouts/Layout"
-import { Card, Divider, message } from "antd"
+import { Divider } from "@chakra-ui/react"
 import getEnquiries from "app/enquiries/queries/getEnquiries"
 import { Suspense } from "react"
-import { Avatar, AvatarGroup, IconButton, Text, Tooltip } from "@chakra-ui/react"
+import { Avatar, AvatarGroup, Box, IconButton, Text, Tooltip } from "@chakra-ui/react"
 import { IoMdRefresh } from "react-icons/io"
 import getEnquiriesCount from "app/enquiries/queries/getEnquiriesCount"
 import { Button } from "app/core/components/Button"
@@ -15,6 +15,7 @@ import {
   exportToCSVWithColumn,
 } from "app/common"
 import { list_of_bank } from "app/core/data/bank"
+import { toast } from "./_app"
 
 const TableColumn = {
   id: "ID",
@@ -178,20 +179,21 @@ export const EnquiriesList = () => {
       {!["USER", "PARTNER"].includes(session.role as string) && (
         <div>
           <p className="text-3xl font-bold">Overview</p>
-          <Divider />
+          <Divider my={4} />
           <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
             {cardData.map((item) => (
               <div key={item.name}>
                 <Link href={item.link ?? "#"}>
-                  <Card hoverable={item.link ? true : false}>
+                  <Box backgroundColor="white" p={5}>
+                    {/* <Card hoverable={item.link ? true : false}> */}
                     <p className="text-gray-500 text-xs">{item.name}</p>
                     <p className="text-xl font-bold">{item.count}</p>
-                  </Card>
+                  </Box>
                 </Link>
               </div>
             ))}
           </div>
-          <Divider />
+          <Divider my={4} />
         </div>
       )}
       <div>
@@ -226,7 +228,11 @@ export const EnquiriesList = () => {
                 aria-label="Search database"
                 onClick={async () => {
                   await refetch()
-                  message.success("Updated")
+                  toast({
+                    title: "Updated",
+                    status: "success",
+                    isClosable: true,
+                  })
                 }}
                 variant="outline"
                 icon={<IoMdRefresh />}

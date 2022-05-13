@@ -1,11 +1,4 @@
-import { Layout } from "antd"
-import {
-  LogoutOutlined,
-  PieChartOutlined,
-  DashboardOutlined,
-  UserOutlined,
-  FormOutlined,
-} from "@ant-design/icons"
+import { AiOutlineDashboard, AiOutlineUser, AiOutlineForm } from "react-icons/ai"
 import React, { useState } from "react"
 import Link from "next/link"
 import logo from "public/logo.png"
@@ -16,110 +9,110 @@ import { Divider } from "@chakra-ui/react"
 import getCurrentUser from "app/users/queries/getCurrentUser"
 import { AiOutlineClose, AiOutlineSetting } from "react-icons/ai"
 import { FaHeart, FaBars } from "react-icons/fa"
-
-const { Content } = Layout
+import { IoLogOutOutline } from "react-icons/io5"
+import { FiPieChart } from "react-icons/fi"
 
 const sidebar_data = [
   {
     name: "Dashboard",
-    icon: DashboardOutlined,
+    icon: AiOutlineDashboard,
     link: "/",
   },
 ]
 const sidebar_data_2 = [
   {
     name: "Enquiries",
-    icon: FormOutlined,
+    icon: AiOutlineForm,
     role: ["STAFF"],
     link: "/enquiries",
     sidebar_data: [
       {
         name: "Add a New Enquiry",
-        icon: PieChartOutlined,
+        icon: FiPieChart,
         link: "/enquiries/new",
       },
     ],
   },
   {
     name: "Enquiries",
-    icon: FormOutlined,
+    icon: AiOutlineForm,
     role: ["ADMIN"],
     link: "/enquiries",
     sidebar_data: [
       {
         name: "Add a New Enquiry",
-        icon: PieChartOutlined,
+        icon: FiPieChart,
         link: "/enquiries/new",
       },
       {
         name: "Enquiry Request",
-        icon: PieChartOutlined,
+        icon: FiPieChart,
         link: "/enquiries/request",
       },
       {
         name: "Approved Enquiries",
-        icon: PieChartOutlined,
+        icon: FiPieChart,
         link: "/enquiries/approved",
       },
       {
         name: "Rejected Enquiries",
-        icon: PieChartOutlined,
+        icon: FiPieChart,
         link: "/enquiries/rejected",
       },
       {
         name: "Sanctioned Enquiries",
-        icon: PieChartOutlined,
+        icon: FiPieChart,
         link: "/enquiries/sanctioned",
       },
     ],
   },
   {
     name: "Users",
-    icon: UserOutlined,
+    icon: AiOutlineUser,
     role: ["ADMIN"],
     link: "/users",
     sidebar_data: [
       {
         name: "Add a new user",
-        icon: PieChartOutlined,
+        icon: FiPieChart,
         link: "/users/new",
       },
       {
         name: "Admin",
-        icon: PieChartOutlined,
+        icon: FiPieChart,
         link: "/users/list/admin",
       },
       {
         name: "Staff",
-        icon: PieChartOutlined,
+        icon: FiPieChart,
         link: "/users/list/staff",
       },
       {
         name: "Channel Partner",
-        icon: PieChartOutlined,
+        icon: FiPieChart,
         link: "/users/list/partner",
       },
       {
         name: "Customer",
-        icon: PieChartOutlined,
+        icon: FiPieChart,
         link: "/users/list/user",
       },
     ],
   },
   {
     name: "Channel Partner",
-    icon: PieChartOutlined,
+    icon: FiPieChart,
     link: "/partner",
     role: ["ADMIN"],
     sidebar_data: [
       {
         name: "All Channel Partner",
-        icon: PieChartOutlined,
+        icon: FiPieChart,
         link: "/partner",
       },
       {
         name: "Channel Partner Requests",
-        icon: PieChartOutlined,
+        icon: FiPieChart,
         link: "/partner/requests",
       },
     ],
@@ -171,9 +164,9 @@ const Sidebar = ({ children }) => {
                 </MenuItem>
               ))}
               {sidebar_data_2.map((item) => (
-                <>
+                <div key={item.name}>
                   {item.role.includes(session.role as string) && (
-                    <SubMenu key={item.name} icon={<item.icon />} title={item.name}>
+                    <SubMenu icon={<item.icon />} title={item.name}>
                       {item.sidebar_data.map((item) => (
                         <MenuItem key={item.link} onClick={() => setToggled(false)}>
                           <Link href={item.link} passHref={true}>
@@ -187,17 +180,17 @@ const Sidebar = ({ children }) => {
                       ))}
                     </SubMenu>
                   )}
-                </>
+                </div>
               ))}
 
-              <Divider />
+              <Divider my={4} />
               <MenuItem key="Account" icon={<AiOutlineSetting />} onClick={() => setToggled(false)}>
                 <Link href="/users/profile">Account Setting</Link>
               </MenuItem>
               <MenuItem
                 onClick={async () => await logoutMutation()}
                 key="logout"
-                icon={<LogoutOutlined />}
+                icon={<IoLogOutOutline />}
               >
                 Logout
               </MenuItem>
@@ -215,7 +208,7 @@ const Sidebar = ({ children }) => {
           </div>
         </div>
         <div className="md:p-5 ">
-          <Content
+          <div
             style={{
               margin: "0px 5px",
               padding: "5px",
@@ -223,7 +216,7 @@ const Sidebar = ({ children }) => {
             }}
           >
             {children}
-          </Content>
+          </div>
         </div>
       </div>
     </div>

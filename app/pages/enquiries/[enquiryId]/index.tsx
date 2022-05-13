@@ -11,7 +11,7 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { Divider } from "antd"
+import { Divider } from "@chakra-ui/react"
 import Overview from "app/enquiries/components/Overview"
 import Log from "app/logs/components/log"
 import Document from "app/documents/components/documents"
@@ -23,6 +23,8 @@ import BankQuery from "app/bank-queries/components/BankQuery"
 import Teasers from "app/teasers/components/Teasers"
 import Loading from "app/core/components/Loading"
 import getEnquiry from "app/enquiries/queries/getEnquiry"
+import { Button } from "app/core/components/Button"
+import { toast } from "app/pages/_app"
 
 export const Enquiry = () => {
   const enquiryId = useParam("enquiryId", "number")
@@ -79,8 +81,8 @@ export const Enquiry = () => {
       </Head>
 
       <div className="flex space-x-2 items-center"></div>
-      <Divider />
-      <Tabs colorScheme="green" isLazy variant="enclosed">
+      <Divider my={4} />
+      <Tabs colorScheme="Customgreen" isLazy variant="enclosed">
         <div className="overflow-scroll md:overflow-auto p-2">
           <TabList bg="white">
             {TabData.map((item) => (

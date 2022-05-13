@@ -155,7 +155,7 @@ export function RetailTeaserForm<S extends z.ZodType<any, any>>(props: FormProps
                       </div>
                     </div>
                   ))}
-                  <Divider />
+                  <Divider my={4} />
 
                   <h3 className="text-xl font-bold text-center mt-2">Existing Facilities</h3>
                   <div className="grid md:grid-cols-2">

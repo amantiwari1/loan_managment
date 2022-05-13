@@ -1,4 +1,3 @@
-import { message } from "antd"
 import Table, { BankNameCell, CreateButtonTable, DateCell } from "app/core/components/Table"
 
 import React from "react"
@@ -25,6 +24,7 @@ import getBankQueries from "../queries/getBankQueries"
 import getEnquiry from "app/enquiries/queries/getEnquiry"
 import DrawerForm from "app/core/components/DrawerForm"
 import { ActionComponent } from "app/core/components/ActionComponent"
+import { toast } from "app/pages/_app"
 
 const BankQuery = () => {
   const enquiryId = useParam("enquiryId", "number")
@@ -37,26 +37,50 @@ const BankQuery = () => {
   )
   const [createBankQueryMutation] = useMutation(createBankQuery, {
     onSuccess() {
-      message.success("Created Case")
+      toast({
+        title: "Created",
+        status: "success",
+        isClosable: true,
+      })
     },
     onError() {
-      message.error("Failed to Create BankQuery")
+      toast({
+        title: "Failed to Create",
+        status: "error",
+        isClosable: true,
+      })
     },
   })
   const [updateBankQueryMutation] = useMutation(updateBankQuery, {
     onSuccess() {
-      message.success("Updated BankQuery")
+      toast({
+        title: "Updated",
+        status: "success",
+        isClosable: true,
+      })
     },
     onError() {
-      message.error("Failed to Updated BankQuery")
+      toast({
+        title: "Failed to Updated",
+        status: "error",
+        isClosable: true,
+      })
     },
   })
   const [deleteBankQueryMutation, { isLoading }] = useMutation(deleteBankQuery, {
     onSuccess() {
-      message.success("Deleted BankQuery")
+      toast({
+        title: "Deleted",
+        status: "success",
+        isClosable: true,
+      })
     },
     onError() {
-      message.error("Failed to Delete BankQuery")
+      toast({
+        title: "Failed to Delete.",
+        status: "success",
+        isClosable: true,
+      })
     },
   })
   const [Edit, setEdit] = React.useState<any>({

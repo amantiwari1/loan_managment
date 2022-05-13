@@ -12,9 +12,10 @@ import { File } from "@prisma/client"
 import { FieldArray } from "react-final-form-arrays"
 import { Field } from "react-final-form"
 import GetPreSignUrl from "app/documents/mutations/GetPreSignUrl"
-import { message } from "antd"
+
 import axios from "axios"
 import DeleteKeyFromSpace from "app/documents/mutations/DeleteKeyFromSpace"
+import { toast } from "app/pages/_app"
 
 const MultiUploadFile = ({ name }: { name: string }) => {
   const enquiryId = useParam("enquiryId", "number")
@@ -51,13 +52,27 @@ const MultiUploadFile = ({ name }: { name: string }) => {
       if (url) {
         await axios
           .put(url, formData)
-          .then(() => message.success("uploaded file successfully"))
+          .then(() =>
+            toast({
+              title: "uploaded file successfully.",
+              status: "success",
+              isClosable: true,
+            })
+          )
           .catch((err) => {
-            message.error("failed to upload file")
+            toast({
+              title: "Failed to Upload file.",
+              status: "error",
+              isClosable: true,
+            })
             console.log(err)
           })
       } else {
-        message.error("failed to upload file")
+        toast({
+          title: "Failed to Upload file.",
+          status: "error",
+          isClosable: true,
+        })
       }
     }
 
@@ -108,8 +123,8 @@ const MultiUploadFile = ({ name }: { name: string }) => {
             className="block w-full mb-5 mx-auto max-w-sm text-sm text-slate-500
           file:mr-4 file:py-2 file:px-4
           file:rounded-full file:border-0
-          file:text-xl file:font-semibold
-          file:bg-blue-50 file:text-blue-700
+          file:text-xl file:font-semibold file:text-white
+          file:bg-blue-50 
           hover:file:bg-blue-100
           "
           />

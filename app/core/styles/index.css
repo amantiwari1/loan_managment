@@ -36,3 +36,20 @@
 .link_nav_bar.active {
   @apply text-[#91b841] !font-semibold;
 }
+
+#nprogress .bar {
+  height: 6px !important;
+  background-color: #242547 !important;
+}
+
+#nprogress .spinner {
+  @apply !border-blue-500 !border-2  !rounded-md !p-2 !bg-gray-100 !right-1/2;
+}
+
+#nprogress .spinner-icon {
+  @apply !border-t-blue-500 !border-l-blue-500;
+}
+
+#nprogress .peg {
+  box-shadow: none !important;
+}

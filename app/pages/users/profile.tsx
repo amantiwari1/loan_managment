@@ -2,12 +2,13 @@ import { Suspense } from "react"
 import { Head, useQuery, useMutation, BlitzPage, Routes } from "blitz"
 import Layout from "app/core/layouts/Layout"
 import { FORM_ERROR } from "app/users/components/UserForm"
-import { notification } from "antd"
+
 import { ProfileUser } from "app/auth/validations"
 import { ProfileForm } from "app/users/components/ProfileForm"
 import getCurrentUser from "app/users/queries/getCurrentUser"
 import updateProfile from "app/users/mutations/updateProfile"
 import Loading from "app/core/components/Loading"
+import { toast } from "../_app"
 
 export const EditUser = () => {
   const [user, { setQueryData }] = useQuery(getCurrentUser, null, {
@@ -32,8 +33,11 @@ export const EditUser = () => {
                 ...values,
               })
               await setQueryData(updated)
-
-              notification.success({ type: "success", message: "Updated Profile" })
+              toast({
+                title: "Updated Profile",
+                status: "success",
+                isClosable: true,
+              })
             } catch (error: any) {
               console.error(error)
               return {

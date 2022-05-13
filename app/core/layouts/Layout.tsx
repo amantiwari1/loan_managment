@@ -1,14 +1,14 @@
 import { Head, BlitzLayout, useRouter } from "blitz"
 import AuthLayout from "app/core/layouts/AuthLayout"
 import DashboardLayout from "./DashboardLayout"
-import { Suspense } from "react"
+import { ReactNode, Suspense } from "react"
 import Loading from "../components/Loading"
 
-const Layout: BlitzLayout<{ title?: string; layout: "AuthLayout" | "DashboardLayout" }> = ({
-  title,
-  children,
-  layout,
-}) => {
+const Layout: BlitzLayout<{
+  title?: string
+  layout: "AuthLayout" | "DashboardLayout"
+  children: ReactNode
+}> = ({ title, children, layout }) => {
   return (
     <>
       <Head>

@@ -1,4 +1,3 @@
-import { message } from "antd"
 import React, { useState } from "react"
 import {
   getQueryKey,
@@ -27,6 +26,7 @@ import { ActionComponent } from "app/core/components/ActionComponent"
 import DrawerForm from "app/core/components/DrawerForm"
 import sendIntimation from "../mutations/sendIntimation"
 import { client_service_options } from "app/common"
+import { toast } from "app/pages/_app"
 
 const AddNewButton = ({ onClick }: { onClick: () => void }) => {
   const session = useSession()
@@ -36,10 +36,18 @@ const AddNewButton = ({ onClick }: { onClick: () => void }) => {
     sendIntimation,
     {
       onSuccess: () => {
-        message.success("sent Intimation")
+        toast({
+          title: "Sent Intimation.",
+          status: "success",
+          isClosable: true,
+        })
       },
       onError: () => {
-        message.error("Please select Co Applicant")
+        toast({
+          title: "Please select Co Applicant.",
+          status: "success",
+          isClosable: true,
+        })
       },
     }
   )
@@ -74,26 +82,50 @@ const Document = () => {
 
   const [createDocumentMutation] = useMutation(createDocument, {
     onSuccess() {
-      message.success("Created Document")
+      toast({
+        title: "Created",
+        status: "success",
+        isClosable: true,
+      })
     },
     onError() {
-      message.error("Failed to Create Document")
+      toast({
+        title: "Failed to Create.",
+        status: "error",
+        isClosable: true,
+      })
     },
   })
   const [updateDocumentMutation] = useMutation(updateDocument, {
     onSuccess() {
-      message.success("Updated Document")
+      toast({
+        title: "Updated",
+        status: "success",
+        isClosable: true,
+      })
     },
     onError() {
-      message.error("Failed to Updated Document")
+      toast({
+        title: "Failed to Updated",
+        status: "error",
+        isClosable: true,
+      })
     },
   })
   const [deleteDocumentMutation, { isLoading }] = useMutation(deleteDocument, {
     onSuccess() {
-      message.success("Deleted Document")
+      toast({
+        title: "Deleted",
+        status: "success",
+        isClosable: true,
+      })
     },
     onError() {
-      message.error("Failed to Delete Document")
+      toast({
+        title: "Failed to Delete.",
+        status: "success",
+        isClosable: true,
+      })
     },
   })
   const [Edit, setEdit] = React.useState<any>({
@@ -193,8 +225,8 @@ const Document = () => {
                 id: row.original.id,
                 enquiryId,
                 is_public_user: e.target.checked,
-              }).finally(() => {
-                refetch()
+              }).finally(async () => {
+                await refetch()
               })
             }}
           />

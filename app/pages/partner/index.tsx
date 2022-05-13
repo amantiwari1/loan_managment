@@ -2,10 +2,11 @@ import { Suspense } from "react"
 import { Head, Link, usePaginatedQuery, useRouter, BlitzPage, Routes } from "blitz"
 import Layout from "app/core/layouts/Layout"
 import getChannelPartners from "app/channel-partners/queries/getChannelPartners"
-import { message, Table } from "antd"
 import { IconButton, Text } from "@chakra-ui/react"
 import { IoMdRefresh } from "react-icons/io"
 import Loading from "app/core/components/Loading"
+import { toast } from "../_app"
+import Table from "app/core/components/Table"
 
 const ITEMS_PER_PAGE = 100
 
@@ -21,71 +22,52 @@ export const ChannelPartnersList = () => {
     },
   })
 
-  const goToPreviousPage = () => router.push({ query: { page: page - 1 } })
-  const goToNextPage = () => router.push({ query: { page: page + 1 } })
-
   const columns = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-      render: (name) => <p>{name}</p>,
+      Header: "Name",
+      accessor: "name",
     },
     {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-      render: (name) => <p>{name}</p>,
+      Header: "Email",
+      accessor: "email",
     },
     {
-      title: "Company",
-      dataIndex: "company",
-      key: "company",
-      render: (name) => <p>{name}</p>,
+      Header: "Company",
+      accessor: "company",
     },
     {
-      title: "Phone",
-      dataIndex: "phone",
-      key: "phone",
-      render: (name) => <p>{name.toString()}</p>,
+      Header: "Phone",
+      accessor: "phone",
+      render: ({ value }) => <p>{value.toString()}</p>,
     },
     {
-      title: "City",
-      dataIndex: "city",
-      key: "city",
-      render: (name) => <p>{name}</p>,
+      Header: "City",
+      accessor: "city",
     },
   ]
 
   return (
     <div>
       <Table
-        scroll={{ x: "max-content" }}
+        title="Channel Partner"
         columns={columns}
-        dataSource={channelPartners}
-        bordered
-        title={() => (
-          <div className="space-y-1 md:flex md:justify-between">
-            <Text fontWeight="bold">Channel Partner</Text>
-            <IconButton
-              aria-label="Search database"
-              onClick={async () => {
-                await refetch()
-                message.success("Updated")
-              }}
-              variant="outline"
-              icon={<IoMdRefresh />}
-            />
-          </div>
+        data={channelPartners}
+        rightRender={() => (
+          <IconButton
+            aria-label="Search database"
+            onClick={async () => {
+              await refetch()
+              toast({
+                title: "Updated",
+                status: "success",
+                isClosable: true,
+              })
+            }}
+            variant="outline"
+            icon={<IoMdRefresh />}
+          />
         )}
       />
-
-      {/* <button disabled={page === 0} onClick={goToPreviousPage}>
-        Previous
-      </button>
-      <button disabled={!hasMore} onClick={goToNextPage}>
-        Next
-      </button> */}
     </div>
   )
 }

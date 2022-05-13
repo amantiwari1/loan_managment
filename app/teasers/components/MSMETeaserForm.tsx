@@ -139,7 +139,7 @@ export function MSMETeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S
             </div>
           </div>
         ))}
-        <Divider />
+        <Divider my={4} />
 
         <h3 className="text-xl font-bold text-center mt-2">Existing Facilities</h3>
         <SwitchField name="is_existing_facilities" label="is Existing Facilities?" />
@@ -165,7 +165,7 @@ export function MSMETeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S
             </div>
           ))}
         </div>
-        <Divider />
+        <Divider my={4} />
 
         <h3 className="text-xl font-bold text-center mt-2">Proposed Facilities</h3>
         <div className="grid md:grid-cols-2">
@@ -179,7 +179,7 @@ export function MSMETeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S
             />
           ))}
         </div>
-        <Divider />
+        <Divider my={4} />
 
         <h3 className="text-xl font-bold text-center mt-2">Security Offered</h3>
         <p className="text-sm text-gray-500 text-center">
@@ -196,7 +196,7 @@ export function MSMETeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S
             />
           ))}
         </div>
-        <Divider />
+        <Divider my={4} />
         <h3 className="text-xl font-bold text-center mt-2">Guarantee</h3>
         <p className="text-sm text-gray-500 text-center">
           Personal Guarantee of the following persons:

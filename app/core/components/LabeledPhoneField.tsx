@@ -6,7 +6,6 @@ import { FormControl, FormLabel } from "@chakra-ui/form-control"
 import { auth } from "../firebase"
 import { Button } from "./Button"
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth"
-import { message } from "antd"
 
 function isPhoneNumberValid(phoneNumber: string) {
   const pattern = /^\+[0-9\s\-\(\)]+$/
@@ -125,14 +124,22 @@ export const LabeledPhoneField = forwardRef<HTMLInputElement, LabeledPhoneFieldP
             ...otp,
             isOtpLoading: false,
           })
-          return message.error("Incorrect code entered")
+          return toast({
+            title: "Incorrect code entered.",
+            status: "error",
+            isClosable: true,
+          })
         })
         .catch((error) => {
           setOtp({
             ...otp,
             isOtpLoading: false,
           })
-          message.error("Incorrect code entered")
+          toast({
+            title: "Incorrect code entered.",
+            status: "error",
+            isClosable: true,
+          })
         })
     }
 

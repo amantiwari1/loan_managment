@@ -2,7 +2,7 @@ import { Link, useRouter, useMutation, BlitzPage, Routes, useSession } from "bli
 import Layout from "app/core/layouts/Layout"
 import createEnquiry from "app/enquiries/mutations/createEnquiry"
 import { EnquiryForm, FORM_ERROR } from "app/enquiries/components/EnquiryForm"
-import { Divider, message } from "antd"
+import { Divider } from "@chakra-ui/react"
 import { CreateEnquiry } from "app/auth/validations"
 
 const NewEnquiryPage: BlitzPage = () => {
@@ -13,13 +13,17 @@ const NewEnquiryPage: BlitzPage = () => {
   return (
     <div className="max-w-5xl mx-auto">
       <h1 className="text-3xl font-medium">Create a new Loan Enquiry</h1>
-      <Divider />
+      <Divider my={4} />
       <EnquiryForm
         submitText="Create Enquiry"
         schema={CreateEnquiry}
         onSubmit={async (values: any) => {
           if (!values.isVerifiedPhone) {
-            message.error("Please verify your phone number")
+            toast({
+              title: "Please verify your phone number.",
+              status: "error",
+              isClosable: true,
+            })
             return
           }
           try {

@@ -1,10 +1,12 @@
 import { useMutation, BlitzPage } from "blitz"
 import createEnquiry from "app/enquiries/mutations/createEnquiry"
 import { EnquiryForm, FORM_ERROR } from "app/enquiries/components/EnquiryForm"
-import { Divider, message, Result } from "antd"
+import { Divider } from "@chakra-ui/react"
 import { CreateEnquiry } from "app/auth/validations"
 import { useState } from "react"
-import { SmileOutlined } from "@ant-design/icons"
+import { toast } from "../_app"
+import { CheckCircleIcon } from "@chakra-ui/icons"
+import { Box, Heading } from "@chakra-ui/react"
 
 const NewPublicEnquiryPage: BlitzPage = () => {
   const [createEnquiryMutation] = useMutation(createEnquiry)
@@ -13,17 +15,26 @@ const NewPublicEnquiryPage: BlitzPage = () => {
   return (
     <div className="max-w-xl mx-auto p-5">
       {completed ? (
-        <Result icon={<SmileOutlined />} title="Thank you for Applying" />
+        <Box textAlign="center" py={10} px={6}>
+          <CheckCircleIcon boxSize={"50px"} color={"green.500"} />
+          <Heading as="h2" size="xl" mt={6} mb={2}>
+            Thank you for Applying
+          </Heading>
+        </Box>
       ) : (
         <>
           <h1 className="text-3xl font-medium text-center">Apply Loan</h1>
-          <Divider />
+          <Divider my={4} />
           <EnquiryForm
             submitText="Apply"
             schema={CreateEnquiry}
             onSubmit={async (values: any) => {
               if (!values.isVerifiedPhone) {
-                message.error("Please verify your phone number")
+                toast({
+                  title: "Please verify your phone number.",
+                  status: "error",
+                  isClosable: true,
+                })
                 return
               }
               try {

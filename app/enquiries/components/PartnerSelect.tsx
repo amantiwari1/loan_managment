@@ -132,7 +132,7 @@ const PartnerSelect = ({
                       Delete
                     </Button>
                   </div>
-                  <Divider />
+                  <Divider my={4} />
                 </div>
               ))}
 

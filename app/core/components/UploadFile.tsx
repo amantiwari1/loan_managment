@@ -9,8 +9,9 @@ import deleteFile from "app/file/mutations/deleteFile"
 import GetPreSignUrl from "app/documents/mutations/GetPreSignUrl"
 import DeleteKeyFromSpace from "app/documents/mutations/DeleteKeyFromSpace"
 import axios from "axios"
-import { message } from "antd"
+
 import { File } from "@prisma/client"
+import { toast } from "app/pages/_app"
 
 const UploadFile = ({ name }: { name: string }) => {
   const enquiryId = useParam("enquiryId", "number")
@@ -51,14 +52,26 @@ const UploadFile = ({ name }: { name: string }) => {
           const fileId = await createFileMutation({ key: key, name: file.name })
           input.onChange(fileId.id)
           fileNameInput.onChange(file)
-          message.success("uploaded file successfully")
+          toast({
+            title: "uploaded file successfully.",
+            status: "success",
+            isClosable: true,
+          })
         })
         .catch((err) => {
-          message.error("failed to upload file")
+          toast({
+            title: "Failed to Upload file.",
+            status: "error",
+            isClosable: true,
+          })
           console.log(err)
         })
     } else {
-      message.error("failed to upload file")
+      toast({
+        title: "Failed to Upload file.",
+        status: "error",
+        isClosable: true,
+      })
     }
 
     setIsUploading(true)

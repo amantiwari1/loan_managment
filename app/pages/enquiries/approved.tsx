@@ -1,12 +1,13 @@
 import { Link, BlitzPage, Routes, usePaginatedQuery, useRouter, useSession } from "blitz"
 import Layout from "app/core/layouts/Layout"
-import { message } from "antd"
+
 import getEnquiries from "app/enquiries/queries/getEnquiries"
 import { Suspense } from "react"
 import { IconButton, Text } from "@chakra-ui/react"
 import { IoMdRefresh } from "react-icons/io"
 import Loading from "app/core/components/Loading"
 import Table, { NumberCell, DateCell, ClientNameCell } from "app/core/components/Table"
+import { toast } from "../_app"
 
 const ITEMS_PER_PAGE = 100
 
@@ -56,7 +57,11 @@ export const EnquiriesList = () => {
             aria-label="Search database"
             onClick={async () => {
               await refetch()
-              message.success("Updated")
+              toast({
+                title: "Updated",
+                status: "success",
+                isClosable: true,
+              })
             }}
             variant="outline"
             icon={<IoMdRefresh />}

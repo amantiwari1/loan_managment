@@ -6,50 +6,68 @@ import {
   AuthorizationError,
   ErrorFallbackProps,
   useQueryErrorResetBoundary,
+  dynamic,
 } from "blitz"
 import LoginForm from "app/auth/components/LoginForm"
-import "antd/dist/antd.css"
 import "app/core/styles/index.css"
 import "react-pro-sidebar/dist/css/styles.css"
 import "react-day-picker/lib/style.css"
+import "nprogress/nprogress.css"
+const TopProgressBar = dynamic(
+  () => import("app/core/components/TopProgressBar").then((mode) => mode.default()),
+  { ssr: false }
+)
+import { createStandaloneToast } from "@chakra-ui/toast"
 
-import { ChakraProvider } from "@chakra-ui/react"
+const { ToastContainer, toast } = createStandaloneToast()
 
-// 1. Import `extendTheme`
+export { toast }
+
+import { ChakraProvider, withDefaultColorScheme, withDefaultVariant } from "@chakra-ui/react"
+
 import { extendTheme } from "@chakra-ui/react"
 
-// 2. Call `extendTheme` and pass your custom values
-const theme = extendTheme({
-  shadows: {
-    outline: "0 0 0 3px rgba(145, 184, 65, 0.6)",
-  },
-  colors: {
-    green: {
-      50: "#c3ea73",
-      100: "#b9e069",
-      200: "#afd65f",
-      300: "#a5cc55",
-      400: "#9bc24b",
-      500: "#91b841",
-      600: "#87ae37",
-      700: "#7da42d",
-      800: "#739a23",
-      900: "#699019",
+const theme = extendTheme(
+  {
+    fonts: {
+      body: "sans-serif",
+      heading: "sans-serif",
+      mono: "sans-serif",
     },
-    blue: {
-      50: "#565779",
-      100: "#4c4d6f",
-      200: "#424365",
-      300: "#38395b",
-      400: "#2e2f51",
-      500: "#242547",
-      600: "#1a1b3d",
-      700: "#101133",
-      800: "#060729",
-      900: "#00001f",
+    shadows: {
+      outline: "0 0 0 3px rgba(145, 184, 65, 0.6)",
+    },
+    colors: {
+      Customgreen: {
+        50: "#c3ea73",
+        100: "#b9e069",
+        200: "#afd65f",
+        300: "#a5cc55",
+        400: "#9bc24b",
+        500: "#91b841",
+        600: "#87ae37",
+        700: "#7da42d",
+        800: "#739a23",
+        900: "#699019",
+      },
+      Customblue: {
+        50: "#565779",
+        100: "#4c4d6f",
+        200: "#424365",
+        300: "#38395b",
+        400: "#2e2f51",
+        500: "#242547",
+        600: "#1a1b3d",
+        700: "#101133",
+        800: "#060729",
+        900: "#00001f",
+      },
     },
   },
-})
+  withDefaultColorScheme({
+    colorScheme: "Customblue",
+  })
+)
 
 export default function App({ Component, pageProps }: AppProps) {
   const getLayout = Component.getLayout || ((page) => page)
@@ -60,6 +78,8 @@ export default function App({ Component, pageProps }: AppProps) {
         FallbackComponent={RootErrorFallback}
         onReset={useQueryErrorResetBoundary().reset}
       >
+        <TopProgressBar />
+        <ToastContainer />
         {getLayout(<Component {...pageProps} />)}
       </ErrorBoundary>
     </ChakraProvider>

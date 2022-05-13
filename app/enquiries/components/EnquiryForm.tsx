@@ -1,4 +1,4 @@
-import { Divider } from "antd"
+import { Divider } from "@chakra-ui/react"
 import { Form, FormProps } from "app/core/components/Form"
 import { LabeledTextField } from "app/core/components/LabeledTextField"
 import SwitchField from "app/core/components/SwitchField"
@@ -58,7 +58,7 @@ export function EnquiryForm<S extends z.ZodType<any, any>>(props: FormProps<S>) 
         placeholder="Enter a Loan Amount"
       />
       <LabeledTextField name="client_address" label="Location" placeholder="Enter a Location" />
-      <Divider />
+      <Divider my={4} />
       <SwitchField name="private_enquiry" label="Private Enquiry" />
     </Form>
   )

@@ -1,4 +1,3 @@
-import { message } from "antd"
 import React from "react"
 import {
   getQueryKey,
@@ -29,6 +28,7 @@ import getSearchValuationReports from "../queries/getSearchValuationReports"
 import getEnquiry from "app/enquiries/queries/getEnquiry"
 import DrawerForm from "app/core/components/DrawerForm"
 import { ActionComponent } from "app/core/components/ActionComponent"
+import { toast } from "app/pages/_app"
 
 const SearchValuationReport = () => {
   const enquiryId = useParam("enquiryId", "number")
@@ -43,28 +43,52 @@ const SearchValuationReport = () => {
 
   const [createSearchValuationReportMutation] = useMutation(createSearchValuationReport, {
     onSuccess() {
-      message.success("Created Case")
+      toast({
+        title: "Created",
+        status: "success",
+        isClosable: true,
+      })
     },
     onError() {
-      message.error("Failed to Create SearchValuationReport")
+      toast({
+        title: "Failed to Create.",
+        status: "error",
+        isClosable: true,
+      })
     },
   })
   const [updateSearchValuationReportMutation] = useMutation(updateSearchValuationReport, {
     onSuccess() {
-      message.success("Updated SearchValuationReport")
+      toast({
+        title: "Updated",
+        status: "success",
+        isClosable: true,
+      })
     },
     onError() {
-      message.error("Failed to Updated SearchValuationReport")
+      toast({
+        title: "Failed to Updated",
+        status: "error",
+        isClosable: true,
+      })
     },
   })
   const [deleteSearchValuationReportMutation, { isLoading }] = useMutation(
     deleteSearchValuationReport,
     {
       onSuccess() {
-        message.success("Deleted SearchValuationReport")
+        toast({
+          title: "Deleted",
+          status: "success",
+          isClosable: true,
+        })
       },
       onError() {
-        message.error("Failed to Delete SearchValuationReport")
+        toast({
+          title: "Failed to Delete.",
+          status: "error",
+          isClosable: true,
+        })
       },
     }
   )
