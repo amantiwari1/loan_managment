@@ -88,6 +88,7 @@ model File {
   updatedAt             DateTime                @updatedAt
   key                   String
   name                  String
+  fileType              String                  @default("pdf")
   ProjectReport         ProjectReport[]
   SanctionDisbursment   SanctionDisbursment[]
   SearchValuationReport SearchValuationReport[]

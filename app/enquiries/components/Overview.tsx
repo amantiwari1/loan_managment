@@ -17,7 +17,13 @@ import { client_service_options, client_occupations_type_options } from "app/com
 
 const Overview = () => {
   const enquiryId = useParam("enquiryId", "number")
-  const [enquiry, { refetch }] = useQuery(getEnquiry, { id: enquiryId })
+  const [enquiry, { refetch }] = useQuery(
+    getEnquiry,
+    { id: enquiryId },
+    {
+      refetchOnWindowFocus: false,
+    }
+  )
   const session = useSession()
 
   const data = [

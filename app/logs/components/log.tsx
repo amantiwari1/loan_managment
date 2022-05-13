@@ -14,7 +14,13 @@ const TimelineColor = {
 
 const Log = () => {
   const enquiryId = useParam("enquiryId", "number")
-  const [enquiry] = useQuery(getEnquiry, { id: enquiryId })
+  const [enquiry] = useQuery(
+    getEnquiry,
+    { id: enquiryId },
+    {
+      refetchOnWindowFocus: false,
+    }
+  )
   const [data] = useQuery(getLogs, {
     where: {
       enquiryId: enquiry.id,

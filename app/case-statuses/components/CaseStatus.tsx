@@ -33,7 +33,13 @@ import { ActionComponent } from "app/core/components/ActionComponent"
 
 const CaseStatus = () => {
   const enquiryId = useParam("enquiryId", "number")
-  const [enquiry] = useQuery(getEnquiry, { id: enquiryId })
+  const [enquiry] = useQuery(
+    getEnquiry,
+    { id: enquiryId },
+    {
+      refetchOnWindowFocus: false,
+    }
+  )
   const [createCaseStatusMutation] = useMutation(createCaseStatus, {
     onSuccess() {
       message.success("Created Case")

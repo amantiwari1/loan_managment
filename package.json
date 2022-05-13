@@ -41,6 +41,7 @@
     "aws-sdk": "2.1066.0",
     "axios": "0.26.1",
     "blitz": "0.44.4",
+    "classnames": "2.3.1",
     "final-form": "4.20.6",
     "final-form-arrays": "3.0.2",
     "firebase": "9.6.8",

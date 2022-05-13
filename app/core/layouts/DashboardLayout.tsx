@@ -131,7 +131,9 @@ const Sidebar = ({ children }) => {
   const session = useSession()
   const router = useRouter()
   const [toggled, setToggled] = useState(false)
-  const [user] = useQuery(getCurrentUser, null)
+  const [user] = useQuery(getCurrentUser, null, {
+    refetchOnWindowFocus: false,
+  })
   return (
     <div className="md:grid md:grid-cols-12">
       <div className="md:col-span-3 lg:col-span-2">

@@ -28,7 +28,13 @@ import { ActionComponent } from "app/core/components/ActionComponent"
 
 const BankQuery = () => {
   const enquiryId = useParam("enquiryId", "number")
-  const [enquiry] = useQuery(getEnquiry, { id: enquiryId })
+  const [enquiry] = useQuery(
+    getEnquiry,
+    { id: enquiryId },
+    {
+      refetchOnWindowFocus: false,
+    }
+  )
   const [createBankQueryMutation] = useMutation(createBankQuery, {
     onSuccess() {
       message.success("Created Case")
@@ -128,7 +134,7 @@ const BankQuery = () => {
           <CreateButtonTable
             session={session}
             allowRoles={["ADMIN", "STAFF"]}
-            title="Add New Bank Query"
+            title="Add New"
             onClick={onOpen}
           />
         )}
@@ -137,12 +143,7 @@ const BankQuery = () => {
         columns={columns}
       />
 
-      <DrawerForm
-        isOpen={isOpen}
-        firstField={firstField}
-        onClose={onClose}
-        title="Add Project Report"
-      >
+      <DrawerForm isOpen={isOpen} firstField={firstField} onClose={onClose} title="Bank Query">
         <BankQueryForm
           submitText="Create Bank Query"
           // TODO use a zod schema for form validation

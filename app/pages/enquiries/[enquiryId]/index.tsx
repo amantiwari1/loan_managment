@@ -26,7 +26,13 @@ import getEnquiry from "app/enquiries/queries/getEnquiry"
 
 export const Enquiry = () => {
   const enquiryId = useParam("enquiryId", "number")
-  const [enquiry, { refetch }] = useQuery(getEnquiry, { id: enquiryId })
+  const [enquiry, { refetch }] = useQuery(
+    getEnquiry,
+    { id: enquiryId },
+    {
+      refetchOnWindowFocus: false,
+    }
+  )
   const TabData = [
     {
       name: "Overview",
@@ -57,11 +63,11 @@ export const Enquiry = () => {
       components: SearchValuationReport,
     },
     {
-      name: "Bank Queries",
+      name: "Bank Query",
       components: BankQuery,
     },
     {
-      name: "Sanction & Disbursment",
+      name: "Sanctioned & Disbursement",
       components: SanctionDisbursment,
     },
   ].slice(0, enquiry.enquiry_request === "APPROVED" ? 9 : 1)

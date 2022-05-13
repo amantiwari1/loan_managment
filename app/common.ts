@@ -114,3 +114,7 @@ export const client_service_options_data = [
   { value: "STARTUP_LOAN", label: "Startup Loan" },
   { value: "SUBSIDY_SCHEMES", label: "Subsidy Schemes" },
 ]
+
+export const fileNameSplit = (name: string) => {
+  return [name.substring(0, name.lastIndexOf(".")), name.substring(name.lastIndexOf(".") + 1)]
+}

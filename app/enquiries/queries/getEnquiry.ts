@@ -10,14 +10,12 @@ const GetEnquiry = z.object({
 interface Options {
   where: {
     id: number
-    users?: {
-      some: {
-        userId: number
-      }
-    }
   }
   include: {
     users: {
+      where?: {
+        userId: number
+      }
       include: {
         user: boolean
       }
@@ -44,14 +42,12 @@ export default resolver.pipe(
       options = {
         where: {
           id,
-          users: {
-            some: {
-              userId: ctx.session.userId,
-            },
-          },
         },
         include: {
           users: {
+            where: {
+              userId: ctx.session.userId,
+            },
             include: {
               user: true,
             },

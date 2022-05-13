@@ -1,5 +1,5 @@
 import { message } from "antd"
-import React from "react"
+import React, { useState } from "react"
 import {
   getQueryKey,
   queryClient,
@@ -28,13 +28,18 @@ import DrawerForm from "app/core/components/DrawerForm"
 import sendIntimation from "../mutations/sendIntimation"
 import { client_service_options } from "app/common"
 
-const AddNewButton = ({ onClick, enquiry }: { onClick: () => void; enquiry: any }) => {
+const AddNewButton = ({ onClick }: { onClick: () => void }) => {
   const session = useSession()
+  const enquiryId = useParam("enquiryId", "number")
+
   const [SendIntimationMutation, { isLoading: isLoadingSendIntimation }] = useMutation(
     sendIntimation,
     {
       onSuccess: () => {
         message.success("sent Intimation")
+      },
+      onError: () => {
+        message.error("Please select Co Applicant")
       },
     }
   )
@@ -53,15 +58,7 @@ const AddNewButton = ({ onClick, enquiry }: { onClick: () => void; enquiry: any 
             isLoading={isLoadingSendIntimation}
             disabled={isLoadingSendIntimation}
             onClick={() => {
-              if (enquiry.customer.user.email || enquiry.partner[0].user.email) {
-                SendIntimationMutation({
-                  name: enquiry.customer.user.name ?? enquiry.partner[0].user.name ?? "",
-                  email: enquiry.customer.user.email ?? enquiry.partner[0].user.email ?? "",
-                  product: client_service_options[enquiry.client_service],
-                })
-              } else {
-                message.error("Please select Co Applicant")
-              }
+              SendIntimationMutation({ id: enquiryId })
             }}
           >
             Send Intimation
@@ -74,15 +71,6 @@ const AddNewButton = ({ onClick, enquiry }: { onClick: () => void; enquiry: any 
 
 const Document = () => {
   const enquiryId = useParam("enquiryId", "number")
-  const [enquiry] = useQuery(
-    getEnquiry,
-    { id: enquiryId },
-    {
-      refetchOnWindowFocus: false,
-    }
-  )
-
-  const [SwitchDocumentMutation, { isLoading: isLoadingSwitch }] = useMutation(SwitchDocument)
 
   const [createDocumentMutation] = useMutation(createDocument, {
     onSuccess() {
@@ -124,13 +112,13 @@ const Document = () => {
   const session = useAuthenticatedSession()
 
   let where: any = {
-    enquiryId: enquiry.id,
+    enquiryId: enquiryId,
     is_public_user: true,
   }
 
   if (["ADMIN", "STAFF"].includes(session.role)) {
     where = {
-      enquiryId: enquiry.id,
+      enquiryId: enquiryId,
     }
   }
 
@@ -147,7 +135,7 @@ const Document = () => {
   const onRefreshData = async () => {
     const queryKey = getQueryKey(getLogs, {
       where: {
-        enquiryId: enquiry.id,
+        enquiryId: enquiryId,
       },
     })
     await queryClient.invalidateQueries(queryKey)
@@ -177,7 +165,14 @@ const Document = () => {
       Header: "Download",
       accessor: "file",
       id: "id",
-      Cell: DownloadMultiCell,
+      Cell: ({ value, row }) => (
+        <DownloadMultiCell
+          value={value}
+          id={row.original.id}
+          name="Document"
+          relationName="documentId"
+        />
+      ),
     },
     {
       Header: "Remark",
@@ -186,20 +181,25 @@ const Document = () => {
     {
       Header: "Show User",
       accessor: "is_public_user",
-      Cell: ({ value, row }) => (
-        <Switch
-          defaultChecked={value}
-          isDisabled={isLoadingSwitch}
-          onChange={async (e) => {
-            await SwitchDocumentMutation({
-              id: row.original.id,
-              enquiryId,
-              is_public_user: e.target.checked,
-            })
-            await refetch()
-          }}
-        />
-      ),
+      Cell: ({ value, row }) => {
+        const [SwitchDocumentMutation, { isLoading: isLoadingSwitch }] = useMutation(SwitchDocument)
+
+        return (
+          <Switch
+            defaultChecked={value}
+            isDisabled={isLoadingSwitch}
+            onChange={async (e) => {
+              await SwitchDocumentMutation({
+                id: row.original.id,
+                enquiryId,
+                is_public_user: e.target.checked,
+              }).finally(() => {
+                refetch()
+              })
+            }}
+          />
+        )
+      },
     },
     {
       Header: "Action",
@@ -223,18 +223,13 @@ const Document = () => {
   return (
     <div>
       <Table
-        rightRender={() => <AddNewButton onClick={onOpen} enquiry={enquiry} />}
+        rightRender={() => <AddNewButton onClick={onOpen} />}
         title="Documents"
         data={data.documents}
         columns={columns}
       />
 
-      <DrawerForm
-        isOpen={isOpen}
-        firstField={firstField}
-        onClose={onClose}
-        title="Add New Document"
-      >
+      <DrawerForm isOpen={isOpen} firstField={firstField} onClose={onClose} title="Document">
         <DocumentForm
           id="document-form"
           submitText="Create Document"
@@ -247,8 +242,8 @@ const Document = () => {
               } else {
                 await createDocumentMutation({
                   ...values,
-                  client_name: enquiry.client_name,
-                  enquiryId: enquiry.id,
+                  client_name: "",
+                  enquiryId: enquiryId,
                 })
               }
               onClose()

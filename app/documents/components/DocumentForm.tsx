@@ -29,7 +29,6 @@ export function DocumentForm<S extends z.ZodType<any, any>>(props: FormProps<S>)
         label="Remark"
         placeholder="Enter"
       />
-      <MultiUploadFile name="Document" />
     </Form>
   )
 }

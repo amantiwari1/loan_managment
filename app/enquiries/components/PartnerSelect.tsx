@@ -161,7 +161,7 @@ const PartnerSelect = ({
           </DrawerContent>
         </Drawer>
         <div className="flex items-center space-x-2">
-          <Text fontSize="sm">Channel Partner :</Text>
+          <Text fontSize="sm">Secondary Partner :</Text>
           {!["USER", "PARTNER"].includes(session.role) && (
             <div className="text-2xl cursor-pointer">
               <BiEdit onClick={onOpen} />

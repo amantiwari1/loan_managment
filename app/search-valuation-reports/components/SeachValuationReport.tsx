@@ -32,7 +32,13 @@ import { ActionComponent } from "app/core/components/ActionComponent"
 
 const SearchValuationReport = () => {
   const enquiryId = useParam("enquiryId", "number")
-  const [enquiry] = useQuery(getEnquiry, { id: enquiryId })
+  const [enquiry] = useQuery(
+    getEnquiry,
+    { id: enquiryId },
+    {
+      refetchOnWindowFocus: false,
+    }
+  )
   const session = useAuthenticatedSession()
 
   const [createSearchValuationReportMutation] = useMutation(createSearchValuationReport, {
@@ -135,7 +141,7 @@ const SearchValuationReport = () => {
   return (
     <div>
       <Table
-        title="Search Valuation Report"
+        title="Search And Valuation"
         rightRender={() => (
           <CreateButtonTable
             session={session}
@@ -152,10 +158,10 @@ const SearchValuationReport = () => {
         isOpen={isOpen}
         firstField={firstField}
         onClose={onClose}
-        title="Add Project Report"
+        title="Search & Valuation"
       >
         <SearchValuationReportForm
-          submitText="Add New Search Valuation Report"
+          submitText="Add New"
           // TODO use a zod schema for form validation
           //  - Tip: extract mutation's schema into a shared `validations.ts` file and
           //         then import and use it here

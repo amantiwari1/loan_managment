@@ -34,7 +34,13 @@ import { client_service_options } from "app/common"
 
 const SanctionDisbursment = () => {
   const enquiryId = useParam("enquiryId", "number")
-  const [enquiry] = useQuery(getEnquiry, { id: enquiryId })
+  const [enquiry] = useQuery(
+    getEnquiry,
+    { id: enquiryId },
+    {
+      refetchOnWindowFocus: false,
+    }
+  )
   const [createSanctionDisbursmentMutation] = useMutation(createSanctionDisbursment, {
     onSuccess() {
       message.success("Created Case")
@@ -163,12 +169,12 @@ const SanctionDisbursment = () => {
   return (
     <div>
       <Table
-        title="Sanction Disbursment"
+        title="Sanctioned Disbursement"
         rightRender={() => (
           <CreateButtonTable
             session={session}
             allowRoles={["ADMIN", "STAFF"]}
-            title="Add New Sanction Disbursment"
+            title="Add New"
             onClick={onOpen}
           />
         )}
@@ -180,7 +186,7 @@ const SanctionDisbursment = () => {
         isOpen={isOpen}
         firstField={firstField}
         onClose={onClose}
-        title="Add Project Report"
+        title="Sanctioned Disbursement"
       >
         <SanctionDisbursmentForm
           submitText="Create Sanction Disbursment"

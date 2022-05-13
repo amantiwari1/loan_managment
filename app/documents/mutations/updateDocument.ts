@@ -39,6 +39,7 @@ export default resolver.pipe(
       where: { id },
       data: {
         document_name: data.document_name,
+        description: data.description,
         remark: data.remark,
         enquiryId: data.enquiryId,
         file: {

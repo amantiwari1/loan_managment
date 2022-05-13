@@ -10,7 +10,9 @@ import updateProfile from "app/users/mutations/updateProfile"
 import Loading from "app/core/components/Loading"
 
 export const EditUser = () => {
-  const [user, { setQueryData }] = useQuery(getCurrentUser, null)
+  const [user, { setQueryData }] = useQuery(getCurrentUser, null, {
+    refetchOnWindowFocus: false,
+  })
   const [updateUserMutation] = useMutation(updateProfile)
 
   return (

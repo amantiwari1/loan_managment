@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import {
   useTable,
   useFilters,
@@ -14,13 +14,23 @@ import {
   ChevronDoubleRightIcon,
 } from "@heroicons/react/solid"
 import { SortIcon, SortUpIcon, SortDownIcon } from "./Icon"
-import { Input, Tag, Text } from "@chakra-ui/react"
-import { AddIcon, DownloadIcon } from "@chakra-ui/icons"
+import { ButtonGroup, IconButton, Input, Tag, Text } from "@chakra-ui/react"
+import { AddIcon, DeleteIcon, DownloadIcon } from "@chakra-ui/icons"
 import { Button } from "./Button"
 import { list_of_bank } from "../data/bank"
-import { Link, Routes, useMutation } from "blitz"
-import { client_service_options_data } from "app/common"
+import { getQueryKey, Link, queryClient, Routes, useMutation, useParam } from "blitz"
+import { client_service_options_data, fileNameSplit, getFileName } from "app/common"
 import DownloadPreSignUrl from "app/documents/mutations/DownloadPreSignUrl"
+import createMultiFile from "app/file/mutations/createMultiFile"
+import axios from "axios"
+import { message } from "antd"
+import GetPreSignUrl from "app/documents/mutations/GetPreSignUrl"
+import className from "classnames"
+import getDocuments from "app/documents/queries/getDocuments"
+import { PulseLoader } from "react-spinners"
+import deleteFile from "app/file/mutations/deleteFile"
+import DeleteKeyFromSpace from "app/documents/mutations/DeleteKeyFromSpace"
+import createMultiFileWithEnquiryId from "app/file/mutations/createMultiFileWithEnquiryId"
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
@@ -165,34 +175,155 @@ function download(url: string, filename: string) {
     })
     .catch(console.error)
 }
+const DownloadButton = ({ name, keys, id, fileType }) => {
+  const enquiryId = useParam("enquiryId", "number")
 
-export const DownloadMultiCell = ({ value }) => {
-  const [DownloadPreSignUrlMutation, { isLoading: isLoadingUrl }] = useMutation(DownloadPreSignUrl)
+  const [DownloadPreSignUrlMutation, { isLoading: isLoadingDownload }] =
+    useMutation(DownloadPreSignUrl)
+  const [DeleteFileMutation, { isLoading: isLoadingDelete }] = useMutation(deleteFile)
+  const [DeleteKeyFromSpaceMutation, { isLoading: isLoadingDeleteUrl }] =
+    useMutation(DeleteKeyFromSpace)
+
+  const removeFile = async (id: number, key: string) => {
+    await DeleteKeyFromSpaceMutation({ key: key })
+    await DeleteFileMutation({ id: id })
+    await onRefreshDocumentData(enquiryId)
+  }
+  return (
+    <ButtonGroup size="xs" isAttached variant="outline">
+      <Button
+        size="xs"
+        onClick={async () => {
+          const url = await DownloadPreSignUrlMutation({ key: keys })
+          download(url, name + "." + fileType)
+        }}
+        isLoading={isLoadingDownload || isLoadingDelete || isLoadingDelete}
+        leftIcon={<DownloadIcon />}
+      >
+        {name.substring(0, 6)}...{fileType}
+      </Button>
+      <IconButton
+        colorScheme="blue"
+        aria-label="Delete File"
+        size="xs"
+        onClick={() => removeFile(id, keys)}
+        isLoading={isLoadingDownload || isLoadingDelete || isLoadingDelete}
+        icon={<DeleteIcon />}
+      />
+    </ButtonGroup>
+  )
+}
+
+const onRefreshDocumentData = async (enquiryId) => {
+  const queryKey = getQueryKey(getDocuments, {
+    where: {
+      enquiryId: enquiryId,
+    },
+  })
+  const queryKeySecond = getQueryKey(getDocuments, {
+    where: {
+      enquiryId: enquiryId,
+      is_public_user: true,
+    },
+  })
+
+  await queryClient.invalidateQueries(queryKey)
+  await queryClient.invalidateQueries(queryKeySecond)
+}
+
+export const DownloadMultiCell = ({
+  value,
+  name,
+  id,
+  relationName,
+}: {
+  value: any
+  name: string
+  id: number
+  relationName: string
+}) => {
+  const [GetPreSignUrlMutation] = useMutation(GetPreSignUrl)
+  const enquiryId = useParam("enquiryId", "number")
+  const [createFileMutation] = useMutation(createMultiFileWithEnquiryId)
+  const [isUploading, setIsUploading] = useState(false)
+
+  const uploadFile: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
+    let isFailedUpload = false
+    setIsUploading(true)
+    const files = []
+    for (let i = 0; i < e.target.files.length; i++) {
+      const key = getFileName(enquiryId, name, e.target.files[i].name)
+      const filename = fileNameSplit(e.target.files[i].name)
+
+      files.push({
+        key: key,
+        name: filename[0],
+        relation_name: relationName,
+        fileType: filename[1],
+        id: id,
+      })
+      const url = await GetPreSignUrlMutation({ key: key })
+      const formData = new FormData()
+      Object.entries({ file: e.target.files[i] }).forEach(([key, value]: any) => {
+        formData.append(key, value)
+      })
+      if (url) {
+        await axios.put(url, formData).catch((err) => {
+          isFailedUpload = true
+          message.error("failed to upload file")
+          console.log(err)
+        })
+      } else {
+        message.error("failed to upload file")
+      }
+    }
+
+    if (!isFailedUpload) {
+      await createFileMutation({ files: files })
+      await onRefreshDocumentData(enquiryId)
+    }
+
+    setIsUploading(false)
+  }
 
   return (
-    <div className="space-y-2">
-      {value && value.length ? (
-        <div className="space-y-2">
-          {value.map((arr, key) => (
-            <div key={key}>
-              <Button
-                variant="outline"
-                w={40}
-                onClick={async () => {
-                  const url = await DownloadPreSignUrlMutation({ key: arr.key })
-                  download(url, arr.name)
-                }}
-                isLoading={isLoadingUrl}
-                leftIcon={<DownloadIcon />}
-              >
-                {arr.name.substring(0, 6)}...{arr.name.split(".").at(-1)}
-              </Button>
-            </div>
-          ))}
+    <div className="space-y-2 w-32">
+      {isUploading && (
+        <div className="flex justify-center">
+          <PulseLoader size={10} color="green" />
         </div>
-      ) : (
-        <p>No Upload file</p>
       )}
+      <div className={className({ hidden: isUploading })}>
+        {value && value.length ? (
+          <div className="space-y-2">
+            {value.map((arr, key) => (
+              <div key={key}>
+                <DownloadButton
+                  fileType={arr.fileType}
+                  id={arr.id}
+                  name={arr.name}
+                  keys={arr.key}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <input
+            multiple
+            type="file"
+            accept=".doc,.docx,.pdf,.txt,.xls,.csv,.xlsx"
+            onChange={uploadFile}
+            className="w-full  mx-auto max-w-sm block text-slate-500
+          file:mr-4 file:py-2 file:px-4
+          file:rounded-md file:border-0
+          file:outline-green-900
+          file:text-sm 
+          file:bg-green-50 file:text-green-700
+          hover:file:bg-green-100
+          "
+          />
+        )}
+      </div>
     </div>
   )
 }

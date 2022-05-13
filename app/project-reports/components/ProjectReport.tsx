@@ -29,7 +29,13 @@ import Table, {
 
 const ProjectReport = () => {
   const enquiryId = useParam("enquiryId", "number")
-  const [enquiry] = useQuery(getEnquiry, { id: enquiryId })
+  const [enquiry] = useQuery(
+    getEnquiry,
+    { id: enquiryId },
+    {
+      refetchOnWindowFocus: false,
+    }
+  )
   const [createProjectReportMutation] = useMutation(createProjectReport, {
     onSuccess() {
       message.success("Created Case")
@@ -136,7 +142,7 @@ const ProjectReport = () => {
           <CreateButtonTable
             session={session}
             allowRoles={["ADMIN", "STAFF"]}
-            title="Add Project Report"
+            title="Add New"
             onClick={onOpen}
           />
         )}
@@ -145,12 +151,7 @@ const ProjectReport = () => {
         columns={columns}
       />
 
-      <DrawerForm
-        isOpen={isOpen}
-        firstField={firstField}
-        onClose={onClose}
-        title="Add Project Report"
-      >
+      <DrawerForm isOpen={isOpen} firstField={firstField} onClose={onClose} title="Project Report">
         <ProjectReportForm
           submitText="Create Project Report"
           // TODO use a zod schema for form validation
