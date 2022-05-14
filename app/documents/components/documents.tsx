@@ -2,10 +2,12 @@ import React, { useState } from "react"
 import {
   getQueryKey,
   queryClient,
+  Routes,
   useAuthenticatedSession,
   useMutation,
   useParam,
   useQuery,
+  useRouter,
   useSession,
 } from "blitz"
 import getDocuments from "../queries/getDocuments"
@@ -77,8 +79,17 @@ const AddNewButton = ({ onClick }: { onClick: () => void }) => {
   )
 }
 
+const ITEMS_PER_PAGE = 10
+
 const Document = () => {
   const enquiryId = useParam("enquiryId", "number")
+  const router = useRouter()
+
+  const page = Number(router.query.page) || 0
+  const search = (router.query.search as string) || ""
+
+  const goToPreviousPage = () => router.push(`/enquiries/${enquiryId}?page=${page - 1}`)
+  const goToNextPage = () => router.push(`/enquiries/${enquiryId}?page=${page + 1}`)
 
   const [createDocumentMutation] = useMutation(createDocument, {
     onSuccess() {
@@ -146,17 +157,28 @@ const Document = () => {
   let where: any = {
     enquiryId: enquiryId,
     is_public_user: true,
+    document_name: {
+      contains: search.toLowerCase(),
+      mode: "insensitive",
+    },
   }
 
   if (["ADMIN", "STAFF"].includes(session.role)) {
     where = {
       enquiryId: enquiryId,
+      document_name: {
+        contains: search.toLowerCase(),
+        mode: "insensitive",
+      },
     }
   }
 
   const [data, { refetch }] = useQuery(
     getDocuments,
     {
+      orderBy: { id: "asc" },
+      skip: ITEMS_PER_PAGE * page,
+      take: ITEMS_PER_PAGE,
       where,
     },
     {
@@ -166,9 +188,10 @@ const Document = () => {
 
   const onRefreshData = async () => {
     const queryKey = getQueryKey(getLogs, {
-      where: {
-        enquiryId: enquiryId,
-      },
+      orderBy: { id: "asc" },
+      skip: ITEMS_PER_PAGE * page,
+      take: ITEMS_PER_PAGE,
+      where,
     })
     await queryClient.invalidateQueries(queryKey)
     await refetch()
@@ -259,6 +282,12 @@ const Document = () => {
         title="Documents"
         data={data.documents}
         columns={columns}
+        count={data.count}
+        pageQuery={page}
+        item={ITEMS_PER_PAGE}
+        goToPreviousPage={goToPreviousPage}
+        goToNextPage={goToNextPage}
+        hasMore={data.hasMore}
       />
 
       <DrawerForm isOpen={isOpen} firstField={firstField} onClose={onClose} title="Document">

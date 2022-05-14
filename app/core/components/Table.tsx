@@ -18,7 +18,7 @@ import { ButtonGroup, IconButton, Input, Tag, Text } from "@chakra-ui/react"
 import { AddIcon, DeleteIcon, DownloadIcon } from "@chakra-ui/icons"
 import { Button } from "./Button"
 import { list_of_bank } from "../data/bank"
-import { getQueryKey, Link, queryClient, Routes, useMutation, useParam } from "blitz"
+import { getQueryKey, Link, queryClient, Routes, useMutation, useParam, useRouter } from "blitz"
 import {
   client_service_options,
   client_service_options_data,
@@ -59,24 +59,45 @@ function PageButton({ children, ...rest }) {
 // Define a default UI for filtering
 function GlobalFilter({ preGlobalFilteredRows, globalFilter, setGlobalFilter }) {
   const count = preGlobalFilteredRows.length
+  const router = useRouter()
+  const { pathname, query } = router
+
   const [value, setValue] = React.useState(globalFilter)
-  const onChange = useAsyncDebounce((value) => {
-    setGlobalFilter(value || undefined)
-  }, 200)
+
+  const onSearch = () =>
+    router.push({
+      pathname,
+      query: {
+        ...query,
+        search: value,
+        page: 0,
+      },
+    })
 
   return (
-    <label className="w-full m-2">
-      <Input
-        type="text"
-        w="full"
-        value={value || ""}
-        onChange={(e) => {
-          setValue(e.target.value)
-          onChange(e.target.value)
-        }}
-        placeholder={`Search ${count} records...`}
-      />
-    </label>
+    <div className="flex items-center gap-2 w-full m-2">
+      <label className="w-full ">
+        <Input
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              onSearch()
+            }
+          }}
+          size="sm"
+          type="text"
+          w="full"
+          rounded="md"
+          value={value || ""}
+          onChange={(e) => {
+            setValue(e.target.value)
+          }}
+          placeholder={`Search ${count} records...`}
+        />
+      </label>
+      <Button w={150} onClick={onSearch}>
+        Search
+      </Button>
+    </div>
   )
 }
 
@@ -360,7 +381,18 @@ export function StatusPillCell({ value }) {
   return <p>{value?.id ? new Date(value.updatedAt).toString() : "No Upload file"}</p>
 }
 
-function Table({ columns, data, title, rightRender }) {
+function Table({
+  columns,
+  data,
+  title,
+  rightRender,
+  count,
+  pageQuery,
+  item,
+  goToPreviousPage,
+  goToNextPage,
+  hasMore,
+}) {
   // Use the state and functions returned from useTable to build your UI
   const {
     getTableProps,
@@ -503,23 +535,23 @@ function Table({ columns, data, title, rightRender }) {
       </div>
       {/* Pagination */}
       <div className="py-3 flex items-center justify-between">
-        <div className="flex-1 flex justify-between sm:hidden">
+        {/* <div className="flex-1 flex justify-between sm:hidden">
           <Button w={100} size="sm" onClick={() => previousPage()} disabled={!canPreviousPage}>
             Previous
           </Button>
           <Button w={100} size="sm" onClick={() => nextPage()} disabled={!canNextPage}>
             Next
           </Button>
-        </div>
+        </div> */}
         <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
           <div className="flex gap-x-2 items-baseline">
+            <span className="text-sm">Total: {count}</span>
             <span className="text-sm text-gray-700">
-              Page <span className="font-medium">{state.pageIndex + 1}</span> of{" "}
-              <span className="font-medium">{pageOptions.length}</span>
+              Page <span className="font-medium">{pageQuery + 1}</span> of{" "}
+              <span className="font-medium">{Math.round(count / item)}</span>
             </span>
             <label>
-              <span className="sr-only">Items Per Page</span>
-              <select
+              {/* <select
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 value={state.pageSize}
                 onChange={(e) => {
@@ -531,15 +563,18 @@ function Table({ columns, data, title, rightRender }) {
                     Show {pageSize}
                   </option>
                 ))}
-              </select>
+              </select> */}
             </label>
           </div>
           <div>
-            <nav
-              className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
-              aria-label="Pagination"
-            >
-              <PageButton
+            <nav aria-label="Pagination" className="flex gap-5">
+              <Button w={100} disabled={pageQuery === 0} onClick={goToPreviousPage}>
+                Previous
+              </Button>
+              <Button w={100} disabled={!hasMore} onClick={goToNextPage}>
+                Next
+              </Button>
+              {/* <PageButton
                 className="rounded-l-md"
                 onClick={() => gotoPage(0)}
                 disabled={!canPreviousPage}
@@ -562,7 +597,7 @@ function Table({ columns, data, title, rightRender }) {
               >
                 <span className="sr-only">Last</span>
                 <ChevronDoubleRightIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-              </PageButton>
+              </PageButton> */}
             </nav>
           </div>
         </div>
