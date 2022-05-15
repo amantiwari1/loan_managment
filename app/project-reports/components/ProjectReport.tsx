@@ -6,6 +6,7 @@ import {
   useMutation,
   useParam,
   useQuery,
+  useRouter,
 } from "blitz"
 import { useDisclosure } from "@chakra-ui/react"
 import { FORM_ERROR } from "final-form"
@@ -16,7 +17,6 @@ import updateProjectReport from "../mutations/updateProjectReport"
 import { ProjectReportForm } from "./ProjectReportForm"
 import getProjectReports from "../queries/getProjectReports"
 import { CreateProjectReport } from "app/auth/validations"
-import getEnquiry from "app/enquiries/queries/getEnquiry"
 import DrawerForm from "app/core/components/DrawerForm"
 import { ActionComponent } from "app/core/components/ActionComponent"
 import Table, {
@@ -29,13 +29,12 @@ import { toast } from "app/pages/_app"
 
 const ProjectReport = () => {
   const enquiryId = useParam("enquiryId", "number")
-  const [enquiry] = useQuery(
-    getEnquiry,
-    { id: enquiryId },
-    {
-      refetchOnWindowFocus: false,
-    }
-  )
+  const router = useRouter()
+
+  const page = Number(router.query.page) || 0
+  const search = (router.query.search as string) || ""
+  const take = Number(router.query.take) || 10
+
   const [createProjectReportMutation] = useMutation(createProjectReport, {
     onSuccess() {
       toast({
@@ -84,30 +83,30 @@ const ProjectReport = () => {
       })
     },
   })
-  const [Edit, setEdit] = React.useState<any>({
-    status: "NOT_UPLOAD",
-  })
+  const [Edit, setEdit] = React.useState()
 
   const firstField = React.useRef(null)
   const { isOpen, onOpen, onClose } = useDisclosure({
-    onClose: () => {
-      refetch()
-      setEdit({
-        status: "NOT_UPLOAD",
-      })
-    },
+    onClose: () => {},
   })
 
   const [data, { refetch }] = useQuery(getProjectReports, {
+    orderBy: { id: "asc" },
+    skip: take * page,
+    take: take,
     where: {
-      enquiryId: enquiry.id,
+      label: {
+        contains: search.toLowerCase(),
+        mode: "insensitive",
+      },
+      enquiryId: enquiryId,
     },
   })
 
   const onRefreshData = async () => {
     const queryKey = getQueryKey(getLogs, {
       where: {
-        enquiryId: enquiry.id,
+        enquiryId: enquiryId,
       },
     })
     await queryClient.invalidateQueries(queryKey)
@@ -162,6 +161,8 @@ const ProjectReport = () => {
   return (
     <div>
       <Table
+        count={data.count}
+        hasMore={data.hasMore}
         rightRender={() => (
           <CreateButtonTable
             session={session}
@@ -178,12 +179,10 @@ const ProjectReport = () => {
       <DrawerForm isOpen={isOpen} firstField={firstField} onClose={onClose} title="Project Report">
         <ProjectReportForm
           submitText="Create Project Report"
-          // TODO use a zod schema for form validation
-          //  - Tip: extract mutation's schema into a shared `validations.ts` file and
-          //         then import and use it here
           schema={CreateProjectReport}
           initialValues={Edit}
           onSubmit={async (values: any) => {
+            console.log(values)
             try {
               if (values?.id) {
                 await updateProjectReportMutation({
@@ -193,7 +192,7 @@ const ProjectReport = () => {
               } else {
                 await createProjectReportMutation({
                   ...values,
-                  enquiryId: enquiry.id,
+                  enquiryId: enquiryId,
                   remark: values?.remark ? values?.remark : "",
                 })
               }

@@ -3,6 +3,7 @@ import Table, {
   DownloadCell,
   NumberCell,
   StatusPillCell,
+  TextCell,
 } from "app/core/components/Table"
 
 import React from "react"
@@ -120,13 +121,11 @@ export const CreateButtonTable = ({ onClick, session, allowRoles, title }) => {
 
 const SanctionDisbursment = () => {
   const enquiryId = useParam("enquiryId", "number")
-  const [enquiry] = useQuery(
-    getEnquiry,
-    { id: enquiryId },
-    {
-      refetchOnWindowFocus: false,
-    }
-  )
+  const router = useRouter()
+
+  const page = Number(router.query.page) || 0
+  const search = (router.query.search as string) || ""
+  const take = Number(router.query.take) || 10
   const [createSanctionDisbursmentMutation] = useMutation(createSanctionDisbursment, {
     onSuccess() {
       toast({
@@ -178,30 +177,30 @@ const SanctionDisbursment = () => {
       },
     }
   )
-  const [Edit, setEdit] = React.useState<any>({
-    status: "NOT_UPLOAD",
-  })
+  const [Edit, setEdit] = React.useState()
 
   const firstField = React.useRef(null)
   const { isOpen, onOpen, onClose } = useDisclosure({
-    onClose: () => {
-      refetch()
-      setEdit({
-        status: "NOT_UPLOAD",
-      })
-    },
+    onClose: () => {},
   })
 
   const [data, { refetch }] = useQuery(getSanctionDisbursments, {
+    orderBy: { id: "asc" },
+    skip: take * page,
+    take: take,
     where: {
-      enquiryId: enquiry.id,
+      client_name: {
+        contains: search.toLowerCase(),
+        mode: "insensitive",
+      },
+      enquiryId: enquiryId,
     },
   })
 
   const onRefreshData = async () => {
     const queryKey = getQueryKey(getLogs, {
       where: {
-        enquiryId: enquiry.id,
+        enquiryId: enquiryId,
       },
     })
     await queryClient.invalidateQueries(queryKey)
@@ -213,11 +212,12 @@ const SanctionDisbursment = () => {
     {
       Header: "Client Name",
       accessor: "client_name",
+      Cell: TextCell,
     },
     {
       Header: "Product",
       accessor: "product",
-      Cell: ({ value }) => <p>{client_service_options[value]}</p>,
+      Cell: ({ value }) => <Text fontSize="sm">{client_service_options[value]}</Text>,
     },
     {
       Header: "Amount Sanctioned",
@@ -232,14 +232,17 @@ const SanctionDisbursment = () => {
     {
       Header: "Bank Name",
       accessor: "bank_name",
+      Cell: TextCell,
     },
     {
       Header: "Rate of Interest",
       accessor: "rate_of_interest",
+      Cell: TextCell,
     },
     {
       Header: "Tenure",
       accessor: "tenure",
+      Cell: TextCell,
     },
     {
       Header: "Action",
@@ -263,6 +266,8 @@ const SanctionDisbursment = () => {
   return (
     <div>
       <Table
+        count={data.count}
+        hasMore={data.hasMore}
         title="Sanctioned Disbursement"
         rightRender={() => (
           <CreateButtonTable
@@ -299,8 +304,7 @@ const SanctionDisbursment = () => {
               } else {
                 await createSanctionDisbursmentMutation({
                   ...values,
-                  // client_name: enquiry.client_name,
-                  enquiryId: enquiry.id,
+                  enquiryId: enquiryId,
                   remark: values?.remark ? values?.remark : "",
                 })
               }

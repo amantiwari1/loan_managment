@@ -1,3 +1,4 @@
+import { list_of_bank } from "app/core/data/bank"
 import { resolver } from "blitz"
 import db from "db"
 import { z } from "zod"
@@ -15,7 +16,7 @@ export default resolver.pipe(
   async (input, ctx) => {
     const caseStatus = await db.caseStatus.create({
       data: {
-        bank_name: input.bank_name,
+        bank_name: list_of_bank[input.bank_name],
         final_login: input.final_login,
         enquiryId: input.enquiryId,
         remark: input.remark,

@@ -34,24 +34,29 @@ const columns = [
 export const EnquiriesList = () => {
   const router = useRouter()
   const page = Number(router.query.page) || 0
-  const [{ enquiries, hasMore }, { refetch }] = usePaginatedQuery(getEnquiries, {
+  const search = (router.query.search as string) || ""
+  const take = Number(router.query.take) || 10
+  const [{ enquiries, hasMore, count }, { refetch }] = usePaginatedQuery(getEnquiries, {
     orderBy: { id: "asc" },
-    skip: ITEMS_PER_PAGE * page,
-    take: ITEMS_PER_PAGE,
+    skip: take * page,
+    take: take,
     where: {
+      client_name: {
+        contains: search.toLowerCase(),
+        mode: "insensitive",
+      },
       enquiry_request: "APPROVED",
     },
   })
 
   const session = useSession()
 
-  // const goToPreviousPage = () => router.push({ query: { page: page - 1 } })
-  // const goToNextPage = () => router.push({ query: { page: page + 1 } })
-
   return (
     <div>
       {!["USER", "PARTNER"].includes(session.role as string) && <div></div>}
       <Table
+        count={count}
+        hasMore={hasMore}
         rightRender={() => (
           <IconButton
             aria-label="Search database"
@@ -71,12 +76,6 @@ export const EnquiriesList = () => {
         data={enquiries}
         title="Approved Enquiries"
       />
-      {/* <button disabled={page === 0} onClick={goToPreviousPage}>
-        Previous
-      </button>
-      <button disabled={!hasMore} onClick={goToNextPage}>
-        Next
-      </button> */}
     </div>
   )
 }

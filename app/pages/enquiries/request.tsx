@@ -31,21 +31,8 @@ import {
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons"
 import { Button } from "app/core/components/Button"
 import updateEnquiryRequest from "app/enquiries/mutations/updateEnquiryRequest"
-import { BiRefresh } from "react-icons/bi"
-import createUser from "app/users/mutations/createUser"
 import Table, { DateCell, NumberCell } from "app/core/components/Table"
 import { toast } from "../_app"
-function generatePassword() {
-  var length = 8,
-    charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
-    retVal = ""
-  for (var i = 0, n = charset.length; i < length; ++i) {
-    retVal += charset.charAt(Math.floor(Math.random() * n))
-  }
-  return retVal
-}
-
-const ITEMS_PER_PAGE = 100
 
 const Client_Service = {
   HOME_LOAN: "Home Loan",
@@ -179,11 +166,17 @@ export const EnquiriesList = () => {
   ]
   const router = useRouter()
   const page = Number(router.query.page) || 0
-  const [{ enquiries, hasMore }, { refetch }] = usePaginatedQuery(getEnquiries, {
+  const search = (router.query.search as string) || ""
+  const take = Number(router.query.take) || 10
+  const [{ enquiries, hasMore, count }, { refetch }] = usePaginatedQuery(getEnquiries, {
     orderBy: { id: "asc" },
-    skip: ITEMS_PER_PAGE * page,
-    take: ITEMS_PER_PAGE,
+    skip: take * page,
+    take: take,
     where: {
+      client_name: {
+        contains: search.toLowerCase(),
+        mode: "insensitive",
+      },
       enquiry_request: "PENDING",
     },
   })
@@ -194,6 +187,8 @@ export const EnquiriesList = () => {
     <div>
       {!["USER", "PARTNER"].includes(session.role as string) && <div></div>}
       <Table
+        count={count}
+        hasMore={hasMore}
         rightRender={() => (
           <IconButton
             aria-label="Search database"

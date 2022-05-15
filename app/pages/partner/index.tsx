@@ -8,16 +8,20 @@ import Loading from "app/core/components/Loading"
 import { toast } from "../_app"
 import Table from "app/core/components/Table"
 
-const ITEMS_PER_PAGE = 100
-
 export const ChannelPartnersList = () => {
   const router = useRouter()
   const page = Number(router.query.page) || 0
-  const [{ channelPartners, hasMore }, { refetch }] = usePaginatedQuery(getChannelPartners, {
+  const search = (router.query.search as string) || ""
+  const take = Number(router.query.take) || 10
+  const [{ channelPartners, hasMore, count }, { refetch }] = usePaginatedQuery(getChannelPartners, {
     orderBy: { id: "asc" },
-    skip: ITEMS_PER_PAGE * page,
-    take: ITEMS_PER_PAGE,
+    skip: take * page,
+    take: take,
     where: {
+      name: {
+        contains: search.toLowerCase(),
+        mode: "insensitive",
+      },
       request: "APPROVED",
     },
   })
@@ -49,6 +53,8 @@ export const ChannelPartnersList = () => {
   return (
     <div>
       <Table
+        count={count}
+        hasMore={hasMore}
         title="Channel Partner"
         columns={columns}
         data={channelPartners}

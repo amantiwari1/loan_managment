@@ -11,6 +11,7 @@ import { AiOutlineClose, AiOutlineSetting } from "react-icons/ai"
 import { FaHeart, FaBars } from "react-icons/fa"
 import { IoLogOutOutline } from "react-icons/io5"
 import { FiPieChart } from "react-icons/fi"
+import classNames from "classnames"
 
 const sidebar_data = [
   {
@@ -153,7 +154,11 @@ const Sidebar = ({ children }) => {
                 <MenuItem
                   active={router.pathname === item.link}
                   key={item.link}
-                  icon={<item.icon />}
+                  icon={
+                    <item.icon
+                      className={classNames({ "text-green-500": router.pathname === item.link })}
+                    />
+                  }
                   onClick={() => setToggled(false)}
                 >
                   <Link href={item.link} passHref={true}>
@@ -166,7 +171,16 @@ const Sidebar = ({ children }) => {
               {sidebar_data_2.map((item) => (
                 <div key={item.name}>
                   {item.role.includes(session.role as string) && (
-                    <SubMenu icon={<item.icon />} title={item.name}>
+                    <SubMenu
+                      icon={
+                        <item.icon
+                          className={classNames({
+                            "text-green-500": router.pathname === item.link,
+                          })}
+                        />
+                      }
+                      title={item.name}
+                    >
                       {item.sidebar_data.map((item) => (
                         <MenuItem key={item.link} onClick={() => setToggled(false)}>
                           <Link href={item.link} passHref={true}>

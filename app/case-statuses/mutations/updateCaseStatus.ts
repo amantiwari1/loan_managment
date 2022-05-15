@@ -1,3 +1,4 @@
+import { list_of_bank } from "app/core/data/bank"
 import { resolver } from "blitz"
 import db from "db"
 import { z } from "zod"
@@ -17,7 +18,7 @@ export default resolver.pipe(
     const caseStatus = await db.caseStatus.update({
       where: { id },
       data: {
-        bank_name: data.bank_name,
+        bank_name: list_of_bank[data.bank_name],
         final_login: data.final_login,
         enquiryId: data.enquiryId,
         remark: data.remark,

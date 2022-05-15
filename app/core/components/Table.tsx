@@ -1,24 +1,13 @@
 import React, { useState } from "react"
-import {
-  useTable,
-  useFilters,
-  useGlobalFilter,
-  useAsyncDebounce,
-  useSortBy,
-  usePagination,
-} from "react-table"
-import {
-  ChevronDoubleLeftIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronDoubleRightIcon,
-} from "@heroicons/react/solid"
+import { useTable, useSortBy } from "react-table"
+import Select from "react-select"
+
 import { SortIcon, SortUpIcon, SortDownIcon } from "./Icon"
-import { ButtonGroup, IconButton, Input, Tag, Text } from "@chakra-ui/react"
+import { Box, ButtonGroup, Center, Heading, IconButton, Input, Tag, Text } from "@chakra-ui/react"
 import { AddIcon, DeleteIcon, DownloadIcon } from "@chakra-ui/icons"
 import { Button } from "./Button"
 import { list_of_bank } from "../data/bank"
-import { getQueryKey, Link, queryClient, Routes, useMutation, useParam } from "blitz"
+import { getQueryKey, Link, queryClient, Routes, useMutation, useParam, useRouter } from "blitz"
 import {
   client_service_options,
   client_service_options_data,
@@ -42,41 +31,49 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
 }
 
-function PageButton({ children, ...rest }) {
-  return (
-    <button
-      type="button"
-      className={classNames(
-        "relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-      )}
-      {...rest}
-    >
-      {children}
-    </button>
-  )
-}
+export const TextCell = ({ value }) => <Text fontSize="sm">{value}</Text>
 
 // Define a default UI for filtering
-function GlobalFilter({ preGlobalFilteredRows, globalFilter, setGlobalFilter }) {
-  const count = preGlobalFilteredRows.length
-  const [value, setValue] = React.useState(globalFilter)
-  const onChange = useAsyncDebounce((value) => {
-    setGlobalFilter(value || undefined)
-  }, 200)
+function GlobalFilter({ count }) {
+  const router = useRouter()
+  const { pathname, query } = router
+
+  const [value, setValue] = React.useState(query.search)
+
+  const onSearch = () =>
+    router.push({
+      pathname,
+      query: {
+        ...query,
+        search: value,
+        page: 0,
+      },
+    })
 
   return (
-    <label className="w-full m-2">
-      <Input
-        type="text"
-        w="full"
-        value={value || ""}
-        onChange={(e) => {
-          setValue(e.target.value)
-          onChange(e.target.value)
-        }}
-        placeholder={`Search ${count} records...`}
-      />
-    </label>
+    <div className="flex items-center gap-2 w-full m-2">
+      <label className="w-full ">
+        <Input
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              onSearch()
+            }
+          }}
+          size="sm"
+          type="text"
+          w="full"
+          rounded="md"
+          value={value || ""}
+          onChange={(e) => {
+            setValue(e.target.value)
+          }}
+          placeholder={`Search ${count} records...`}
+        />
+      </label>
+      <Button w={150} onClick={onSearch}>
+        Search
+      </Button>
+    </div>
   )
 }
 
@@ -143,11 +140,15 @@ export const ClientNameCell = ({ value, row }) => {
 }
 
 export const StatusCaseDashboardCell = ({ value }) => (
-  <p>{value ? "Case status completed" : "Pending case status"}</p>
+  <Text fontSize="sm">{value ? "Case status completed" : "Pending case status"}</Text>
 )
-export const BankNameCell = ({ value }) => <p>{value ? list_of_bank[value] : "No Selected Bank"}</p>
-export const DateCell = ({ value }) => <p>{new Date(value).toDateString()}</p>
-export const NumberCell = ({ value }) => <p> ₹{parseInt(value.toString()).toLocaleString("hi")}</p>
+export const BankNameCell = ({ value }) => (
+  <Text fontSize="sm">{value ? list_of_bank[value] : "No Selected Bank"}</Text>
+)
+export const DateCell = ({ value }) => <Text fontSize="sm">{new Date(value).toDateString()}</Text>
+export const NumberCell = ({ value }) => (
+  <Text fontSize="sm"> ₹{parseInt(value.toString()).toLocaleString("hi")}</Text>
+)
 export const DownloadCell = ({ value }) => {
   const [DownloadPreSignUrlMutation, { isLoading: isLoadingUrl }] = useMutation(DownloadPreSignUrl)
 
@@ -310,7 +311,7 @@ export const DownloadMultiCell = ({
           <PulseLoader size={10} color="green" />
         </div>
       )}
-      <div className={className({ hidden: isUploading })}>
+      <div className={className({ hidden: isUploading }, "flex justify-center")}>
         {value && value.length ? (
           <div className="space-y-2">
             {value.map((arr, key) => (
@@ -331,12 +332,12 @@ export const DownloadMultiCell = ({
             accept=".doc,.docx,.pdf,.txt,.xls,.csv,.xlsx"
             onChange={uploadFile}
             className="w-full  mx-auto max-w-sm block text-white
-          file:mr-4 file:py-1 file:px-2
+          file:mr-4 file:py-1 file:px-4
           file:rounded-md file:border-0
-          file:outline-green-900
+          file:outline-blue-900
           file:text-sm 
-          file:bg-green-50 file:text-blue-400
-          hover:file:bg-green-100
+          file:bg-blue-50 file:text-white
+          hover:file:bg-blue-100
           "
           />
         )}
@@ -357,41 +358,33 @@ export const CreateButtonTable = ({ onClick, session, allowRoles, title }) => {
   )
 }
 export function StatusPillCell({ value }) {
-  return <p>{value?.id ? new Date(value.updatedAt).toString() : "No Upload file"}</p>
+  return (
+    <Text fontSize="sm">{value?.id ? new Date(value.updatedAt).toString() : "No Upload file"}</Text>
+  )
 }
 
-function Table({ columns, data, title, rightRender }) {
-  // Use the state and functions returned from useTable to build your UI
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    prepareRow,
-    page, // Instead of using 'rows', we'll use page,
-    // which has only the rows for the active page
+function Table({ columns, data, title, rightRender, count, hasMore }) {
+  const router = useRouter()
+  const { pathname, query } = router
 
-    // The rest of these things are super handy, too ;)
-    canPreviousPage,
-    canNextPage,
-    pageOptions,
-    pageCount,
-    gotoPage,
-    nextPage,
-    previousPage,
-    setPageSize,
+  const pageQuery = Number(query.page) || 0
+  const take = Number(query.take) || 10
 
-    state,
-    preGlobalFilteredRows,
-    setGlobalFilter,
-  } = useTable(
+  const goTo = (number: number) =>
+    router.push({
+      pathname,
+      query: {
+        ...query,
+        page: pageQuery + number,
+      },
+    })
+
+  const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } = useTable(
     {
       columns,
       data,
     },
-    useFilters, // useFilters!
-    useGlobalFilter,
-    useSortBy,
-    usePagination // new
+    useSortBy
   )
 
   // Render the UI for your table
@@ -409,11 +402,7 @@ function Table({ columns, data, title, rightRender }) {
 
               {/* SEARCH */}
               <div className="flex gap-x-2">
-                <GlobalFilter
-                  preGlobalFilteredRows={preGlobalFilteredRows}
-                  globalFilter={state.globalFilter}
-                  setGlobalFilter={setGlobalFilter}
-                />
+                <GlobalFilter count={count} />
                 {headerGroups.map((headerGroup) =>
                   headerGroup.headers.map((column) =>
                     column.Filter ? (
@@ -431,21 +420,18 @@ function Table({ columns, data, title, rightRender }) {
                   {...getTableProps()}
                   className="divide-y  w-full overflow-x-auto border-collapse  divide-gray-200"
                 >
-                  <thead className="bg-gray-50">
+                  <thead className="bg-blue-50 text-white">
                     {headerGroups.map((headerGroup, key) => (
                       <tr {...headerGroup.getHeaderGroupProps()} key={key}>
                         {headerGroup.headers.map((column, key) => (
-                          // Add the sorting props to control sorting. For this example
-                          // we can add them into the header props
                           <th
                             scope="col"
                             key={key}
-                            className="group border px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            className="group border px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider"
                             {...column.getHeaderProps(column.getSortByToggleProps())}
                           >
                             <div className="flex items-center space-x-1">
                               <p>{column.render("Header")}</p>
-                              {/* Add a sort direction indicator */}
                               <span>
                                 {column.isSorted ? (
                                   column.isSortedDesc ? (
@@ -464,13 +450,13 @@ function Table({ columns, data, title, rightRender }) {
                     ))}
                   </thead>
                   <tbody {...getTableBodyProps()} className="bg-white divide-y divide-gray-200">
-                    {page.map((row, i) => {
+                    {rows.map((row, i) => {
                       // new
                       prepareRow(row)
                       return (
                         <tr
                           className={
-                            i % 2 === 0 ? "hover:bg-gray-100" : "bg-gray-50 hover:bg-gray-100"
+                            i % 2 === 0 ? "hover:bg-green-200" : "bg-green-50 hover:bg-green-200 "
                           }
                           key={i}
                           {...row.getRowProps()}
@@ -496,6 +482,92 @@ function Table({ columns, data, title, rightRender }) {
                     })}
                   </tbody>
                 </table>
+                {rows && rows.length === 0 && (
+                  <Box w="full" p={5} rounded="md" shadow="md">
+                    <Center>
+                      <svg
+                        className="h-32 w-32"
+                        xmlns="http://www.w3.org/2000/svg"
+                        data-name="Layer 1"
+                        viewBox="0 0 32 32"
+                      >
+                        <path
+                          fill="none"
+                          stroke="#91b841"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M23.5,27.5H6.5l-1-15.19a.76.76,0,0,1,.77-.81H10a1.11,1.11,0,0,1,.89.44l1.22,1.56H23.5v2"
+                        />
+                        <path
+                          fill="none"
+                          stroke="#91b841"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M26.3,20.7l.84-3.2H9.25L6.5,27.5H23.41a1.42,1.42,0,0,0,1.37-1.06l.76-2.88"
+                        />
+                        <path
+                          fill="none"
+                          stroke="#91b841"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M16.5,24.5h0a1.42,1.42,0,0,1,2,0h0"
+                        />
+                        <line
+                          x1="13.5"
+                          x2="14.5"
+                          y1="21.5"
+                          y2="21.5"
+                          fill="none"
+                          stroke="#91b841"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <line
+                          x1="20.5"
+                          x2="21.5"
+                          y1="21.5"
+                          y2="21.5"
+                          fill="none"
+                          stroke="#91b841"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          fill="none"
+                          stroke="#91b841"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M20.62,3.61C18.25,4,16.5,5.37,16.5,7a2.57,2.57,0,0,0,.7,1.7l-.7,2.8,2.86-1.43A8.12,8.12,0,0,0,22,10.5c3,0,5.5-1.57,5.5-3.5,0-1.6-1.69-2.95-4-3.37"
+                        />
+                        <line
+                          x1="21.25"
+                          x2="22.75"
+                          y1="6.25"
+                          y2="7.75"
+                          fill="none"
+                          stroke="#91b841"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <line
+                          x1="22.75"
+                          x2="21.25"
+                          y1="6.25"
+                          y2="7.75"
+                          fill="none"
+                          stroke="#91b841"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </Center>
+                    <Center>
+                      <Heading as="h4" size="md">
+                        No Data
+                      </Heading>
+                    </Center>
+                  </Box>
+                )}
               </div>
             </div>
           </div>
@@ -503,66 +575,43 @@ function Table({ columns, data, title, rightRender }) {
       </div>
       {/* Pagination */}
       <div className="py-3 flex items-center justify-between">
-        <div className="flex-1 flex justify-between sm:hidden">
-          <Button w={100} size="sm" onClick={() => previousPage()} disabled={!canPreviousPage}>
-            Previous
-          </Button>
-          <Button w={100} size="sm" onClick={() => nextPage()} disabled={!canNextPage}>
-            Next
-          </Button>
-        </div>
         <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
           <div className="flex gap-x-2 items-baseline">
+            <span className="text-sm">Total: {count}</span>
             <span className="text-sm text-gray-700">
-              Page <span className="font-medium">{state.pageIndex + 1}</span> of{" "}
-              <span className="font-medium">{pageOptions.length}</span>
+              Page <span className="font-medium">{pageQuery + 1}</span> of{" "}
+              <span className="font-medium">{Math.round(count / take)}</span>
             </span>
-            <label>
-              <span className="sr-only">Items Per Page</span>
-              <select
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                value={state.pageSize}
-                onChange={(e) => {
-                  setPageSize(Number(e.target.value))
-                }}
-              >
-                {[5, 10, 20].map((pageSize) => (
-                  <option key={pageSize} value={pageSize}>
-                    Show {pageSize}
-                  </option>
-                ))}
-              </select>
-            </label>
+
+            <Select
+              defaultValue={{
+                value: take,
+                label: `Show ${take}`,
+              }}
+              onChange={(e) => {
+                router.push({
+                  pathname,
+                  query: {
+                    ...query,
+                    take: Number(e.value),
+                    page: 0,
+                  },
+                })
+              }}
+              options={[5, 10, 20, 50, 100].map((pageSize) => ({
+                value: pageSize,
+                label: `Show ${pageSize}`,
+              }))}
+            />
           </div>
           <div>
-            <nav
-              className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
-              aria-label="Pagination"
-            >
-              <PageButton
-                className="rounded-l-md"
-                onClick={() => gotoPage(0)}
-                disabled={!canPreviousPage}
-              >
-                <span className="sr-only">First</span>
-                <ChevronDoubleLeftIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-              </PageButton>
-              <PageButton onClick={() => previousPage()} disabled={!canPreviousPage}>
-                <span className="sr-only">Previous</span>
-                <ChevronLeftIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-              </PageButton>
-              <PageButton onClick={() => nextPage()} disabled={!canNextPage}>
-                <span className="sr-only">Next</span>
-                <ChevronRightIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-              </PageButton>
-              <PageButton
-                className="rounded-r-md"
-                onClick={() => gotoPage(pageCount - 1)}
-                disabled={!canNextPage}
-              >
-                <span className="sr-only">Last</span>
-                <ChevronDoubleRightIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-              </PageButton>
+            <nav aria-label="Pagination" className="flex gap-5">
+              <Button w={100} disabled={pageQuery === 0} onClick={() => goTo(-1)}>
+                Previous
+              </Button>
+              <Button w={100} disabled={!hasMore} onClick={() => goTo(1)}>
+                Next
+              </Button>
             </nav>
           </div>
         </div>

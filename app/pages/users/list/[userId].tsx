@@ -47,29 +47,30 @@ export const UsersList = () => {
   const router = useRouter()
   const role = useParam("userId", "string")
   const page = Number(router.query.page) || 0
-  const [{ users, hasMore }] = usePaginatedQuery(getUsers, {
+  const search = (router.query.search as string) || ""
+  const take = Number(router.query.take) || 10
+  const [{ users, hasMore, count }] = usePaginatedQuery(getUsers, {
+    orderBy: { id: "asc" },
+    skip: take * page,
+    take: take,
     where: {
+      name: {
+        contains: search.toLowerCase(),
+        mode: "insensitive",
+      },
       role: role?.toUpperCase(),
     },
-    orderBy: { id: "asc" },
-    skip: ITEMS_PER_PAGE * page,
-    take: ITEMS_PER_PAGE,
   })
 
-  const goToPreviousPage = () => router.push({ query: { page: page - 1 } })
-  const goToNextPage = () => router.push({ query: { page: page + 1 } })
-
   return (
-    <div>
-      <Table columns={Columns} data={users} title={`List of ${role}`} rightRender={() => {}} />
-
-      <button disabled={page === 0} onClick={goToPreviousPage}>
-        Previous
-      </button>
-      <button disabled={!hasMore} onClick={goToNextPage}>
-        Next
-      </button>
-    </div>
+    <Table
+      count={count}
+      hasMore={hasMore}
+      columns={Columns}
+      data={users}
+      title={`List of ${role}`}
+      rightRender={() => {}}
+    />
   )
 }
 

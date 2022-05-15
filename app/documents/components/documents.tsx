@@ -2,10 +2,12 @@ import React, { useState } from "react"
 import {
   getQueryKey,
   queryClient,
+  Routes,
   useAuthenticatedSession,
   useMutation,
   useParam,
   useQuery,
+  useRouter,
   useSession,
 } from "blitz"
 import getDocuments from "../queries/getDocuments"
@@ -20,7 +22,12 @@ import updateDocument from "../mutations/updateDocument"
 import deleteDocument from "../mutations/deleteDocument"
 import { CreateDocument } from "app/auth/validations"
 import getEnquiry from "app/enquiries/queries/getEnquiry"
-import Table, { DateCell, DownloadMultiCell, StatusPillCell } from "app/core/components/Table"
+import Table, {
+  DateCell,
+  DownloadMultiCell,
+  StatusPillCell,
+  TextCell,
+} from "app/core/components/Table"
 import SwitchDocument from "../mutations/SwitchDocument"
 import { ActionComponent } from "app/core/components/ActionComponent"
 import DrawerForm from "app/core/components/DrawerForm"
@@ -77,8 +84,15 @@ const AddNewButton = ({ onClick }: { onClick: () => void }) => {
   )
 }
 
+const ITEMS_PER_PAGE = 10
+
 const Document = () => {
   const enquiryId = useParam("enquiryId", "number")
+  const router = useRouter()
+
+  const page = Number(router.query.page) || 0
+  const search = (router.query.search as string) || ""
+  const take = Number(router.query.take) || 10
 
   const [createDocumentMutation] = useMutation(createDocument, {
     onSuccess() {
@@ -128,35 +142,39 @@ const Document = () => {
       })
     },
   })
-  const [Edit, setEdit] = React.useState<any>({
-    status: "NOT_UPLOAD",
-  })
+  const [Edit, setEdit] = React.useState()
 
   const firstField = React.useRef(null)
   const { isOpen, onOpen, onClose } = useDisclosure({
-    onClose: () => {
-      refetch()
-      setEdit({
-        status: "NOT_UPLOAD",
-      })
-    },
+    onClose: () => {},
   })
   const session = useAuthenticatedSession()
 
   let where: any = {
     enquiryId: enquiryId,
     is_public_user: true,
+    document_name: {
+      contains: search.toLowerCase(),
+      mode: "insensitive",
+    },
   }
 
   if (["ADMIN", "STAFF"].includes(session.role)) {
     where = {
       enquiryId: enquiryId,
+      document_name: {
+        contains: search.toLowerCase(),
+        mode: "insensitive",
+      },
     }
   }
 
   const [data, { refetch }] = useQuery(
     getDocuments,
     {
+      orderBy: { id: "asc" },
+      skip: take * page,
+      take: take,
       where,
     },
     {
@@ -166,9 +184,10 @@ const Document = () => {
 
   const onRefreshData = async () => {
     const queryKey = getQueryKey(getLogs, {
-      where: {
-        enquiryId: enquiryId,
-      },
+      orderBy: { id: "asc" },
+      skip: take * page,
+      take: take,
+      where,
     })
     await queryClient.invalidateQueries(queryKey)
     await refetch()
@@ -178,10 +197,12 @@ const Document = () => {
     {
       Header: "Document",
       accessor: "document_name",
+      Cell: TextCell,
     },
     {
       Header: "Description",
       accessor: "description",
+      Cell: TextCell,
     },
     {
       Header: "Status",
@@ -209,6 +230,7 @@ const Document = () => {
     {
       Header: "Remark",
       accessor: "remark",
+      Cell: TextCell,
     },
     {
       Header: "Show User",
@@ -218,6 +240,7 @@ const Document = () => {
 
         return (
           <Switch
+            size="sm"
             defaultChecked={value}
             isDisabled={isLoadingSwitch}
             onChange={async (e) => {
@@ -259,6 +282,8 @@ const Document = () => {
         title="Documents"
         data={data.documents}
         columns={columns}
+        count={data.count}
+        hasMore={data.hasMore}
       />
 
       <DrawerForm isOpen={isOpen} firstField={firstField} onClose={onClose} title="Document">
