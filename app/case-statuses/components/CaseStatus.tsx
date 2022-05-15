@@ -8,6 +8,7 @@ import {
   useMutation,
   useParam,
   useQuery,
+  useRouter,
   useSession,
 } from "blitz"
 import { Button } from "app/core/components/Button"
@@ -17,6 +18,7 @@ import Table, {
   DateCell,
   DownloadCell,
   StatusPillCell,
+  TextCell,
 } from "app/core/components/Table"
 
 import { useDisclosure, Tag } from "@chakra-ui/react"
@@ -27,20 +29,19 @@ import updateCaseStatus from "../mutations/updateCaseStatus"
 import { CaseStatusForm } from "./CaseStatusForm"
 import getCaseStatuses from "../queries/getCaseStatuses"
 import getLogs from "../../logs/queries/getLogs"
-import getEnquiry from "app/enquiries/queries/getEnquiry"
 import DrawerForm from "app/core/components/DrawerForm"
 import { ActionComponent } from "app/core/components/ActionComponent"
 import { toast } from "app/pages/_app"
 
 const CaseStatus = () => {
   const enquiryId = useParam("enquiryId", "number")
-  const [enquiry] = useQuery(
-    getEnquiry,
-    { id: enquiryId },
-    {
-      refetchOnWindowFocus: false,
-    }
-  )
+
+  const router = useRouter()
+
+  const page = Number(router.query.page) || 0
+  const search = (router.query.search as string) || ""
+  const take = Number(router.query.take) || 10
+
   const [createCaseStatusMutation] = useMutation(createCaseStatus, {
     onSuccess() {
       toast({
@@ -89,29 +90,30 @@ const CaseStatus = () => {
       })
     },
   })
-  const [Edit, setEdit] = React.useState<any>({
-    status: "NOT_UPLOAD",
-  })
+  const [Edit, setEdit] = React.useState()
 
   const firstField = React.useRef(null)
   const { isOpen, onOpen, onClose } = useDisclosure({
-    onClose: () => {
-      setEdit({
-        status: "NOT_UPLOAD",
-      })
-    },
+    onClose: () => {},
   })
 
   const [data, { refetch }] = useQuery(getCaseStatuses, {
+    orderBy: { id: "asc" },
+    skip: take * page,
+    take: take,
     where: {
-      enquiryId: enquiry.id,
+      bank_name: {
+        contains: search.toLowerCase(),
+        mode: "insensitive",
+      },
+      enquiryId: enquiryId,
     },
   })
 
   const onRefreshData = async () => {
     const queryKey = getQueryKey(getLogs, {
       where: {
-        enquiryId: enquiry.id,
+        enquiryId: enquiryId,
       },
     })
     await queryClient.invalidateQueries(queryKey)
@@ -123,7 +125,7 @@ const CaseStatus = () => {
     {
       Header: "Bank Name",
       accessor: "bank_name",
-      Cell: BankNameCell,
+      Cell: TextCell,
     },
     {
       Header: "Final Login",
@@ -165,6 +167,8 @@ const CaseStatus = () => {
   return (
     <div>
       <Table
+        count={data.count}
+        hasMore={data.hasMore}
         rightRender={() => (
           <CreateButtonTable
             session={session}
@@ -201,8 +205,8 @@ const CaseStatus = () => {
               } else {
                 await createCaseStatusMutation({
                   ...values,
-                  client_name: enquiry.client_name,
-                  enquiryId: enquiry.id,
+                  client_name: "",
+                  enquiryId: enquiryId,
                   remark: values?.remark ? values?.remark : "",
                 })
               }

@@ -29,17 +29,20 @@ export const ChannelPartnersList = () => {
   const [updatePartnerMutation, { isLoading }] = useMutation(updateChannelPartnerRequest)
   const router = useRouter()
   const page = Number(router.query.page) || 0
-  const [{ channelPartners, hasMore }, { refetch }] = usePaginatedQuery(getChannelPartners, {
+  const search = (router.query.search as string) || ""
+  const take = Number(router.query.take) || 10
+  const [{ channelPartners, hasMore, count }, { refetch }] = usePaginatedQuery(getChannelPartners, {
     orderBy: { id: "asc" },
-    skip: ITEMS_PER_PAGE * page,
-    take: ITEMS_PER_PAGE,
+    skip: take * page,
+    take: take,
     where: {
+      name: {
+        contains: search.toLowerCase(),
+        mode: "insensitive",
+      },
       request: "PENDING",
     },
   })
-
-  const goToPreviousPage = () => router.push({ query: { page: page - 1 } })
-  const goToNextPage = () => router.push({ query: { page: page + 1 } })
 
   const columns = [
     {
@@ -150,6 +153,8 @@ export const ChannelPartnersList = () => {
   return (
     <div>
       <Table
+        count={count}
+        hasMore={hasMore}
         title="Channel Partner Request"
         columns={columns}
         data={channelPartners}

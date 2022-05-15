@@ -33,30 +33,34 @@ const columns = [
 export const EnquiriesList = () => {
   const router = useRouter()
   const page = Number(router.query.page) || 0
-  const [{ enquiries, hasMore }] = usePaginatedQuery(getEnquiries, {
+  const search = (router.query.search as string) || ""
+  const take = Number(router.query.take) || 10
+  const [{ enquiries, hasMore, count }, { refetch }] = usePaginatedQuery(getEnquiries, {
     orderBy: { id: "asc" },
-    skip: ITEMS_PER_PAGE * page,
-    take: ITEMS_PER_PAGE,
+    skip: take * page,
+    take: take,
     where: {
+      client_name: {
+        contains: search.toLowerCase(),
+        mode: "insensitive",
+      },
       enquiry_request: "REJECTED",
     },
   })
 
   const session = useSession()
 
-  // const goToPreviousPage = () => router.push({ query: { page: page - 1 } })
-  // const goToNextPage = () => router.push({ query: { page: page + 1 } })
-
   return (
     <div>
       {!["USER", "PARTNER"].includes(session.role as string) && <div></div>}
-      <Table rightRender={() => {}} columns={columns} data={enquiries} title="Rejected Enquiries" />
-      {/* <button disabled={page === 0} onClick={goToPreviousPage}>
-        Previous
-      </button>
-      <button disabled={!hasMore} onClick={goToNextPage}>
-        Next
-      </button> */}
+      <Table
+        count={count}
+        hasMore={hasMore}
+        rightRender={() => {}}
+        columns={columns}
+        data={enquiries}
+        title="Rejected Enquiries"
+      />
     </div>
   )
 }

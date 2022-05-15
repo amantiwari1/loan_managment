@@ -68,7 +68,6 @@ export const ProfileUser = z.object({
 // Project Report
 export const CreateProjectReport = z.object({
   label: z.string(),
-  status,
   remark: z.string().optional().default(""),
 })
 

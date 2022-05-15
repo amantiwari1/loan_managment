@@ -31,11 +31,11 @@ export const ActionComponent = ({ onEdit, onDelete, isDeleting, session }) => {
             </AlertDialogBody>
 
             <AlertDialogFooter>
-              <Button size="sm" ref={firstField} variant="outline" onClick={onAlertClose}>
+              <Button size="xs" ref={firstField} variant="outline" onClick={onAlertClose}>
                 Cancel
               </Button>
               <Button
-                size="sm"
+                size="xs"
                 colorScheme="red"
                 isLoading={isDeleting}
                 onClick={async () => {
@@ -55,12 +55,12 @@ export const ActionComponent = ({ onEdit, onDelete, isDeleting, session }) => {
         onClick={onEdit}
         variant="outline"
         icon={<EditIcon />}
-        size="sm"
+        size="xs"
       />
       {["ADMIN", "STAFF"].includes(session.role) && (
         <IconButton
           aria-label="Delete"
-          size="sm"
+          size="xs"
           onClick={() => {
             setIsAlertOpen(true)
           }}

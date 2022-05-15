@@ -6,6 +6,7 @@ import {
   useMutation,
   useParam,
   useQuery,
+  useRouter,
   useSession,
 } from "blitz"
 import { Button } from "app/core/components/Button"
@@ -32,13 +33,11 @@ import { toast } from "app/pages/_app"
 
 const SearchValuationReport = () => {
   const enquiryId = useParam("enquiryId", "number")
-  const [enquiry] = useQuery(
-    getEnquiry,
-    { id: enquiryId },
-    {
-      refetchOnWindowFocus: false,
-    }
-  )
+  const router = useRouter()
+
+  const page = Number(router.query.page) || 0
+  const search = (router.query.search as string) || ""
+  const take = Number(router.query.take) || 10
   const session = useAuthenticatedSession()
 
   const [createSearchValuationReportMutation] = useMutation(createSearchValuationReport, {
@@ -92,30 +91,32 @@ const SearchValuationReport = () => {
       },
     }
   )
-  const [Edit, setEdit] = React.useState<any>({
-    status: "NOT_UPLOAD",
-  })
+  const [Edit, setEdit] = React.useState()
 
   const firstField = React.useRef(null)
   const { isOpen, onOpen, onClose } = useDisclosure({
     onClose: () => {
       refetch()
-      setEdit({
-        status: "NOT_UPLOAD",
-      })
     },
   })
 
   const [data, { refetch }] = useQuery(getSearchValuationReports, {
+    orderBy: { id: "asc" },
+    skip: take * page,
+    take: take,
     where: {
-      enquiryId: enquiry.id,
+      enquiryId: enquiryId,
+      document: {
+        contains: search.toLowerCase(),
+        mode: "insensitive",
+      },
     },
   })
 
   const onRefreshData = async () => {
     const queryKey = getQueryKey(getLogs, {
       where: {
-        enquiryId: enquiry.id,
+        enquiryId: enquiryId,
       },
     })
     await queryClient.invalidateQueries(queryKey)
@@ -165,6 +166,8 @@ const SearchValuationReport = () => {
   return (
     <div>
       <Table
+        count={data.count}
+        hasMore={data.hasMore}
         title="Search And Valuation"
         rightRender={() => (
           <CreateButtonTable
@@ -201,8 +204,8 @@ const SearchValuationReport = () => {
               } else {
                 await createSearchValuationReportMutation({
                   ...values,
-                  client_name: enquiry.client_name,
-                  enquiryId: enquiry.id,
+                  client_name: "",
+                  enquiryId: enquiryId,
                   remark: values?.remark ? values?.remark : "",
                 })
               }

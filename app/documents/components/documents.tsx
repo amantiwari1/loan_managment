@@ -22,7 +22,12 @@ import updateDocument from "../mutations/updateDocument"
 import deleteDocument from "../mutations/deleteDocument"
 import { CreateDocument } from "app/auth/validations"
 import getEnquiry from "app/enquiries/queries/getEnquiry"
-import Table, { DateCell, DownloadMultiCell, StatusPillCell } from "app/core/components/Table"
+import Table, {
+  DateCell,
+  DownloadMultiCell,
+  StatusPillCell,
+  TextCell,
+} from "app/core/components/Table"
 import SwitchDocument from "../mutations/SwitchDocument"
 import { ActionComponent } from "app/core/components/ActionComponent"
 import DrawerForm from "app/core/components/DrawerForm"
@@ -87,9 +92,7 @@ const Document = () => {
 
   const page = Number(router.query.page) || 0
   const search = (router.query.search as string) || ""
-
-  const goToPreviousPage = () => router.push(`/enquiries/${enquiryId}?page=${page - 1}`)
-  const goToNextPage = () => router.push(`/enquiries/${enquiryId}?page=${page + 1}`)
+  const take = Number(router.query.take) || 10
 
   const [createDocumentMutation] = useMutation(createDocument, {
     onSuccess() {
@@ -139,18 +142,11 @@ const Document = () => {
       })
     },
   })
-  const [Edit, setEdit] = React.useState<any>({
-    status: "NOT_UPLOAD",
-  })
+  const [Edit, setEdit] = React.useState()
 
   const firstField = React.useRef(null)
   const { isOpen, onOpen, onClose } = useDisclosure({
-    onClose: () => {
-      refetch()
-      setEdit({
-        status: "NOT_UPLOAD",
-      })
-    },
+    onClose: () => {},
   })
   const session = useAuthenticatedSession()
 
@@ -177,8 +173,8 @@ const Document = () => {
     getDocuments,
     {
       orderBy: { id: "asc" },
-      skip: ITEMS_PER_PAGE * page,
-      take: ITEMS_PER_PAGE,
+      skip: take * page,
+      take: take,
       where,
     },
     {
@@ -189,8 +185,8 @@ const Document = () => {
   const onRefreshData = async () => {
     const queryKey = getQueryKey(getLogs, {
       orderBy: { id: "asc" },
-      skip: ITEMS_PER_PAGE * page,
-      take: ITEMS_PER_PAGE,
+      skip: take * page,
+      take: take,
       where,
     })
     await queryClient.invalidateQueries(queryKey)
@@ -201,10 +197,12 @@ const Document = () => {
     {
       Header: "Document",
       accessor: "document_name",
+      Cell: TextCell,
     },
     {
       Header: "Description",
       accessor: "description",
+      Cell: TextCell,
     },
     {
       Header: "Status",
@@ -232,6 +230,7 @@ const Document = () => {
     {
       Header: "Remark",
       accessor: "remark",
+      Cell: TextCell,
     },
     {
       Header: "Show User",
@@ -241,6 +240,7 @@ const Document = () => {
 
         return (
           <Switch
+            size="sm"
             defaultChecked={value}
             isDisabled={isLoadingSwitch}
             onChange={async (e) => {
@@ -283,10 +283,6 @@ const Document = () => {
         data={data.documents}
         columns={columns}
         count={data.count}
-        pageQuery={page}
-        item={ITEMS_PER_PAGE}
-        goToPreviousPage={goToPreviousPage}
-        goToNextPage={goToNextPage}
         hasMore={data.hasMore}
       />
 

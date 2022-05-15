@@ -1,4 +1,9 @@
-import Table, { BankNameCell, CreateButtonTable, DateCell } from "app/core/components/Table"
+import Table, {
+  BankNameCell,
+  CreateButtonTable,
+  DateCell,
+  TextCell,
+} from "app/core/components/Table"
 
 import React from "react"
 import {
@@ -8,6 +13,7 @@ import {
   useMutation,
   useParam,
   useQuery,
+  useRouter,
   useSession,
 } from "blitz"
 import { Button } from "app/core/components/Button"
@@ -19,22 +25,19 @@ import createBankQuery from "../mutations/createBankQuery"
 import deleteBankQuery from "../mutations/deleteBankQuery"
 import updateBankQuery from "../mutations/updateBankQuery"
 import { BankQueryForm } from "./BankQueryForm"
-import getBankQuery from "../queries/getBankQuery"
 import getBankQueries from "../queries/getBankQueries"
-import getEnquiry from "app/enquiries/queries/getEnquiry"
 import DrawerForm from "app/core/components/DrawerForm"
 import { ActionComponent } from "app/core/components/ActionComponent"
 import { toast } from "app/pages/_app"
 
 const BankQuery = () => {
   const enquiryId = useParam("enquiryId", "number")
-  const [enquiry] = useQuery(
-    getEnquiry,
-    { id: enquiryId },
-    {
-      refetchOnWindowFocus: false,
-    }
-  )
+  const router = useRouter()
+
+  const page = Number(router.query.page) || 0
+  const search = (router.query.search as string) || ""
+  const take = Number(router.query.take) || 10
+
   const [createBankQueryMutation] = useMutation(createBankQuery, {
     onSuccess() {
       toast({
@@ -83,22 +86,23 @@ const BankQuery = () => {
       })
     },
   })
-  const [Edit, setEdit] = React.useState<any>({
-    status: "NOT_UPLOAD",
-  })
+  const [Edit, setEdit] = React.useState()
 
   const firstField = React.useRef(null)
   const { isOpen, onOpen, onClose } = useDisclosure({
-    onClose: () => {
-      setEdit({
-        status: "NOT_UPLOAD",
-      })
-    },
+    onClose: () => {},
   })
 
   const [data, { refetch }] = useQuery(getBankQueries, {
+    orderBy: { id: "asc" },
+    skip: take * page,
+    take: take,
     where: {
-      enquiryId: enquiry.id,
+      bank_query: {
+        contains: search.toLowerCase(),
+        mode: "insensitive",
+      },
+      enquiryId: enquiryId,
     },
   })
   const session = useAuthenticatedSession()
@@ -106,7 +110,7 @@ const BankQuery = () => {
   const onRefreshData = async () => {
     const queryKey = getQueryKey(getLogs, {
       where: {
-        enquiryId: enquiry.id,
+        enquiryId: enquiryId,
       },
     })
     await queryClient.invalidateQueries(queryKey)
@@ -117,15 +121,17 @@ const BankQuery = () => {
     {
       Header: "Bank Query",
       accessor: "bank_query",
-      Cell: BankNameCell,
+      Cell: TextCell,
     },
     {
       Header: "Our Response",
       accessor: "our_response",
+      Cell: TextCell,
     },
     {
       Header: "remark",
       accessor: "remark",
+      Cell: TextCell,
     },
     {
       Header: "Upload on",
@@ -154,6 +160,8 @@ const BankQuery = () => {
   return (
     <div>
       <Table
+        count={data.count}
+        hasMore={data.hasMore}
         rightRender={() => (
           <CreateButtonTable
             session={session}
@@ -185,8 +193,7 @@ const BankQuery = () => {
               } else {
                 await createBankQueryMutation({
                   ...values,
-                  client_name: enquiry.client_name,
-                  enquiryId: enquiry.id,
+                  enquiryId: enquiryId,
                   remark: values?.remark ? values?.remark : "",
                 })
               }

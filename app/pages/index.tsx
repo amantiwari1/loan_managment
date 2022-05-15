@@ -7,7 +7,13 @@ import { Avatar, AvatarGroup, Box, IconButton, Text, Tooltip } from "@chakra-ui/
 import { IoMdRefresh } from "react-icons/io"
 import getEnquiriesCount from "app/enquiries/queries/getEnquiriesCount"
 import { Button } from "app/core/components/Button"
-import Table, { BankNameCell, NumberCell, StatusCaseDashboardCell } from "app/core/components/Table"
+import Table, {
+  BankNameCell,
+  DateCell,
+  NumberCell,
+  StatusCaseDashboardCell,
+  TextCell,
+} from "app/core/components/Table"
 import Loading from "app/core/components/Loading"
 import {
   client_occupations_type_options,
@@ -43,7 +49,7 @@ const columns = [
     Cell: ({ value, row }) => (
       <div>
         <Link href={Routes.ShowEnquiryPage({ enquiryId: row.original.id })}>
-          <a className="text-lg font-bold underline hover:text-blue-500">{value}</a>
+          <a className="text-sm font-bold underline hover:text-blue-500">{value}</a>
         </Link>
       </div>
     ),
@@ -51,7 +57,7 @@ const columns = [
   {
     Header: "Client Name",
     accessor: "client_service",
-    Cell: ({ value }) => <p>{client_service_options[value]}</p>,
+    Cell: ({ value }) => <Text fontSize="sm">{client_service_options[value]}</Text>,
   },
   {
     Header: "Amount",
@@ -61,6 +67,7 @@ const columns = [
   {
     Header: "Location",
     accessor: "client_address",
+    Cell: TextCell,
   },
   {
     Header: "Applied Bank Name",
@@ -81,7 +88,9 @@ const columns = [
       <Text fontWeight="medium" textTransform="capitalize">
         <div className="space-y-2 font-medium items-center">
           {!value.filter((arr) => arr.user.role === "PARTNER").length && (
-            <Text fontWeight="medium">No Partner Selected</Text>
+            <Text fontWeight="medium" fontSize="sm">
+              No Partner Selected
+            </Text>
           )}
           <AvatarGroup size="xs" max={3}>
             {value
@@ -105,7 +114,9 @@ const columns = [
       <Text fontWeight="medium" textTransform="capitalize">
         <div className="space-y-2 font-medium items-center">
           {!value.filter((arr) => arr.user.role === "STAFF").length && (
-            <Text fontWeight="medium">No Staff Selected</Text>
+            <Text fontWeight="medium" fontSize="sm">
+              No Staff Selected
+            </Text>
           )}
           <AvatarGroup size="xs" max={3}>
             {value
@@ -125,7 +136,7 @@ const columns = [
   {
     Header: "Last Updated on",
     accessor: "updatedAt",
-    Cell: ({ value }) => <p>{new Date(value).toDateString()}</p>,
+    Cell: DateCell,
   },
 ]
 
@@ -134,14 +145,24 @@ export const EnquiriesList = () => {
 
   const [count] = useQuery(getEnquiriesCount, {})
   const page = Number(router.query.page) || 0
-  const [{ enquiries, hasMore }, { refetch }] = usePaginatedQuery(getEnquiries, {
-    orderBy: { id: "asc" },
-    skip: ITEMS_PER_PAGE * page,
-    take: ITEMS_PER_PAGE,
-    where: {
-      enquiry_request: "APPROVED",
-    },
-  })
+  const search = (router.query.search as string) || ""
+  const take = Number(router.query.take) || 10
+
+  const [{ enquiries, hasMore, count: serachCount }, { refetch }] = usePaginatedQuery(
+    getEnquiries,
+    {
+      orderBy: { id: "asc" },
+      skip: take * page,
+      take: take,
+      where: {
+        client_name: {
+          contains: search.toLowerCase(),
+          mode: "insensitive",
+        },
+        enquiry_request: "APPROVED",
+      },
+    }
+  )
 
   const cardData = [
     {
@@ -171,9 +192,6 @@ export const EnquiriesList = () => {
   ]
   const session = useSession()
 
-  // const goToPreviousPage = () => router.push({ query: { page: page - 1 } })
-  // const goToNextPage = () => router.push({ query: { page: page + 1 } })
-
   return (
     <div>
       {!["USER", "PARTNER"].includes(session.role as string) && (
@@ -198,6 +216,8 @@ export const EnquiriesList = () => {
       )}
       <div>
         <Table
+          count={serachCount}
+          hasMore={hasMore}
           columns={columns}
           data={enquiries}
           rightRender={() => (
@@ -242,12 +262,6 @@ export const EnquiriesList = () => {
           title="Active Enquiries"
         />
       </div>
-      {/* <button disabled={page === 0} onClick={goToPreviousPage}>
-        Previous
-      </button>
-      <button disabled={!hasMore} onClick={goToNextPage}>
-        Next
-      </button> */}
     </div>
   )
 }
