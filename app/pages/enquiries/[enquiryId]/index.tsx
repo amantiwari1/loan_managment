@@ -1,16 +1,7 @@
 import { Suspense } from "react"
-import { Head, Link, useRouter, useQuery, useParam, BlitzPage, useMutation, Routes } from "blitz"
+import { Head, Link, useRouter, useQuery, useParam, BlitzPage, Routes } from "blitz"
 import Layout from "app/core/layouts/Layout"
-import {
-  Avatar,
-  Tab,
-  Tabs,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Text,
-  useColorModeValue,
-} from "@chakra-ui/react"
+import { Tab, Tabs, TabList, TabPanel, TabPanels, Text } from "@chakra-ui/react"
 import { Divider } from "@chakra-ui/react"
 import Overview from "app/enquiries/components/Overview"
 import Log from "app/logs/components/log"
@@ -23,12 +14,14 @@ import BankQuery from "app/bank-queries/components/BankQuery"
 import Teasers from "app/teasers/components/Teasers"
 import Loading from "app/core/components/Loading"
 import getEnquiry from "app/enquiries/queries/getEnquiry"
-import { Button } from "app/core/components/Button"
-import { toast } from "app/pages/_app"
 
 export const Enquiry = () => {
+  const router = useRouter()
+
+  const { pathname, query } = router
+
   const enquiryId = useParam("enquiryId", "number")
-  const [enquiry, { refetch }] = useQuery(
+  const [enquiry] = useQuery(
     getEnquiry,
     { id: enquiryId },
     {
@@ -82,7 +75,19 @@ export const Enquiry = () => {
 
       <div className="flex space-x-2 items-center"></div>
       <Divider my={4} />
-      <Tabs colorScheme="Customgreen" isLazy variant="enclosed">
+      <Tabs
+        colorScheme="Customgreen"
+        isLazy
+        variant="enclosed"
+        onChange={() => {
+          router.push({
+            pathname: pathname,
+            query: {
+              enquiryId,
+            },
+          })
+        }}
+      >
         <div className="overflow-scroll md:overflow-auto p-2">
           <TabList bg="white">
             {TabData.map((item) => (

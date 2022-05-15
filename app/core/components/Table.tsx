@@ -27,10 +27,6 @@ import DeleteKeyFromSpace from "app/documents/mutations/DeleteKeyFromSpace"
 import createMultiFileWithEnquiryId from "app/file/mutations/createMultiFileWithEnquiryId"
 import { toast } from "app/pages/_app"
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ")
-}
-
 export const TextCell = ({ value }) => <Text fontSize="sm">{value}</Text>
 
 // Define a default UI for filtering
