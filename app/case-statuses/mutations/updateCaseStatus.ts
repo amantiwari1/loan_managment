@@ -5,7 +5,7 @@ import { z } from "zod"
 
 const UpdateCaseStatus = z.object({
   id: z.number(),
-  bank_name: z.string(),
+  bank_code: z.string(),
   final_login: z.boolean(),
   remark: z.string().optional().default(""),
   enquiryId: z.number(),
@@ -18,9 +18,9 @@ export default resolver.pipe(
     const caseStatus = await db.caseStatus.update({
       where: { id },
       data: {
-        bank_name: list_of_bank[data.bank_name],
+        bank_query: list_of_bank[data.bank_code],
+        bank_code: data.bank_code,
         final_login: data.final_login,
-        enquiryId: data.enquiryId,
         remark: data.remark,
       },
     })
@@ -29,7 +29,8 @@ export default resolver.pipe(
       if (caseStatus.bankQueryId) {
         await db.bankQuery.update({
           data: {
-            bank_query: data.bank_name,
+            bank_query: list_of_bank[data.bank_code],
+            bank_code: data.bank_code,
           },
           where: {
             id: caseStatus.bankQueryId,
@@ -43,8 +44,8 @@ export default resolver.pipe(
                 id: caseStatus.id,
               },
             },
-            bank_query: data.bank_name,
-            enquiryId: data.enquiryId,
+            bank_query: list_of_bank[data.bank_code],
+            bank_code: data.bank_code,
             our_response: "",
           },
         })
@@ -55,8 +56,8 @@ export default resolver.pipe(
       data: {
         name: "Updated Case Status by",
         type: "UPDATED",
-        enquiryId: data.enquiryId,
         userId: ctx.session.userId,
+        enquiryId: data.enquiryId,
       },
     })
 

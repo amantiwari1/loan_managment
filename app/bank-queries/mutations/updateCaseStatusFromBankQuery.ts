@@ -6,30 +6,23 @@ import { z } from "zod"
 const UpdateBankQuery = z.object({
   id: z.number(),
   enquiryId: z.number(),
-  bank_code: z.string(),
-  our_response: z.string().optional().default(""),
-  remark: z.string().optional().default(""),
+  case_status: z.string(),
 })
 
 export default resolver.pipe(
   resolver.zod(UpdateBankQuery),
   resolver.authorize(["ADMIN", "STAFF"]),
   async ({ id, ...data }, ctx) => {
-    // TODO: in multi-tenant app, you must add validation to ensure correct tenant
-    const bankQuery = await db.bankQuery.update({
+    const bankQuery = await db.caseStatus.update({
       where: { id },
       data: {
-        bank_query: list_of_bank[data.bank_code],
-        bank_code: data.bank_code,
-        our_response: data.our_response,
-        remark: data.remark,
-        enquiryId: data.enquiryId,
+        case_status: data.case_status,
       },
     })
 
     await db.log.create({
       data: {
-        name: "Updated Project Report by",
+        name: "Updated Bank Query by",
         type: "UPDATED",
         enquiryId: data.enquiryId,
         userId: ctx.session.userId,

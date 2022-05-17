@@ -76,7 +76,7 @@ const columns = [
   },
   {
     Header: "Case Status",
-    accessor: "case_status[0].bank_name",
+    accessor: "case_status[0].case_status",
     id: "case_status",
     Cell: StatusCaseDashboardCell,
   },

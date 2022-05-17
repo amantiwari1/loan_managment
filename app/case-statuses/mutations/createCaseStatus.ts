@@ -4,7 +4,7 @@ import db from "db"
 import { z } from "zod"
 
 const CreateCaseStatus = z.object({
-  bank_name: z.string(),
+  bank_code: z.string(),
   final_login: z.boolean(),
   remark: z.string().optional().default(""),
   enquiryId: z.number(),
@@ -16,7 +16,8 @@ export default resolver.pipe(
   async (input, ctx) => {
     const caseStatus = await db.caseStatus.create({
       data: {
-        bank_name: list_of_bank[input.bank_name],
+        bank_name: list_of_bank[input.bank_code],
+        bank_code: input.bank_code,
         final_login: input.final_login,
         enquiryId: input.enquiryId,
         remark: input.remark,
@@ -31,7 +32,8 @@ export default resolver.pipe(
               id: caseStatus.id,
             },
           },
-          bank_query: input.bank_name,
+          bank_query: list_of_bank[input.bank_code],
+          bank_code: input.bank_code,
           enquiryId: input.enquiryId,
           our_response: "",
         },

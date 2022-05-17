@@ -41,6 +41,7 @@ export default resolver.pipe(
               case_status: {
                 select: {
                   bank_name: true,
+                  case_status: true,
                 },
                 where: {
                   final_login: true,
@@ -85,6 +86,7 @@ export default resolver.pipe(
             case_status: {
               select: {
                 bank_name: true,
+                case_status: true,
               },
               where: {
                 final_login: true,

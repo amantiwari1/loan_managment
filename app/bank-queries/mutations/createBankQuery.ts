@@ -4,7 +4,7 @@ import db from "db"
 import { z } from "zod"
 
 const CreateBankQuery = z.object({
-  bank_query: z.string(),
+  bank_code: z.string(),
   our_response: z.string().optional().default(""),
   enquiryId: z.number(),
   remark: z.string().optional().default(""),
@@ -16,7 +16,8 @@ export default resolver.pipe(
   async (input, ctx) => {
     const bankQuery = await db.bankQuery.create({
       data: {
-        bank_query: list_of_bank[input.bank_query],
+        bank_query: list_of_bank[input.bank_code],
+        bank_code: input.bank_code,
         our_response: input.our_response,
         remark: input.remark,
         enquiryId: input.enquiryId,

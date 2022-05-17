@@ -136,11 +136,9 @@ export const ClientNameCell = ({ value, row }) => {
 }
 
 export const StatusCaseDashboardCell = ({ value }) => (
-  <Text fontSize="sm">{value ? "Case status completed" : "Pending case status"}</Text>
+  <Text fontSize="sm">{value ?? "Pending case status"}</Text>
 )
-export const BankNameCell = ({ value }) => (
-  <Text fontSize="sm">{value ? list_of_bank[value] : "No Selected Bank"}</Text>
-)
+export const BankNameCell = ({ value }) => <Text fontSize="sm">{value ?? "No Selected Bank"}</Text>
 export const DateCell = ({ value }) => <Text fontSize="sm">{new Date(value).toDateString()}</Text>
 export const NumberCell = ({ value }) => (
   <Text fontSize="sm"> ₹{parseInt(value.toString()).toLocaleString("hi")}</Text>

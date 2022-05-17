@@ -16,9 +16,7 @@ import {
   useRouter,
   useSession,
 } from "blitz"
-import { Button } from "app/core/components/Button"
-import { AddIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons"
-import { useDisclosure } from "@chakra-ui/react"
+import { HStack, Text, useDisclosure } from "@chakra-ui/react"
 import { FORM_ERROR } from "final-form"
 import getLogs from "app/logs/queries/getLogs"
 import createBankQuery from "../mutations/createBankQuery"
@@ -29,6 +27,7 @@ import getBankQueries from "../queries/getBankQueries"
 import DrawerForm from "app/core/components/DrawerForm"
 import { ActionComponent } from "app/core/components/ActionComponent"
 import { toast } from "app/pages/_app"
+import BankNameDetails from "./BankNameDetails"
 
 const BankQuery = () => {
   const enquiryId = useParam("enquiryId", "number")
@@ -159,6 +158,7 @@ const BankQuery = () => {
 
   return (
     <div>
+      <BankNameDetails />
       <Table
         count={data.count}
         hasMore={data.hasMore}

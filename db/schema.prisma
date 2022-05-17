@@ -140,7 +140,9 @@ model CaseStatus {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   bank_name   String
+  bank_code   String?
   final_login Boolean
+  case_status String?
   remark      String?
   enquiryId   Int?
   bank_query  BankQuery? @relation(fields: [bankQueryId], references: [id])
@@ -165,6 +167,7 @@ model BankQuery {
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   bank_query   String
+  bank_code    String?
   our_response String
   remark       String?
   enquiryId    Int?
