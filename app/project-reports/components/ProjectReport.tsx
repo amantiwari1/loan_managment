@@ -26,6 +26,7 @@ import Table, {
   StatusPillCell,
 } from "app/core/components/Table"
 import { toast } from "app/pages/_app"
+import { ColumnDef } from "@tanstack/react-table"
 
 const ProjectReport = () => {
   const enquiryId = useParam("enquiryId", "number")
@@ -114,34 +115,34 @@ const ProjectReport = () => {
   }
   const session = useAuthenticatedSession()
 
-  const columns = [
+  const columns: ColumnDef<any>[] = [
     {
-      Header: "label",
-      accessor: "label",
+      header: "label",
+      accessorKey: "label",
     },
     {
-      Header: "remark",
-      accessor: "remark",
+      header: "remark",
+      accessorKey: "remark",
     },
     {
-      Header: "Status",
-      accessor: "file",
-      Cell: StatusPillCell,
+      header: "Status",
+      accessorKey: "file",
+      cell: StatusPillCell,
     },
     {
-      Header: "Download",
-      accessor: "file",
+      header: "Download",
+      accessorKey: "file",
       id: "id",
-      Cell: DownloadCell,
+      cell: DownloadCell,
     },
     {
-      Header: "Upload on",
-      accessor: "updatedAt",
-      Cell: DateCell,
+      header: "Upload on",
+      accessorKey: "updatedAt",
+      cell: DateCell,
     },
     {
-      Header: "Action",
-      Cell: ({ row }) => (
+      header: "Action",
+      cell: ({ row }) => (
         <ActionComponent
           session={session}
           isDeleting={isLoading}

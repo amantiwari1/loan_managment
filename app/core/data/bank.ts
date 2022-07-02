@@ -1,4 +1,4 @@
-export const list_of_bank = {
+export const list_of_bank: any = {
   AACX: "Akhand Anand Co.op Bank",
   ABBL: "AB Bank",
   ABCX: "Aurangabad District Central Co-operative Bank",

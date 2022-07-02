@@ -1,7 +1,7 @@
 import { generateToken, hash256, resolver, SecurePassword } from "blitz"
-import { InviteUserMailer } from "mailers/InviteUserMailer"
 import db from "db"
 import { z } from "zod"
+import { InviteUserMailerV1 } from "mailers/InviteUserMailerV1"
 
 const CreateUser = z.object({
   email: z
@@ -46,6 +46,15 @@ export default resolver.pipe(
         sentTo: user.email,
       },
     })
+
+    // 6. Send an email to the user with the token.
+
+    const resetUrl = `${origin}/welcome-password?token=${token}`
+    await InviteUserMailerV1({
+      to: user.email,
+      name: user.name as string,
+      url: resetUrl,
+    }).send()
 
     return token
   }

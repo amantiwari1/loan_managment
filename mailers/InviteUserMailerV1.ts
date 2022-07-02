@@ -5,10 +5,9 @@ type ResetPasswordMailer = {
   to: string
   name: string
   url: string
-  product: string
 }
 
-export function InviteUserMailer({ to, name, product, url }: ResetPasswordMailer) {
+export function InviteUserMailerV1({ to, name, url }: ResetPasswordMailer) {
   const msg = {
     from: "info@kredpartner.com",
     to,
@@ -18,10 +17,9 @@ export function InviteUserMailer({ to, name, product, url }: ResetPasswordMailer
     <html>
     <body>
     <p>Dear, ${name}</p>
-    <p>Your enquiry regarding ${product} has been approved. Here's the link to set your password </p>
+    <p>Here's the link to set your password </p>
     <a href="${url}" >Click here. <a> 
-    Id: ${to}
-
+ 
     <p>Thanks and Regards,</p>
 <p>Kredpartner</p>
 </body>

@@ -1,35 +1,19 @@
-import Table, {
-  DateCell,
-  DownloadCell,
-  NumberCell,
-  StatusPillCell,
-  TextCell,
-} from "app/core/components/Table"
+import Table, { DateCell, NumberCell, TextCell } from "app/core/components/Table"
 
 import React from "react"
 import {
   getQueryKey,
   queryClient,
-  Routes,
   useAuthenticatedSession,
   useMutation,
   useParam,
   useQuery,
   useRouter,
-  useSession,
 } from "blitz"
 import { Button } from "app/core/components/Button"
 import { AddIcon } from "@chakra-ui/icons"
 import {
   useDisclosure,
-  Popover,
-  PopoverTrigger,
-  Portal,
-  PopoverContent,
-  PopoverArrow,
-  PopoverHeader,
-  PopoverCloseButton,
-  PopoverBody,
   Text,
   AlertDialog,
   AlertDialogBody,
@@ -45,18 +29,16 @@ import deleteSanctionDisbursment from "../mutations/deleteSanctionDisbursment"
 import updateSanctionDisbursment from "../mutations/updateSanctionDisbursment"
 import { SanctionDisbursmentForm } from "./SanctionDisbursmentForm"
 import getSanctionDisbursments from "../queries/getSanctionDisbursments"
-import getEnquiry from "app/enquiries/queries/getEnquiry"
 import DrawerForm from "app/core/components/DrawerForm"
 import { ActionComponent } from "app/core/components/ActionComponent"
 import { client_service_options } from "app/common"
 import updateEnquiryRequest from "app/enquiries/mutations/updateEnquiryRequest"
 import { toast } from "app/pages/_app"
+import { ColumnDef } from "@tanstack/react-table"
 
 export const CreateButtonTable = ({ onClick, session, allowRoles, title }) => {
-  const router = useRouter()
-
   const [updateEnquiryMutation, { isLoading }] = useMutation(updateEnquiryRequest)
-  const enquiryId = useParam("enquiryId", "number")
+  const enquiryId = Number(useParam("enquiryId", "number"))
   const [isAlertOpen, setIsAlertOpen] = React.useState(false)
 
   const onAlertClose = () => setIsAlertOpen(false)
@@ -84,7 +66,7 @@ export const CreateButtonTable = ({ onClick, session, allowRoles, title }) => {
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete Document
+              Close Enquiry
             </AlertDialogHeader>
 
             <AlertDialogBody>
@@ -102,6 +84,7 @@ export const CreateButtonTable = ({ onClick, session, allowRoles, title }) => {
                 isLoading={isLoading}
                 onClick={async () => {
                   await updateEnquiryMutation({
+                    isNew: false,
                     id: enquiryId,
                     enquiry_request: "SANCTIONED",
                   })
@@ -208,45 +191,45 @@ const SanctionDisbursment = () => {
   }
   const session = useAuthenticatedSession()
 
-  const columns = [
+  const columns: ColumnDef<any>[] = [
     {
-      Header: "Client Name",
-      accessor: "client_name",
-      Cell: TextCell,
+      header: "Client Name",
+      accessorKey: "client_name",
+      cell: TextCell,
     },
     {
-      Header: "Product",
-      accessor: "product",
-      Cell: ({ value }) => <Text fontSize="sm">{client_service_options[value]}</Text>,
+      header: "Product",
+      accessorKey: "product",
+      cell: ({ getValue }) => <Text fontSize="sm">{client_service_options[getValue()]}</Text>,
     },
     {
-      Header: "Amount Sanctioned",
-      accessor: "amount_sanctioned",
-      Cell: NumberCell,
+      header: "Amount Sanctioned",
+      accessorKey: "amount_sanctioned",
+      cell: NumberCell,
     },
     {
-      Header: "Date of Sanction",
-      accessor: "date_of_sanction",
-      Cell: DateCell,
+      header: "Date of Sanction",
+      accessorKey: "date_of_sanction",
+      cell: DateCell,
     },
     {
-      Header: "Bank Name",
-      accessor: "bank_name",
-      Cell: TextCell,
+      header: "Bank Name",
+      accessorKey: "bank_name",
+      cell: TextCell,
     },
     {
-      Header: "Rate of Interest",
-      accessor: "rate_of_interest",
-      Cell: TextCell,
+      header: "Rate of Interest",
+      accessorKey: "rate_of_interest",
+      cell: TextCell,
     },
     {
-      Header: "Tenure",
-      accessor: "tenure",
-      Cell: TextCell,
+      header: "Tenure",
+      accessorKey: "tenure",
+      cell: TextCell,
     },
     {
-      Header: "Action",
-      Cell: ({ row }) => (
+      header: "Action",
+      cell: ({ row }) => (
         <ActionComponent
           session={session}
           isDeleting={isLoading}
@@ -289,9 +272,6 @@ const SanctionDisbursment = () => {
       >
         <SanctionDisbursmentForm
           submitText="Create Sanction Disbursment"
-          // TODO use a zod schema for form validation
-          //  - Tip: extract mutation's schema into a shared `validations.ts` file and
-          //         then import and use it here
           // schema={CreateSanctionDisbursment}
           initialValues={Edit}
           onSubmit={async (values) => {

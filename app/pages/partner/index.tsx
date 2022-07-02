@@ -1,12 +1,13 @@
 import { Suspense } from "react"
-import { Head, Link, usePaginatedQuery, useRouter, BlitzPage, Routes } from "blitz"
+import { Head, usePaginatedQuery, useRouter, BlitzPage } from "blitz"
 import Layout from "app/core/layouts/Layout"
 import getChannelPartners from "app/channel-partners/queries/getChannelPartners"
-import { IconButton, Text } from "@chakra-ui/react"
+import { IconButton } from "@chakra-ui/react"
 import { IoMdRefresh } from "react-icons/io"
 import Loading from "app/core/components/Loading"
 import { toast } from "../_app"
 import Table from "app/core/components/Table"
+import { ColumnDef } from "@tanstack/react-table"
 
 export const ChannelPartnersList = () => {
   const router = useRouter()
@@ -26,27 +27,27 @@ export const ChannelPartnersList = () => {
     },
   })
 
-  const columns = [
+  const columns: ColumnDef<any>[] = [
     {
-      Header: "Name",
-      accessor: "name",
+      header: "Name",
+      accessorKey: "name",
     },
     {
-      Header: "Email",
-      accessor: "email",
+      header: "Email",
+      accessorKey: "email",
     },
     {
-      Header: "Company",
-      accessor: "company",
+      header: "Company",
+      accessorKey: "company",
     },
     {
-      Header: "Phone",
-      accessor: "phone",
-      render: ({ value }) => <p>{value.toString()}</p>,
+      header: "Phone",
+      accessorKey: "phone",
+      cell: ({ getValue }) => <p>{getValue().toString()}</p>,
     },
     {
-      Header: "City",
-      accessor: "city",
+      header: "City",
+      accessorKey: "city",
     },
   ]
 

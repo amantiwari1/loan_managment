@@ -1,5 +1,3 @@
-import { Enquiry } from "@prisma/client"
-
 import React from "react"
 import {
   getQueryKey,
@@ -9,17 +7,8 @@ import {
   useParam,
   useQuery,
   useRouter,
-  useSession,
 } from "blitz"
-import { Button } from "app/core/components/Button"
-import Table, {
-  BankNameCell,
-  CreateButtonTable,
-  DateCell,
-  DownloadCell,
-  StatusPillCell,
-  TextCell,
-} from "app/core/components/Table"
+import Table, { CreateButtonTable, DateCell, TextCell } from "app/core/components/Table"
 
 import { useDisclosure, Tag } from "@chakra-ui/react"
 import { FORM_ERROR } from "final-form"
@@ -32,9 +21,11 @@ import getLogs from "../../logs/queries/getLogs"
 import DrawerForm from "app/core/components/DrawerForm"
 import { ActionComponent } from "app/core/components/ActionComponent"
 import { toast } from "app/pages/_app"
+import { ColumnDef } from "@tanstack/react-table"
+import { CreateCaseStatus } from "app/auth/validations"
 
 const CaseStatus = () => {
-  const enquiryId = useParam("enquiryId", "number")
+  const enquiryId = Number(useParam("enquiryId", "number"))
 
   const router = useRouter()
 
@@ -121,33 +112,33 @@ const CaseStatus = () => {
   }
   const session = useAuthenticatedSession()
 
-  const columns = [
+  const columns: ColumnDef<any>[] = [
     {
-      Header: "Bank Name",
-      accessor: "bank_name",
-      Cell: TextCell,
+      header: "Bank Name",
+      accessorKey: "bank_name",
+      cell: TextCell,
     },
     {
-      Header: "Final Login",
-      accessor: "final_login",
-      Cell: ({ value }) => (
+      header: "Final Login",
+      accessorKey: "final_login",
+      cell: ({ getValue }) => (
         <>
-          <Tag colorScheme={value ? "green" : "red"}>{value ? "Yes" : "No"}</Tag>
+          <Tag colorScheme={getValue() ? "green" : "red"}>{getValue() ? "Yes" : "No"}</Tag>
         </>
       ),
     },
     {
-      Header: "remark",
-      accessor: "remark",
+      header: "remark",
+      accessorKey: "remark",
     },
     {
-      Header: "Upload on",
-      accessor: "updatedAt",
-      Cell: DateCell,
+      header: "Upload on",
+      accessorKey: "updatedAt",
+      cell: DateCell,
     },
     {
-      Header: "Action",
-      Cell: ({ row }) => (
+      header: "Action",
+      cell: ({ row }) => (
         <ActionComponent
           session={session}
           isDeleting={isLoading}
@@ -190,22 +181,19 @@ const CaseStatus = () => {
       >
         <CaseStatusForm
           submitText="Create bank finalization"
-          // TODO use a zod schema for form validation
-          //  - Tip: extract mutation's schema into a shared `validations.ts` file and
-          //         then import and use it here
-          // schema={CreateCaseStatus}
+          schema={CreateCaseStatus}
           initialValues={Edit}
           onSubmit={async (values) => {
             try {
               if (values.id) {
                 await updateCaseStatusMutation({
                   ...values,
+                  id: values.id,
                   remark: values?.remark ? values?.remark : "",
                 })
               } else {
                 await createCaseStatusMutation({
                   ...values,
-                  client_name: "",
                   enquiryId: enquiryId,
                   remark: values?.remark ? values?.remark : "",
                 })

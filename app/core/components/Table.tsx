@@ -1,21 +1,35 @@
 import React, { useState } from "react"
-import { useTable, useSortBy } from "react-table"
+import {
+  Cell,
+  Column,
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  Row,
+  SortingState,
+  Table as TanstackTable,
+  useReactTable,
+} from "@tanstack/react-table"
+
+interface CellProps {
+  table: TanstackTable<any>
+  column: Column<any>
+  row: Row<any>
+  cell: Cell<any>
+  getValue: () => any
+  renderValue: () => any
+}
+
 import Select from "react-select"
 
 import { SortIcon, SortUpIcon, SortDownIcon } from "./Icon"
-import { Box, ButtonGroup, Center, Heading, IconButton, Input, Tag, Text } from "@chakra-ui/react"
+import { Box, ButtonGroup, Center, Heading, IconButton, Input, Text } from "@chakra-ui/react"
 import { AddIcon, DeleteIcon, DownloadIcon } from "@chakra-ui/icons"
 import { Button } from "./Button"
-import { list_of_bank } from "../data/bank"
 import { getQueryKey, Link, queryClient, Routes, useMutation, useParam, useRouter } from "blitz"
-import {
-  client_service_options,
-  client_service_options_data,
-  fileNameSplit,
-  getFileName,
-} from "app/common"
+import { client_service_options, fileNameSplit, getFileName } from "app/common"
 import DownloadPreSignUrl from "app/documents/mutations/DownloadPreSignUrl"
-import createMultiFile from "app/file/mutations/createMultiFile"
 import axios from "axios"
 
 import GetPreSignUrl from "app/documents/mutations/GetPreSignUrl"
@@ -27,10 +41,10 @@ import DeleteKeyFromSpace from "app/documents/mutations/DeleteKeyFromSpace"
 import createMultiFileWithEnquiryId from "app/file/mutations/createMultiFileWithEnquiryId"
 import { toast } from "app/pages/_app"
 
-export const TextCell = ({ value }) => <Text fontSize="sm">{value}</Text>
+export const TextCell = ({ getValue }: CellProps) => <Text fontSize="sm">{getValue()}</Text>
 
 // Define a default UI for filtering
-function GlobalFilter({ count }) {
+function GlobalFilter({ count }: { count: number }) {
   const router = useRouter()
   const { pathname, query } = router
 
@@ -73,93 +87,47 @@ function GlobalFilter({ count }) {
   )
 }
 
-// This is a custom filter UI for selecting
-// a unique option from a list
-export function SelectColumnFilter({
-  column: { filterValue, setFilter, preFilteredRows, id, render },
-}) {
-  // Calculate the options for filtering
-  // using the preFilteredRows
-  const options = React.useMemo(() => {
-    const options = new Set()
-    preFilteredRows.forEach((row) => {
-      options.add(row.values[id])
-    })
-    return [...(options.values() as any)]
-  }, [id, preFilteredRows])
-
-  // Render a multi-select box
-  return (
-    <label className="flex gap-x-2 items-baseline">
-      <span className="text-gray-700">{render("Header")}: </span>
-      <select
-        className="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        name={id}
-        id={id}
-        value={filterValue}
-        onChange={(e) => {
-          setFilter(e.target.value || undefined)
-        }}
-      >
-        <option value="">All</option>
-        {options.map((option, i) => (
-          <option key={i} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
-    </label>
-  )
-}
-
-const StatusData = {
-  true: {
-    color: "green",
-    title: "Uploaded",
-  },
-  false: {
-    color: "red",
-    title: "No Upload",
-  },
-}
-
-export const ClientNameCell = ({ value, row }) => {
+export const ClientNameCell = ({ getValue, row }: CellProps) => {
   const ServiceValue = client_service_options[row.original.client_service]
   return (
     <div>
       <Link href={Routes.ShowEnquiryPage({ enquiryId: row.original.id })}>
-        <a className="text-lg font-bold">{value}</a>
+        <a className="text-lg font-bold">{getValue()}</a>
       </Link>
       <p>{ServiceValue}</p>
     </div>
   )
 }
 
-export const StatusCaseDashboardCell = ({ value }) => (
-  <Text fontSize="sm">{value ?? "Pending case status"}</Text>
+export const StatusCaseDashboardCell = ({ getValue }: CellProps) => (
+  <Text fontSize="sm">{getValue() ?? "Pending case status"}</Text>
 )
-export const BankNameCell = ({ value }) => <Text fontSize="sm">{value ?? "No Selected Bank"}</Text>
-export const DateCell = ({ value }) => <Text fontSize="sm">{new Date(value).toDateString()}</Text>
-export const NumberCell = ({ value }) => (
-  <Text fontSize="sm"> ₹{parseInt(value.toString()).toLocaleString("hi")}</Text>
+export const BankNameCell = ({ getValue }: CellProps) => (
+  <Text fontSize="sm">{getValue() ?? "No Selected Bank"}</Text>
 )
-export const DownloadCell = ({ value }) => {
+export const DateCell = ({ getValue }: CellProps) => (
+  <Text fontSize="sm">{new Date(getValue()).toDateString()}</Text>
+)
+export const NumberCell = ({ getValue }: CellProps) => (
+  <Text fontSize="sm"> ₹{parseInt(getValue().toString()).toLocaleString("hi")}</Text>
+)
+export const DownloadCell = ({ getValue }: CellProps) => {
   const [DownloadPreSignUrlMutation, { isLoading: isLoadingUrl }] = useMutation(DownloadPreSignUrl)
 
   return (
     <>
-      {value?.name ? (
+      {getValue()?.name ? (
         <Button
           variant="outline"
           w={40}
           onClick={async () => {
-            const url = await DownloadPreSignUrlMutation({ key: value.key })
-            download(url, value.name)
+            const url = (await DownloadPreSignUrlMutation({ key: getValue()?.key })) as string
+            download(url, getValue().name)
           }}
           isLoading={isLoadingUrl}
           leftIcon={<DownloadIcon />}
         >
-          {value.name.substring(0, 6)}...{value.name.split(".").at(-1)}
+          {getValue().name.substring(0, 6)}...{getValue().name.split(".").at(-1)}
         </Button>
       ) : (
         <p>No Upload file</p>
@@ -179,14 +147,23 @@ function download(url: string, filename: string) {
     })
     .catch(console.error)
 }
-const DownloadButton = ({ name, keys, id, fileType }) => {
+const DownloadButton = ({
+  name,
+  keys,
+  id,
+  fileType,
+}: {
+  name: string
+  keys: string
+  id: number
+  fileType: string
+}) => {
   const enquiryId = useParam("enquiryId", "number")
 
   const [DownloadPreSignUrlMutation, { isLoading: isLoadingDownload }] =
     useMutation(DownloadPreSignUrl)
   const [DeleteFileMutation, { isLoading: isLoadingDelete }] = useMutation(deleteFile)
-  const [DeleteKeyFromSpaceMutation, { isLoading: isLoadingDeleteUrl }] =
-    useMutation(DeleteKeyFromSpace)
+  const [DeleteKeyFromSpaceMutation] = useMutation(DeleteKeyFromSpace)
 
   const removeFile = async (id: number, key: string) => {
     await DeleteKeyFromSpaceMutation({ key: key })
@@ -198,7 +175,7 @@ const DownloadButton = ({ name, keys, id, fileType }) => {
       <Button
         size="xs"
         onClick={async () => {
-          const url = await DownloadPreSignUrlMutation({ key: keys })
+          const url = (await DownloadPreSignUrlMutation({ key: keys })) as string
           download(url, name + "." + fileType)
         }}
         isLoading={isLoadingDownload || isLoadingDelete || isLoadingDelete}
@@ -218,7 +195,7 @@ const DownloadButton = ({ name, keys, id, fileType }) => {
   )
 }
 
-export const onRefreshDocumentData = async (enquiryId) => {
+export const onRefreshDocumentData = async (enquiryId: number | undefined) => {
   const queryKey = getQueryKey(getDocuments, {
     where: {
       enquiryId: enquiryId,
@@ -234,59 +211,74 @@ export const onRefreshDocumentData = async (enquiryId) => {
   await queryClient.invalidateQueries(queryKey)
   await queryClient.invalidateQueries(queryKeySecond)
 }
-
+interface fileProps {
+  name: string
+  id: number
+  fileType: string
+  key: string
+  relation_name: string
+}
 export const DownloadMultiCell = ({
   value,
   name,
   id,
   relationName,
 }: {
-  value: any
+  value: fileProps[]
   name: string
   id: number
   relationName: string
 }) => {
   const [GetPreSignUrlMutation] = useMutation(GetPreSignUrl)
-  const enquiryId = useParam("enquiryId", "number")
+  const enquiryId = useParam("enquiryId", "number") as number
   const [createFileMutation] = useMutation(createMultiFileWithEnquiryId)
   const [isUploading, setIsUploading] = useState(false)
 
   const uploadFile: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
     let isFailedUpload = false
     setIsUploading(true)
-    const files = []
-    for (let i = 0; i < e.target.files.length; i++) {
-      const key = getFileName(enquiryId, name, e.target.files[i].name)
-      const filename = fileNameSplit(e.target.files[i].name)
+    const files: fileProps[] = []
 
-      files.push({
-        key: key,
-        name: filename[0],
-        relation_name: relationName,
-        fileType: filename[1],
-        id: id,
-      })
-      const url = await GetPreSignUrlMutation({ key: key })
-      const formData = new FormData()
-      Object.entries({ file: e.target.files[i] }).forEach(([key, value]: any) => {
-        formData.append(key, value)
-      })
-      if (url) {
-        await axios.put(url, formData).catch((err) => {
-          isFailedUpload = true
-          toast({
-            title: "Failed to Upload file.",
-            status: "error",
-            isClosable: true,
+    if (e.target && e.target.files) {
+      for (let i = 0; i < e.target.files.length; i++) {
+        let filenameTarget = e?.target?.files[i]?.name
+
+        if (filenameTarget) {
+          const key = getFileName(enquiryId, name, filenameTarget)
+          const filename = fileNameSplit(filenameTarget)
+
+          if (filename && filename[0] && filename[1]) {
+            files.push({
+              key: key,
+              name: filename[0],
+              relation_name: relationName,
+              fileType: filename[1],
+              id: id,
+            })
+          }
+          const url = await GetPreSignUrlMutation({ key: key })
+          const formData = new FormData()
+          Object.entries({ file: e.target.files[i] }).forEach(([key, value]: any) => {
+            formData.append(key, value)
           })
-          console.log(err)
-        })
-      } else {
-        toast({
-          title: "Failed to Upload file.",
-          status: "error",
-          isClosable: true,
-        })
+          if (url) {
+            await axios.put(url, formData).catch((err) => {
+              isFailedUpload = true
+              toast({
+                title: "Failed to Upload file.",
+                status: "error",
+                isClosable: true,
+              })
+              console.log(err)
+            })
+          } else {
+            toast({
+              title: "Failed to Upload file.",
+              status: "error",
+              isClosable: true,
+            })
+          }
+        }
       }
     }
 
@@ -340,7 +332,21 @@ export const DownloadMultiCell = ({
   )
 }
 
-export const CreateButtonTable = ({ onClick, session, allowRoles, title }) => {
+interface CreateButtonTableProps {
+  onClick: () => void
+  allowRoles: string[]
+  title: string
+  session: {
+    role: string
+  }
+}
+
+export const CreateButtonTable = ({
+  onClick,
+  session,
+  allowRoles,
+  title,
+}: CreateButtonTableProps) => {
   return (
     <div>
       {allowRoles.includes(session.role as string) && (
@@ -351,13 +357,24 @@ export const CreateButtonTable = ({ onClick, session, allowRoles, title }) => {
     </div>
   )
 }
-export function StatusPillCell({ value }) {
+export const StatusPillCell = ({ getValue }: CellProps) => {
   return (
-    <Text fontSize="sm">{value?.id ? new Date(value.updatedAt).toString() : "No Upload file"}</Text>
+    <Text fontSize="sm">
+      {getValue()?.id ? new Date(getValue().updatedAt).toString() : "No Upload file"}
+    </Text>
   )
 }
 
-function Table({ columns, data, title, rightRender, count, hasMore }) {
+interface TableProps {
+  data: object[]
+  columns: ColumnDef<any>[]
+  title: string
+  rightRender?: () => JSX.Element
+  count: number
+  hasMore: boolean
+}
+
+function Table({ columns, data, title, rightRender, count, hasMore }: TableProps) {
   const router = useRouter()
   const { pathname, query } = router
 
@@ -373,13 +390,18 @@ function Table({ columns, data, title, rightRender, count, hasMore }) {
       },
     })
 
-  const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } = useTable(
-    {
-      columns,
-      data,
+  const [sorting, setSorting] = React.useState<SortingState>([])
+
+  const tableReact = useReactTable<any>({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
     },
-    useSortBy
-  )
+    onSortingChange: setSorting,
+  })
 
   // Render the UI for your table
   return (
@@ -391,49 +413,38 @@ function Table({ columns, data, title, rightRender, count, hasMore }) {
             <div className="shadow border-b bg-white border-gray-200 sm:rounded-lg">
               <div className="flex justify-between items-center p-2 px-3">
                 <p className="text-xl font-bold">{title}</p>
-                {rightRender()}
+                {rightRender ? rightRender() : null}
               </div>
 
               {/* SEARCH */}
               <div className="flex gap-x-2">
                 <GlobalFilter count={count} />
-                {headerGroups.map((headerGroup) =>
-                  headerGroup.headers.map((column) =>
-                    column.Filter ? (
-                      <div className="mt-2 sm:mt-0" key={column.id}>
-                        {column.render("Filter")}
-                      </div>
-                    ) : null
-                  )
-                )}
               </div>
 
               {/* TABLE */}
               <div className="overflow-x-auto ">
-                <table
-                  {...getTableProps()}
-                  className="divide-y  w-full overflow-x-auto border-collapse  divide-gray-200"
-                >
+                <table className="divide-y  w-full overflow-x-auto border-collapse  divide-gray-200">
                   <thead className="bg-blue-50 text-white">
-                    {headerGroups.map((headerGroup, key) => (
-                      <tr {...headerGroup.getHeaderGroupProps()} key={key}>
-                        {headerGroup.headers.map((column, key) => (
+                    {tableReact.getHeaderGroups().map((headerGroup) => (
+                      <tr key={headerGroup.id}>
+                        {headerGroup.headers.map((header) => (
                           <th
-                            scope="col"
-                            key={key}
+                            key={header.id}
+                            colSpan={header.colSpan}
                             className="group border px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider"
-                            {...column.getHeaderProps(column.getSortByToggleProps())}
                           >
-                            <div className="flex items-center space-x-1">
-                              <p>{column.render("Header")}</p>
+                            <div
+                              className="flex items-center space-x-1"
+                              {...{ onClick: header.column.getToggleSortingHandler() }}
+                            >
+                              <p>
+                                {flexRender(header?.column?.columnDef?.header, header.getContext())}
+                              </p>
                               <span>
-                                {column.isSorted ? (
-                                  column.isSortedDesc ? (
-                                    <SortDownIcon className="w-2 h-4 text-gray-400" />
-                                  ) : (
-                                    <SortUpIcon className="w-2 h-4 text-gray-400" />
-                                  )
-                                ) : (
+                                {{
+                                  asc: <SortUpIcon className="w-2 h-4 text-gray-400" />,
+                                  desc: <SortDownIcon className="w-2 h-4 text-gray-400" />,
+                                }[header.column.getIsSorted() as string] ?? (
                                   <SortIcon className="w-2 h-4 text-gray-400 " />
                                 )}
                               </span>
@@ -443,31 +454,28 @@ function Table({ columns, data, title, rightRender, count, hasMore }) {
                       </tr>
                     ))}
                   </thead>
-                  <tbody {...getTableBodyProps()} className="bg-white divide-y divide-gray-200">
-                    {rows.map((row, i) => {
-                      // new
-                      prepareRow(row)
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {tableReact.getRowModel().rows.map((row, i) => {
                       return (
                         <tr
                           className={
                             i % 2 === 0 ? "hover:bg-green-200" : "bg-green-50 hover:bg-green-200 "
                           }
-                          key={i}
-                          {...row.getRowProps()}
+                          key={row.id}
                         >
-                          {row.cells.map((cell, key) => {
+                          {row.getVisibleCells().map((cell) => {
                             return (
                               <td
-                                key={key}
-                                {...cell.getCellProps()}
+                                key={cell.id}
                                 className="px-6 py-1 border whitespace-nowrap"
                                 role="cell"
                               >
-                                {cell.column.Cell.name === "defaultRenderer" ? (
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                {/* {cell.column.columnDef.name === "defaultRenderer" ? (
                                   <div className="text-sm text-gray-500">{cell.render("Cell")}</div>
                                 ) : (
                                   cell.render("Cell")
-                                )}
+                                )} */}
                               </td>
                             )
                           })}
@@ -476,7 +484,7 @@ function Table({ columns, data, title, rightRender, count, hasMore }) {
                     })}
                   </tbody>
                 </table>
-                {rows && rows.length === 0 && (
+                {tableReact.getRowModel().rows && tableReact.getRowModel().rows.length === 0 && (
                   <Box w="full" p={5} rounded="md" shadow="md">
                     <Center>
                       <svg
@@ -587,7 +595,7 @@ function Table({ columns, data, title, rightRender, count, hasMore }) {
                   pathname,
                   query: {
                     ...query,
-                    take: Number(e.value),
+                    take: Number(e?.value),
                     page: 0,
                   },
                 })

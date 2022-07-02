@@ -8,10 +8,8 @@ import {
   useMutation,
 } from "blitz"
 import Layout from "app/core/layouts/Layout"
-
 import getEnquiries from "app/enquiries/queries/getEnquiries"
 import { Suspense } from "react"
-import { Enquiry } from "@prisma/client"
 import { IoMdRefresh } from "react-icons/io"
 import Loading from "app/core/components/Loading"
 
@@ -21,7 +19,6 @@ import {
   PopoverBody,
   PopoverCloseButton,
   PopoverContent,
-  PopoverFooter,
   Popover,
   PopoverHeader,
   PopoverTrigger,
@@ -33,8 +30,9 @@ import { Button } from "app/core/components/Button"
 import updateEnquiryRequest from "app/enquiries/mutations/updateEnquiryRequest"
 import Table, { DateCell, NumberCell } from "app/core/components/Table"
 import { toast } from "../_app"
+import { ColumnDef } from "@tanstack/react-table"
 
-const Client_Service = {
+const Client_Service: any = {
   HOME_LOAN: "Home Loan",
   MORTGAGE_LOAN: "Mortgage Loan",
   UNSECURED_LOAN: "Unsecured Loan",
@@ -46,45 +44,45 @@ const Client_Service = {
 export const EnquiriesList = () => {
   const [updateEnquiryMutation, { isLoading }] = useMutation(updateEnquiryRequest)
 
-  const columns = [
+  const columns: ColumnDef<any>[] = [
     {
-      Header: "Client Name",
-      accessor: "client_name",
-      Cell: ({ value, row }) => (
+      header: "Client Name",
+      accessorKey: "client_name",
+      cell: ({ getValue, row }) => (
         <div>
           <Link href={Routes.ShowEnquiryPage({ enquiryId: row.original.id })}>
-            <a className="text-lg font-bold">{value}</a>
+            <a className="text-lg font-bold">{getValue()}</a>
           </Link>
           <p>{Client_Service[row.original.client_service]}</p>
         </div>
       ),
     },
     {
-      Header: "Amount",
-      accessor: "loan_amount",
-      key: "loan_amount",
-      Cell: NumberCell,
+      header: "Amount",
+      accessorKey: "loan_amount",
+      id: "loan_amount",
+      cell: NumberCell,
     },
     {
-      Header: "Channel Partner",
-      accessor: "users",
-      Cell: ({ value }) => (
+      header: "Channel Partner",
+      accessorKey: "users",
+      cell: ({ getValue }) => (
         <Text fontWeight="medium" textTransform="capitalize">
-          {value.length !== 0 ? value[0]?.user?.name ?? "Not Selected" : "Not Selected"}
+          {getValue().length !== 0 ? getValue()[0]?.user?.name ?? "Not Selected" : "Not Selected"}
         </Text>
       ),
     },
     {
-      Header: "Last Updated",
-      accessor: "updatedAt",
-      key: "updatedAt",
-      Cell: DateCell,
+      header: "Last Updated",
+      accessorKey: "updatedAt",
+      id: "updatedAt",
+      cell: DateCell,
     },
     {
-      Header: "Actions",
-      accessor: "id",
-      key: "id",
-      Cell: ({ value }) => (
+      header: "Actions",
+      accessorKey: "id",
+      id: "id",
+      cell: ({ getValue }) => (
         <div className="space-x-5">
           <Popover>
             <PopoverTrigger>
@@ -108,11 +106,12 @@ export const EnquiriesList = () => {
                       isLoading={isLoading}
                       onClick={async () => {
                         await updateEnquiryMutation({
-                          id: value,
+                          isNew: true,
+                          id: getValue(),
                           enquiry_request: "APPROVED",
                         })
 
-                        router.push(Routes.ShowEnquiryPage({ enquiryId: value }))
+                        router.push(Routes.ShowEnquiryPage({ enquiryId: getValue() }))
                       }}
                       w={50}
                     >
@@ -145,7 +144,8 @@ export const EnquiriesList = () => {
                       isLoading={isLoading}
                       onClick={async () => {
                         await updateEnquiryMutation({
-                          id: value,
+                          isNew: true,
+                          id: getValue(),
                           enquiry_request: "REJECTED",
                         })
 

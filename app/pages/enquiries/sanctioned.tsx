@@ -1,29 +1,28 @@
-import { Link, BlitzPage, Routes, usePaginatedQuery, useRouter, useSession } from "blitz"
+import { BlitzPage, Routes, usePaginatedQuery, useRouter, useSession } from "blitz"
 import Layout from "app/core/layouts/Layout"
 import getEnquiries from "app/enquiries/queries/getEnquiries"
 import { Suspense } from "react"
 import Loading from "app/core/components/Loading"
 import Table, { NumberCell, DateCell, ClientNameCell } from "app/core/components/Table"
+import { ColumnDef } from "@tanstack/react-table"
 
-const ITEMS_PER_PAGE = 100
-
-const columns = [
+const columns: ColumnDef<any>[] = [
   {
-    Header: "Client Name",
-    accessor: "client_name",
-    Cell: ClientNameCell,
+    header: "Client Name",
+    accessorKey: "client_name",
+    cell: ClientNameCell,
   },
   {
-    Header: "Amount",
-    accessor: "loan_amount",
-    key: "loan_amount",
-    Cell: NumberCell,
+    header: "Amount",
+    accessorKey: "loan_amount",
+    id: "loan_amount",
+    cell: NumberCell,
   },
   {
-    Header: "Last Updated",
-    accessor: "updatedAt",
-    key: "updatedAt",
-    Cell: DateCell,
+    header: "Last Updated",
+    accessorKey: "updatedAt",
+    id: "updatedAt",
+    cell: DateCell,
   },
 ]
 
@@ -32,7 +31,7 @@ export const EnquiriesList = () => {
   const page = Number(router.query.page) || 0
   const search = (router.query.search as string) || ""
   const take = Number(router.query.take) || 10
-  const [{ enquiries, hasMore, count }, { refetch }] = usePaginatedQuery(getEnquiries, {
+  const [{ enquiries, hasMore, count }] = usePaginatedQuery(getEnquiries, {
     orderBy: { id: "asc" },
     skip: take * page,
     take: take,
@@ -53,7 +52,6 @@ export const EnquiriesList = () => {
       <Table
         count={count}
         hasMore={hasMore}
-        rightRender={() => {}}
         columns={columns}
         data={enquiries}
         title="Sanctioned Enquiries"

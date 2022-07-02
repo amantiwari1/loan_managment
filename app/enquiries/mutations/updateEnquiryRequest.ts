@@ -16,20 +16,7 @@ function generatePassword() {
 const UpdateEnquiry = z.object({
   id: z.number(),
   enquiry_request: z.enum(["PENDING", "APPROVED", "REJECTED", "SANCTIONED"]),
-})
-
-const CreateUser = z.object({
-  email: z
-    .string()
-    .email()
-    .transform((str) => str.toLowerCase().trim()),
-  password: z
-    .string()
-    .min(10)
-    .max(100)
-    .transform((str) => str.trim()),
-  name: z.string().max(50),
-  role: z.enum(["ADMIN", "USER", "STAFF", "PARTNER"]),
+  isNew: z.boolean(),
 })
 
 const RESET_PASSWORD_TOKEN_EXPIRATION_IN_HOURS = 720
@@ -37,13 +24,13 @@ const RESET_PASSWORD_TOKEN_EXPIRATION_IN_HOURS = 720
 export default resolver.pipe(
   resolver.zod(UpdateEnquiry),
   resolver.authorize(["ADMIN"]),
-  async ({ id, enquiry_request }) => {
+  async ({ id, enquiry_request, isNew }) => {
     const enquiry: Enquiry = await db.enquiry.update({
       where: { id },
       data: { enquiry_request: enquiry_request },
     })
 
-    if (enquiry_request === "APPROVED") {
+    if (enquiry_request === "APPROVED" && isNew) {
       const origin = process.env.APP_ORIGIN || process.env.BLITZ_DEV_SERVER_ORIGIN
       const hashedPassword = await SecurePassword.hash(generatePassword().trim())
       const user = await db.user.create({
@@ -86,7 +73,7 @@ export default resolver.pipe(
       const resetUrl = `${origin}/welcome-password?token=${token}`
       await InviteUserMailer({
         to: user.email,
-        name: user.name,
+        name: user.name as string,
         product: enquiry.client_service,
         url: resetUrl,
       }).send()

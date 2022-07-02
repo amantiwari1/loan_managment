@@ -1,8 +1,8 @@
 import { Router } from "blitz"
 import NProgress from "nprogress"
 
-let timer
-let state
+let timer: any
+let state: "stop" | "loading" = "stop"
 let activeRequests = 0
 const delay = 250
 

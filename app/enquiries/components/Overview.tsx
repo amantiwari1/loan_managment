@@ -1,19 +1,26 @@
-import { Enquiry } from "@prisma/client"
-import { Divider } from "@chakra-ui/react"
-import React, { useState } from "react"
-import Select from "react-select"
-import { BiEdit, BiMap, BiRupee, BiUser } from "react-icons/bi"
+import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  Divider,
+} from "@chakra-ui/react"
+import React from "react"
+import { BiMap, BiRupee, BiUser } from "react-icons/bi"
 import { BsStar, BsTelephone } from "react-icons/bs"
 import { MdOutlineAlternateEmail } from "react-icons/md"
-import { FiUsers } from "react-icons/fi"
 
 import { Box, Heading, Text } from "@chakra-ui/react"
-import { useParam, useQuery, useSession } from "blitz"
+import { Router, Routes, useMutation, useParam, useQuery, useRouter, useSession } from "blitz"
 import getEnquiry from "../queries/getEnquiry"
 import PartnerSelect from "./PartnerSelect"
 import CustomerSelect from "./CustomerSelect"
 import StaffSelect from "./StaffSelect"
 import { client_service_options, client_occupations_type_options } from "app/common"
+import { Button } from "app/core/components/Button"
+import updateEnquiryRequest from "../mutations/updateEnquiryRequest"
 
 const Overview = () => {
   const enquiryId = useParam("enquiryId", "number")
@@ -77,9 +84,13 @@ const Overview = () => {
 
   return (
     <Box backgroundColor="white" p={5}>
-      <Heading as="h4" size="md">
-        Enquiry Overview
-      </Heading>
+      <div className="flex gap-5">
+        <Heading as="h4" size="md">
+          Enquiry Overview
+        </Heading>
+
+        <CloseEquiry request={enquiry.enquiry_request} />
+      </div>
 
       <Divider my={4} />
       {enquiry.enquiry_request === "APPROVED" ? (
@@ -146,6 +157,74 @@ const Overview = () => {
         </div>
       )}
     </Box>
+  )
+}
+
+const CloseEquiry = ({ request }: { request: string }) => {
+  const [updateEnquiryMutation, { isLoading }] = useMutation(updateEnquiryRequest)
+  const enquiryId = Number(useParam("enquiryId", "number"))
+  const [isAlertOpen, setIsAlertOpen] = React.useState(false)
+
+  const onAlertClose = () => setIsAlertOpen(false)
+  const onAlertOpen = () => setIsAlertOpen(true)
+
+  const firstField = React.useRef(null)
+  // router
+  const router = useRouter()
+
+  if (request === "PENDING") {
+    return <></>
+  }
+
+  return (
+    <>
+      <Button w={200} onClick={onAlertOpen} isLoading={isLoading} colorScheme="Customblue">
+        {request === "REJECTED" || request === "SANCTIONED" ? "Approve Enquiry" : "Close Enquiry"}
+      </Button>
+      <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={firstField} onClose={onAlertClose}>
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {request === "REJECTED" || request === "SANCTIONED"
+                ? "Approve Enquiry"
+                : "Close Enquiry"}
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              Are you sure you want to close this enquiry? You can&apos;t undo this action
+              afterwards.
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button size="sm" ref={firstField} variant="outline" onClick={onAlertClose}>
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                colorScheme="red"
+                isLoading={isLoading}
+                onClick={async () => {
+                  await updateEnquiryMutation({
+                    isNew: false,
+                    id: enquiryId,
+                    enquiry_request:
+                      request === "REJECTED" || request === "SANCTIONED" ? "APPROVED" : "REJECTED",
+                  })
+
+                  router.push(Routes.Home())
+                  onAlertClose()
+                }}
+                ml={3}
+              >
+                {request === "REJECTED" || request === "SANCTIONED"
+                  ? "Approve Enquiry"
+                  : "Close Enquiry"}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+    </>
   )
 }
 

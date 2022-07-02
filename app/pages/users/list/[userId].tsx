@@ -5,38 +5,37 @@ import getUsers from "app/users/queries/getUsers"
 import { Button } from "app/core/components/Button"
 import Loading from "app/core/components/Loading"
 import Table, { DateCell } from "app/core/components/Table"
+import { ColumnDef } from "@tanstack/react-table"
 
-const ITEMS_PER_PAGE = 100
-
-const Columns = [
+const Columns: ColumnDef<any>[] = [
   {
-    Header: "createdAt",
-    accessor: "createdAt",
-    Cell: DateCell,
+    header: "createdAt",
+    accessorKey: "createdAt",
+    cell: DateCell,
   },
   {
-    Header: "updatedAt",
-    accessor: "updatedAt",
-    Cell: DateCell,
+    header: "updatedAt",
+    accessorKey: "updatedAt",
+    cell: DateCell,
   },
   {
-    Header: "Name",
-    accessor: "name",
-    Cell: ({ value }) => <p>{value ? value : "No Name"}</p>,
+    header: "Name",
+    accessorKey: "name",
+    cell: ({ getValue }) => <p>{getValue() ? getValue() : "No Name"}</p>,
   },
   {
-    Header: "Email",
-    accessor: "email",
+    header: "Email",
+    accessorKey: "email",
   },
   {
-    Header: "Role",
-    accessor: "role",
+    header: "Role",
+    accessorKey: "role",
   },
   {
-    Header: "Action",
-    accessor: "id",
-    Cell: ({ value }) => (
-      <Link href={Routes.EditUserPage({ userId: value })}>
+    header: "Action",
+    accessorKey: "id",
+    cell: ({ getValue }) => (
+      <Link href={Routes.EditUserPage({ userId: getValue() })}>
         <a className="text-blue-400"> Edit</a>
       </Link>
     ),
@@ -69,7 +68,6 @@ export const UsersList = () => {
       columns={Columns}
       data={users}
       title={`List of ${role}`}
-      rightRender={() => {}}
     />
   )
 }

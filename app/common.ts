@@ -37,7 +37,7 @@ export const convertStringToKey = (str: string) => {
   return str.toLowerCase().replace(/ /g, "_").replace(/-/g, "_")
 }
 
-const objectMap = (obj, fn) =>
+const objectMap = (obj: any, fn: any) =>
   Object.fromEntries(Object.entries(obj).map(([k, v], i) => [k, fn(v, k, i)]))
 
 export const constructObject = (arr: { name: string }[]) => {
@@ -50,7 +50,7 @@ export const constructObject = (arr: { name: string }[]) => {
 export const exportToCSVWithColumn = function (
   tableData: any[],
   tableName: string,
-  tableColumn: Object
+  tableColumn: any
 ) {
   const column = Object.keys(tableData[0])
     .map((arr) => tableColumn[arr] ?? arr)
@@ -72,11 +72,11 @@ export const exportToCSVWithColumn = function (
   downloadLink.click()
 }
 
-export const exportToCSV = function (tableData, tableName) {
+export const exportToCSV = function (tableData: any, tableName: any) {
   let csvContent = "data:text/csv;charset=utf-8,"
   csvContent += [
     Object.keys(tableData[0]).join(","),
-    ...tableData.map((item) => Object.values(item).join(",").replace(/,\s*$/u, "")),
+    ...tableData.map((item: any) => Object.values(item).join(",").replace(/,\s*$/u, "")),
   ].join("\n")
   const data = encodeURI(csvContent)
   const downloadLink = document.createElement("a")
@@ -86,7 +86,7 @@ export const exportToCSV = function (tableData, tableName) {
   downloadLink.click()
 }
 
-export const client_service_options = [
+export const client_service_options: any = [
   { value: "HOME_LOAN", label: "Home Loan" },
   { value: "MORTGAGE_LOAN", label: "Mortgage Loan" },
   { value: "UNSECURED_LOAN", label: "Unsecured Loan" },
@@ -95,7 +95,7 @@ export const client_service_options = [
   { value: "SUBSIDY_SCHEMES", label: "Subsidy Schemes" },
 ].reduce((obj, item) => Object.assign(obj, { [item.value]: item.label }), {})
 
-export const client_occupations_type_options = [
+export const client_occupations_type_options: any = [
   { value: "SALARIED_INDIVIDUAL", label: "Salaried Individual" },
   { value: "INDIVIDUAL", label: "Individual" },
   {
