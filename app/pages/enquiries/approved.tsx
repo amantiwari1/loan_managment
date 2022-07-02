@@ -10,7 +10,7 @@ import Table, { NumberCell, DateCell, ClientNameCell } from "app/core/components
 import { toast } from "../_app"
 import { ColumnDef } from "@tanstack/react-table"
 
-const columns: ColumnDef<any>[] = [
+const columns = [
   {
     header: "Client Name",
     accessorKey: "client_name",

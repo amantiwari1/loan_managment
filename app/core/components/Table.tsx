@@ -2,18 +2,16 @@ import React, { useState } from "react"
 import {
   Cell,
   Column,
-  ColumnDef,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
   Row,
   SortingState,
-  Table as TanstackTable,
   useReactTable,
 } from "@tanstack/react-table"
 
 interface CellProps {
-  table: TanstackTable<any>
+  table: any
   column: Column<any>
   row: Row<any>
   cell: Cell<any>
@@ -367,7 +365,7 @@ export const StatusPillCell = ({ getValue }: CellProps) => {
 
 interface TableProps {
   data: object[]
-  columns: ColumnDef<any>[]
+  columns: any[]
   title: string
   rightRender?: () => JSX.Element
   count: number
@@ -392,7 +390,7 @@ function Table({ columns, data, title, rightRender, count, hasMore }: TableProps
 
   const [sorting, setSorting] = React.useState<SortingState>([])
 
-  const tableReact = useReactTable<any>({
+  const tableReact = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -471,11 +469,6 @@ function Table({ columns, data, title, rightRender, count, hasMore }: TableProps
                                 role="cell"
                               >
                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                {/* {cell.column.columnDef.name === "defaultRenderer" ? (
-                                  <div className="text-sm text-gray-500">{cell.render("Cell")}</div>
-                                ) : (
-                                  cell.render("Cell")
-                                )} */}
                               </td>
                             )
                           })}

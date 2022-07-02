@@ -112,7 +112,7 @@ const CaseStatus = () => {
   }
   const session = useAuthenticatedSession()
 
-  const columns: ColumnDef<any>[] = [
+  const columns = [
     {
       header: "Bank Name",
       accessorKey: "bank_name",

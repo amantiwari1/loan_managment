@@ -115,7 +115,7 @@ const ProjectReport = () => {
   }
   const session = useAuthenticatedSession()
 
-  const columns: ColumnDef<any>[] = [
+  const columns = [
     {
       header: "label",
       accessorKey: "label",

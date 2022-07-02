@@ -44,7 +44,7 @@ const Client_Service: any = {
 export const EnquiriesList = () => {
   const [updateEnquiryMutation, { isLoading }] = useMutation(updateEnquiryRequest)
 
-  const columns: ColumnDef<any>[] = [
+  const columns = [
     {
       header: "Client Name",
       accessorKey: "client_name",

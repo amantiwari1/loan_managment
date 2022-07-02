@@ -191,7 +191,7 @@ const SanctionDisbursment = () => {
   }
   const session = useAuthenticatedSession()
 
-  const columns: ColumnDef<any>[] = [
+  const columns = [
     {
       header: "Client Name",
       accessorKey: "client_name",

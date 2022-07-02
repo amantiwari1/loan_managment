@@ -7,7 +7,7 @@ import Loading from "app/core/components/Loading"
 import Table, { DateCell } from "app/core/components/Table"
 import { ColumnDef } from "@tanstack/react-table"
 
-const Columns: ColumnDef<any>[] = [
+const Columns = [
   {
     header: "createdAt",
     accessorKey: "createdAt",

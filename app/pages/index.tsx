@@ -41,7 +41,7 @@ const TableColumn = {
   case_status: "APPLIED BANK NAME",
 }
 
-const columns: ColumnDef<any>[] = [
+const columns = [
   {
     header: "Client Name",
     accessorKey: "client_name",

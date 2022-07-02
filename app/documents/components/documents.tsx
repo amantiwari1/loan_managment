@@ -210,7 +210,7 @@ const Document = () => {
     await refetch()
   }
 
-  const columns: ColumnDef<any>[] = [
+  const columns = [
     {
       header: "Document",
       accessorKey: "document_name",

@@ -120,7 +120,7 @@ const SearchValuationReport = () => {
     await refetch()
   }
 
-  const columns: ColumnDef<any>[] = [
+  const columns = [
     {
       header: "Document",
       accessorKey: "document",

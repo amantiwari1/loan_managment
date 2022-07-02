@@ -27,7 +27,7 @@ export const ChannelPartnersList = () => {
     },
   })
 
-  const columns: ColumnDef<any>[] = [
+  const columns = [
     {
       header: "Name",
       accessorKey: "name",
