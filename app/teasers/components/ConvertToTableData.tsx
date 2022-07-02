@@ -469,399 +469,397 @@ export const RetailsJsonTable = (datas: any) => {
   return data
 }
 
-export const RetailWordJsonTable = (datas: any, Image: any) => {
-  const table: any[] = []
+// export const RetailWordJsonTable = (datas: any, Image: any) => {
+//   const table: any[] = []
 
-  datas.teasers.forEach((arr: any, i: number) => {
-    const preData = MSMETableWordData(arr, RetailOrderedData)
+//   datas.teasers.forEach((arr: any, i: number) => {
+//     const preData = MSMETableWordData(arr, RetailOrderedData)
 
-    const oneTable = [
-      new Paragraph({
-        alignment: AlignmentType.LEFT,
-        children: [
-          new TextRun({
-            text: i === 0 ? `APPLICANT DETAILS :` : `CO-APPLICANT ${i} DETAILS:`,
-            bold: true,
-            size: 32,
-            color: "#000000",
-          }),
-        ],
-      }),
-      new Table({
-        columnWidths: [1000, 2000, 8000],
-        rows: [
-          new TableRow({
-            tableHeader: true,
-            children: [
-              new TableCell({
-                children: [new Paragraph("S. No.")],
-              }),
-              new TableCell({
-                children: [new Paragraph("Key Parameters")],
-              }),
-              new TableCell({
-                children: [new Paragraph("Particulars")],
-              }),
-            ],
-          }),
-          ...preData,
-        ],
-      }),
-    ]
+//     const oneTable = [
+//       new Paragraph({
+//         alignment: AlignmentType.LEFT,
+//         children: [
+//           new TextRun({
+//             text: i === 0 ? `APPLICANT DETAILS :` : `CO-APPLICANT ${i} DETAILS:`,
+//             bold: true,
+//             size: 32,
+//             color: "#000000",
+//           }),
+//         ],
+//       }),
+//       new Table({
+//         columnWidths: [1000, 2000, 8000],
+//         rows: [
+//           new TableRow({
+//             tableHeader: true,
+//             children: [
+//               new TableCell({
+//                 children: [new Paragraph("S. No.")],
+//               }),
+//               new TableCell({
+//                 children: [new Paragraph("Key Parameters")],
+//               }),
+//               new TableCell({
+//                 children: [new Paragraph("Particulars")],
+//               }),
+//             ],
+//           }),
+//           ...preData,
+//         ],
+//       }),
+//     ]
 
-    table.push(oneTable)
-  })
-  const doc: Document = new Document({
-    sections: [
-      {
-        properties: {
-          page: {
-            margin: {
-              bottom: 150,
-              left: 150,
-              right: 150,
-              top: 150,
-            },
-            borders: {
-              pageBorderLeft: {
-                style: BorderStyle.SINGLE,
-                size: 3,
-                color: "auto",
-                space: 1,
-              },
-              pageBorderRight: {
-                style: BorderStyle.SINGLE,
-                size: 3,
-                color: "auto",
-                space: 1,
-              },
-              pageBorderTop: {
-                style: BorderStyle.SINGLE,
-                size: 3,
-                color: "auto",
-                space: 1,
-              },
-              pageBorderBottom: {
-                style: BorderStyle.SINGLE,
-                size: 3,
-                color: "auto",
-                space: 1,
-              },
-            },
-          },
-        },
-        headers: {
-          default: new Header({
-            children: [
-              new Paragraph({
-                children: [Image],
-              }),
-            ],
-          }),
-        },
-        children: [
-          new Paragraph({
-            alignment: AlignmentType.CENTER,
-            children: [
-              new TextRun({
-                text: "Teaser",
-                bold: true,
-                size: 32,
-                color: "#000000",
-              }),
-            ],
-          }),
-          ...table,
-        ],
-      },
-    ],
-  })
+//     table.push(oneTable)
+//   })
+//   const doc: Document = new Document({
+//     sections: [
+//       {
+//         properties: {
+//           page: {
+//             margin: {
+//               bottom: 150,
+//               left: 150,
+//               right: 150,
+//               top: 150,
+//             },
+//             borders: {
+//               pageBorderLeft: {
+//                 style: BorderStyle.SINGLE,
+//                 size: 3,
+//                 color: "auto",
+//                 space: 1,
+//               },
+//               pageBorderRight: {
+//                 style: BorderStyle.SINGLE,
+//                 size: 3,
+//                 color: "auto",
+//                 space: 1,
+//               },
+//               pageBorderTop: {
+//                 style: BorderStyle.SINGLE,
+//                 size: 3,
+//                 color: "auto",
+//                 space: 1,
+//               },
+//               pageBorderBottom: {
+//                 style: BorderStyle.SINGLE,
+//                 size: 3,
+//                 color: "auto",
+//                 space: 1,
+//               },
+//             },
+//           },
+//         },
+//         headers: {
+//           default: new Header({
+//             children: [
+//               new Paragraph({
+//                 children: [Image],
+//               }),
+//             ],
+//           }),
+//         },
+//         children: [
+//           new Paragraph({
+//             alignment: AlignmentType.CENTER,
+//             children: [
+//               new TextRun({
+//                 text: "Teaser",
+//                 bold: true,
+//                 size: 32,
+//                 color: "#000000",
+//               }),
+//             ],
+//           }),
+//           ...table,
+//         ],
+//       },
+//     ],
+//   })
 
-  return doc
-}
+//   return doc
+// }
 
 // ============================================ RETAIL ======================================================
 
-export const MSMETableWordData = (data: any, ordereddata: any) => {
-  return ordereddata.flatMap((arr: any, index: any) => {
-    if (!data) {
-      return []
-    }
+// export const MSMETableWordData = (data: any, ordereddata: any) => {
+//   return ordereddata.flatMap((arr: any, index: any) => {
+//     if (!data) {
+//       return []
+//     }
 
-    // ADDRESS
-    if (arr.key === "reg_address") {
-      return [
-        new TableRow({
-          children: [
-            new TableCell({
-              children: [new Paragraph(index + 1)],
-            }),
-            new TableCell({
-              children: [new Paragraph(arr.name)],
-            }),
-            new TableCell({
-              children: [
-                new Paragraph(
-                  `${data["house_no"] ?? ""},  ${data["street"] ?? ""},  ${data["city"] ?? ""}, ${
-                    data["state"] ?? ""
-                  }, ${data["pincode"] ?? ""}`
-                ),
-              ],
-            }),
-          ],
-        }),
-      ]
-    }
+//     // ADDRESS
+//     if (arr.key === "reg_address") {
+//       return [
+//         new TableRow({
+//           children: [
+//             new TableCell({
+//               children: [new Paragraph(index + 1)],
+//             }),
+//             new TableCell({
+//               children: [new Paragraph(arr.name)],
+//             }),
+//             new TableCell({
+//               children: [
+//                 new Paragraph(
+//                   `${data["house_no"] ?? ""},  ${data["street"] ?? ""},  ${data["city"] ?? ""}, ${
+//                     data["state"] ?? ""
+//                   }, ${data["pincode"] ?? ""}`
+//                 ),
+//               ],
+//             }),
+//           ],
+//         }),
+//       ]
+//     }
 
-    return []
+//     // financial_summary
+//     if (arr.key === "financial_summary") {
+//       let years = MSMETeaseData.summary.slice(0, 5).map((arr) => {
+//         if (!data[convertStringToKey(arr.name)]) {
+//           return [{ text: arr.name, fontSize: FONT_SIZE, bold: true }, ...["-", "-", "-", "-"]]
+//         }
 
-    // financial_summary
-    if (arr.key === "financial_summary") {
-      let years = MSMETeaseData.summary.slice(0, 5).map((arr) => {
-        if (!data[convertStringToKey(arr.name)]) {
-          return [{ text: arr.name, fontSize: FONT_SIZE, bold: true }, ...["-", "-", "-", "-"]]
-        }
+//         const datavalue = Object.values(data[convertStringToKey(arr.name)])
+//         const preData3 = datavalue.map((arr) => {
+//           return { text: arr, fontSize: FONT_SIZE }
+//         })
 
-        const datavalue = Object.values(data[convertStringToKey(arr.name)])
-        const preData3 = datavalue.map((arr) => {
-          return { text: arr, fontSize: FONT_SIZE }
-        })
+//         if (preData3.length < 4) {
+//           const filledNeeded = Array(4 - preData3.length).fill("-")
+//           filledNeeded.forEach((arr) => {
+//             preData3.push(arr)
+//           })
+//         }
 
-        if (preData3.length < 4) {
-          const filledNeeded = Array(4 - preData3.length).fill("-")
-          filledNeeded.forEach((arr) => {
-            preData3.push(arr)
-          })
-        }
+//         return [{ text: arr.name, fontSize: FONT_SIZE, bold: true }, ...preData3]
+//       })
 
-        return [{ text: arr.name, fontSize: FONT_SIZE, bold: true }, ...preData3]
-      })
+//       // half year
+//       const halfYear = MSMETeaseData.summary.slice(5).map((arr) => {
+//         if (!data[convertStringToKey(arr.name)]) {
+//           return [{ text: arr.name, fontSize: FONT_SIZE, bold: true }, ...["-", "-", "-", "-"]]
+//         }
 
-      // half year
-      const halfYear = MSMETeaseData.summary.slice(5).map((arr) => {
-        if (!data[convertStringToKey(arr.name)]) {
-          return [{ text: arr.name, fontSize: FONT_SIZE, bold: true }, ...["-", "-", "-", "-"]]
-        }
+//         const preData3 = Object.values(data[convertStringToKey(arr.name)]).map((arr) => [
+//           { text: arr, fontSize: FONT_SIZE },
+//         ])
 
-        const preData3 = Object.values(data[convertStringToKey(arr.name)]).map((arr) => [
-          { text: arr, fontSize: FONT_SIZE },
-        ])
+//         if (preData3.length !== 5) {
+//           const filledNeeded = Array(5 - preData3.length).fill("-")
+//           filledNeeded.forEach((arr) => {
+//             preData3.push(arr)
+//           })
+//         }
 
-        if (preData3.length !== 5) {
-          const filledNeeded = Array(5 - preData3.length).fill("-")
-          filledNeeded.forEach((arr) => {
-            preData3.push(arr)
-          })
-        }
+//         return [{ text: arr.name, fontSize: FONT_SIZE, bold: true }, ...preData3]
+//       })
 
-        return [{ text: arr.name, fontSize: FONT_SIZE, bold: true }, ...preData3]
-      })
+//       return [
+//         [
+//           index + 1,
+//           { text: arr.name, fontSize: FONT_SIZE, bold: true },
+//           [
+//             {
+//               text: `M/s. ${data["financial_summary"] ?? "___________"} (ITR details) :`,
+//               fontSize: FONT_SIZE,
+//               bold: true,
+//               margin: [10, 10, 10, 10],
+//             },
+//             {
+//               table: {
+//                 widths: ["auto", "*", "*", "*", "*"],
+//                 body: [
+//                   [
+//                     ...YearHeader.map((arr) => {
+//                       return {
+//                         text: arr,
+//                         fontSize: FONT_SIZE,
+//                         bold: true,
+//                       }
+//                     }),
+//                   ],
+//                   ...years,
+//                 ],
+//               },
+//             },
+//             {
+//               text: `Mr./Mrs. ${data["financial_summary1"] ?? "___________"}`,
+//               fontSize: FONT_SIZE,
+//               bold: true,
+//               margin: [10, 10, 10, 10],
+//             },
+//             {
+//               table: {
+//                 widths: ["auto", "*", "*", "*", "*"],
+//                 body: [
+//                   [
+//                     ...YearHeader.map((arr) => {
+//                       return {
+//                         text: arr,
+//                         fontSize: FONT_SIZE,
+//                         bold: true,
+//                       }
+//                     }),
+//                   ],
+//                   ...halfYear,
+//                 ],
+//               },
+//             },
+//           ],
+//         ],
+//       ]
+//     }
 
-      return [
-        [
-          index + 1,
-          { text: arr.name, fontSize: FONT_SIZE, bold: true },
-          [
-            {
-              text: `M/s. ${data["financial_summary"] ?? "___________"} (ITR details) :`,
-              fontSize: FONT_SIZE,
-              bold: true,
-              margin: [10, 10, 10, 10],
-            },
-            {
-              table: {
-                widths: ["auto", "*", "*", "*", "*"],
-                body: [
-                  [
-                    ...YearHeader.map((arr) => {
-                      return {
-                        text: arr,
-                        fontSize: FONT_SIZE,
-                        bold: true,
-                      }
-                    }),
-                  ],
-                  ...years,
-                ],
-              },
-            },
-            {
-              text: `Mr./Mrs. ${data["financial_summary1"] ?? "___________"}`,
-              fontSize: FONT_SIZE,
-              bold: true,
-              margin: [10, 10, 10, 10],
-            },
-            {
-              table: {
-                widths: ["auto", "*", "*", "*", "*"],
-                body: [
-                  [
-                    ...YearHeader.map((arr) => {
-                      return {
-                        text: arr,
-                        fontSize: FONT_SIZE,
-                        bold: true,
-                      }
-                    }),
-                  ],
-                  ...halfYear,
-                ],
-              },
-            },
-          ],
-        ],
-      ]
-    }
+//     // NULL
 
-    // NULL
+//     if (!data[arr.key] || (data[arr.key] && data[arr.key].length === 0)) {
+//       return []
+//     }
 
-    if (!data[arr.key] || (data[arr.key] && data[arr.key].length === 0)) {
-      return []
-    }
+//     if (typeof data[arr.key] === "string") {
+//       // Normal string
+//       return [
+//         [
+//           index + 1,
+//           { text: arr.name, fontSize: FONT_SIZE, bold: true },
+//           { text: data[arr.key], fontSize: FONT_SIZE },
+//         ],
+//       ]
+//     }
 
-    if (typeof data[arr.key] === "string") {
-      // Normal string
-      return [
-        [
-          index + 1,
-          { text: arr.name, fontSize: FONT_SIZE, bold: true },
-          { text: data[arr.key], fontSize: FONT_SIZE },
-        ],
-      ]
-    }
+//     // NESTED TABLE
+//     const preData1 = Object.entries<string>(data[arr.key]).map((Nestarr, i) => {
+//       let name = Nestarr[1]
 
-    // NESTED TABLE
-    const preData1 = Object.entries<string>(data[arr.key]).map((Nestarr, i) => {
-      let name = Nestarr[1]
+//       if (Nestarr[0] === "type_of_loan") {
+//         name = client_service_options[Nestarr[1]]
+//       }
 
-      if (Nestarr[0] === "type_of_loan") {
-        name = client_service_options[Nestarr[1]]
-      }
+//       if (convertStringToKey(arr.name) === "proposed_facilities") {
+//         return [
+//           { text: i + 1, fontSize: FONT_SIZE },
+//           { text: dataObject[Nestarr[0]] ?? Nestarr[0], fontSize: FONT_SIZE, bold: true },
+//           { text: name, fontSize: FONT_SIZE },
+//         ]
+//       }
+//       return [
+//         { text: dataObject[Nestarr[0]] ?? Nestarr[0], fontSize: FONT_SIZE, bold: true },
+//         { text: name, fontSize: FONT_SIZE },
+//       ]
+//     })
 
-      if (convertStringToKey(arr.name) === "proposed_facilities") {
-        return [
-          { text: i + 1, fontSize: FONT_SIZE },
-          { text: dataObject[Nestarr[0]] ?? Nestarr[0], fontSize: FONT_SIZE, bold: true },
-          { text: name, fontSize: FONT_SIZE },
-        ]
-      }
-      return [
-        { text: dataObject[Nestarr[0]] ?? Nestarr[0], fontSize: FONT_SIZE, bold: true },
-        { text: name, fontSize: FONT_SIZE },
-      ]
-    })
+//     const Parameters = dataObject[convertStringToKey(arr.name)] ?? arr.name
 
-    const Parameters = dataObject[convertStringToKey(arr.name)] ?? arr.name
+//     if (convertStringToKey(arr.name) === "existing_facilities") {
+//       return [
+//         [
+//           index + 1,
+//           {
+//             text: Parameters,
+//             fontSize: FONT_SIZE,
+//             bold: true,
+//           },
+//           [
+//             {
+//               text: `Proprietor __________ has availed the following Financial facilities:`,
+//               fontSize: FONT_SIZE,
+//               bold: true,
+//               margin: [10, 10, 10, 10],
+//             },
+//             { table: { widths: ["auto", "*"], body: preData1 } },
+//           ],
+//         ],
+//       ]
+//     }
 
-    if (convertStringToKey(arr.name) === "existing_facilities") {
-      return [
-        [
-          index + 1,
-          {
-            text: Parameters,
-            fontSize: FONT_SIZE,
-            bold: true,
-          },
-          [
-            {
-              text: `Proprietor __________ has availed the following Financial facilities:`,
-              fontSize: FONT_SIZE,
-              bold: true,
-              margin: [10, 10, 10, 10],
-            },
-            { table: { widths: ["auto", "*"], body: preData1 } },
-          ],
-        ],
-      ]
-    }
+//     if (convertStringToKey(arr.name) === "proposed_facilities") {
+//       return [
+//         [
+//           index + 1,
+//           {
+//             text: Parameters,
+//             fontSize: FONT_SIZE,
+//             bold: true,
+//           },
+//           { table: { widths: ["auto", "*", "*"], body: [ProposedHeaderText, ...preData1] } },
+//         ],
+//       ]
+//     }
 
-    if (convertStringToKey(arr.name) === "proposed_facilities") {
-      return [
-        [
-          index + 1,
-          {
-            text: Parameters,
-            fontSize: FONT_SIZE,
-            bold: true,
-          },
-          { table: { widths: ["auto", "*", "*"], body: [ProposedHeaderText, ...preData1] } },
-        ],
-      ]
-    }
+//     if (convertStringToKey(arr.name) === "security_offered") {
+//       return [
+//         [
+//           index + 1,
+//           {
+//             text: Parameters,
+//             fontSize: FONT_SIZE,
+//             bold: true,
+//           },
+//           [
+//             {
+//               text: `The firm is offering the following security against the credit facility proposed :`,
+//               fontSize: FONT_SIZE,
+//               margin: [10, 10, 10, 10],
+//             },
+//             {
+//               text: `Primary: ${data["security_offered"]["primary"]}`,
+//               fontSize: FONT_SIZE,
+//               bold: true,
+//               margin: [10, 10, 10, 10],
+//             },
+//             {
+//               text: `Collateral: ${data["security_offered"]["collateral"]}`,
+//               fontSize: FONT_SIZE,
+//               bold: true,
+//               margin: [10, 10, 10, 10],
+//             },
+//             { table: { widths: "*", body: transpose(preData1) } },
+//           ],
+//         ],
+//       ]
+//     }
 
-    if (convertStringToKey(arr.name) === "security_offered") {
-      return [
-        [
-          index + 1,
-          {
-            text: Parameters,
-            fontSize: FONT_SIZE,
-            bold: true,
-          },
-          [
-            {
-              text: `The firm is offering the following security against the credit facility proposed :`,
-              fontSize: FONT_SIZE,
-              margin: [10, 10, 10, 10],
-            },
-            {
-              text: `Primary: ${data["security_offered"]["primary"]}`,
-              fontSize: FONT_SIZE,
-              bold: true,
-              margin: [10, 10, 10, 10],
-            },
-            {
-              text: `Collateral: ${data["security_offered"]["collateral"]}`,
-              fontSize: FONT_SIZE,
-              bold: true,
-              margin: [10, 10, 10, 10],
-            },
-            { table: { widths: "*", body: transpose(preData1) } },
-          ],
-        ],
-      ]
-    }
+//     if (convertStringToKey(arr.name) === "guarantee") {
+//       return [
+//         [
+//           index + 1,
+//           {
+//             text: Parameters,
+//             fontSize: FONT_SIZE,
+//             bold: true,
+//           },
+//           [
+//             {
+//               text: `Personal Guarantee of the following persons:`,
+//               fontSize: FONT_SIZE,
+//               bold: true,
+//               margin: [2, 2, 2, 2],
+//             },
+//             {
+//               ol: preData1.map((arr: any) => {
+//                 return {
+//                   text: `${arr[1].text}`,
+//                   fontSize: FONT_SIZE,
+//                   margin: [2, 2, 2, 2],
+//                 }
+//               }),
+//             },
+//           ],
+//         ],
+//       ]
+//     }
 
-    if (convertStringToKey(arr.name) === "guarantee") {
-      return [
-        [
-          index + 1,
-          {
-            text: Parameters,
-            fontSize: FONT_SIZE,
-            bold: true,
-          },
-          [
-            {
-              text: `Personal Guarantee of the following persons:`,
-              fontSize: FONT_SIZE,
-              bold: true,
-              margin: [2, 2, 2, 2],
-            },
-            {
-              ol: preData1.map((arr: any) => {
-                return {
-                  text: `${arr[1].text}`,
-                  fontSize: FONT_SIZE,
-                  margin: [2, 2, 2, 2],
-                }
-              }),
-            },
-          ],
-        ],
-      ]
-    }
-
-    return [
-      [
-        index + 1,
-        {
-          text: Parameters,
-          fontSize: FONT_SIZE,
-          bold: true,
-        },
-        { table: { widths: ["auto", "*"], body: preData1 } },
-      ],
-    ]
-  })
-}
+//     return [
+//       [
+//         index + 1,
+//         {
+//           text: Parameters,
+//           fontSize: FONT_SIZE,
+//           bold: true,
+//         },
+//         { table: { widths: ["auto", "*"], body: preData1 } },
+//       ],
+//     ]
+//   })
+// }
