@@ -5,7 +5,7 @@ import updateCaseStatus from "../mutations/updateCaseStatusFromBankQuery"
 import getBankNameDetails from "../queries/getBankNameDetails"
 
 const BankNameDetails = () => {
-  const enquiryId = useParam("enquiryId", "number")
+  const enquiryId = Number(useParam("enquiryId", "number"))
 
   const [data] = useQuery(getBankNameDetails, {
     enquiryId,
@@ -24,11 +24,13 @@ const BankNameDetails = () => {
           w={250}
           defaultValue={data?.case_status ?? ""}
           onChange={(e) => {
-            updateCaseStatusMutation({
-              case_status: e.target.value,
-              enquiryId: enquiryId,
-              id: data.id,
-            })
+            if (data?.id) {
+              updateCaseStatusMutation({
+                case_status: e.target.value,
+                enquiryId: enquiryId,
+                id: data.id,
+              })
+            }
           }}
         />
       </HStack>

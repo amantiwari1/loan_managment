@@ -1,5 +1,3 @@
-import { Teaser } from "@prisma/client"
-
 import { Button } from "app/core/components/Button"
 import getRelationshipEnquiry from "app/enquiries/queries/getRelationshipEnquiry"
 import { Ctx, useMutation, useParam, useQuery } from "blitz"
@@ -13,8 +11,11 @@ import { RetailTeaserForm } from "./RetailTeaserForm"
 import pdfMake from "pdfmake/build/pdfmake.js"
 import pdfFonts from "pdfmake/build/vfs_fonts"
 import { MSMEJsonTable, RetailsJsonTable } from "./ConvertToTableData"
-import { MSMEMockData } from "../data"
 import { toast } from "app/pages/_app"
+
+// import { saveAs } from "file-saver"
+// import { BorderStyle, ImageRun, Packer } from "docx"
+
 pdfMake.vfs = pdfFonts.pdfMake.vfs
 
 if (typeof window !== "undefined") {
@@ -35,7 +36,7 @@ interface CustomRelationshipEnquiry {
 }
 
 const Teasers = () => {
-  const enquiryId = useParam("enquiryId", "number")
+  const enquiryId = Number(useParam("enquiryId", "number"))
   const [createTeaserMutation] = useMutation(createTeaser)
   const [updateTeaserMutation] = useMutation(updateTeaser)
   const [isLoadingExport, setIsLoadingExport] = useState(false)
@@ -64,7 +65,8 @@ const Teasers = () => {
       refetchOnWindowFocus: false,
     }
   )
-  const GeneratePDF = (name: string) => {
+  const GeneratePDF = async (name: string) => {
+    setIsLoadingExport(true)
     try {
       if (!enquiry?.Teaser?.data) {
         toast({
@@ -77,10 +79,10 @@ const Teasers = () => {
 
       if (["HOME_LOAN", "MORTGAGE_LOAN"].includes(enquiry.client_service)) {
         const data = RetailsJsonTable(enquiry?.Teaser?.data)
-        pdfMake.createPdf(data).download(`Retail Teaser ${enquiryId}`)
+        pdfMake.createPdf(data as any).download(`Retail Teaser ${enquiryId}`)
       } else {
         const data = MSMEJsonTable(enquiry?.Teaser?.data)
-        pdfMake.createPdf(data).download(`MSME Teaser ${enquiryId}`)
+        pdfMake.createPdf(data as any).download(`MSME Teaser ${enquiryId}`)
       }
     } catch (err) {
       toast({
@@ -88,8 +90,84 @@ const Teasers = () => {
         status: "error",
         isClosable: true,
       })
+    } finally {
+      setIsLoadingExport(false)
     }
   }
+
+  // const GenerateWord = async (name: string) => {
+  //   try {
+  //     if (!enquiry?.Teaser?.data) {
+  //       toast({
+  //         title: "Failed to export pdf due to incomplete form.",
+  //         status: "error",
+  //         isClosable: true,
+  //       })
+  //       return
+  //     }
+
+  //     if (["HOME_LOAN", "MORTGAGE_LOAN"].includes(enquiry.client_service)) {
+  //     } else {
+  //     }
+
+  //     const letterHead = await fetch("/logo.png")
+
+  //     const BordersCell = {
+  //       bottom: {
+  //         style: BorderStyle.TRIPLE,
+  //         size: 10,
+  //         color: "#000000",
+  //       },
+  //       left: {
+  //         style: BorderStyle.TRIPLE,
+  //         size: 10,
+  //         color: "#000000",
+  //       },
+  //       right: {
+  //         style: BorderStyle.TRIPLE,
+  //         size: 10,
+  //         color: "#000000",
+  //       },
+  //       top: {
+  //         style: BorderStyle.TRIPLE,
+  //         size: 10,
+  //         color: "#000000",
+  //       },
+  //     }
+
+  //     const iamgereal = await letterHead.arrayBuffer()
+  //     console.log("🚀 ~ file: Teasers.tsx ~ line 113 ~ GenerateWord ~ iamgereal", iamgereal)
+  //     const Image = new ImageRun({
+  //       data: iamgereal,
+  //       floating: {
+  //         horizontalPosition: {
+  //           offset: 6014400,
+  //         },
+  //         verticalPosition: {
+  //           offset: 0,
+  //         },
+  //       },
+  //       transformation: {
+  //         width: 100,
+  //         height: 20,
+  //       },
+  //     })
+
+  //     Packer.toBlob(doc).then((blob) => {
+  //       console.log(blob)
+  //       saveAs(blob, "example.docx")
+  //       console.log("Document created successfully")
+  //     })
+  //   } catch (err) {
+  //     console.log(err)
+
+  //     toast({
+  //       title: "Failed to export pdf due to incomplete form.",
+  //       status: "error",
+  //       isClosable: true,
+  //     })
+  //   }
+  // }
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -104,19 +182,29 @@ const Teasers = () => {
         >
           Export PDF
         </Button>
+
+        {/* <Button
+          onClick={() => GenerateWord("")}
+          variant="outline"
+          className="ml-auto"
+          leftIcon={<BiExport />}
+          w={200}
+          isLoading={isLoadingExport}
+        >
+          Export Word
+        </Button> */}
       </div>
       {["HOME_LOAN", "MORTGAGE_LOAN"].includes(enquiry.client_service) ? (
         <>
           <p className="text-2xl text-center">Retail Teaser</p>
           <RetailTeaserForm
             submitText="Save Teaser"
-            // TODO use a zod schema for form validation
             // schema={CreateTeaser}
             initialValues={(enquiry.Teaser?.data as any) ?? {}}
             onSubmit={async (values) => {
               try {
                 if (!enquiry?.Teaser?.id) {
-                  const teaser = await createTeaserMutation({
+                  await createTeaserMutation({
                     data: values,
                     enquiryId: enquiryId,
                   })

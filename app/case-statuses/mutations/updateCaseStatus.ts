@@ -7,7 +7,7 @@ const UpdateCaseStatus = z.object({
   id: z.number(),
   bank_code: z.string(),
   final_login: z.boolean(),
-  remark: z.string().optional().default(""),
+  remark: z.string().default("no remark").optional(),
   enquiryId: z.number(),
 })
 

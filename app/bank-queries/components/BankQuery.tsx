@@ -1,9 +1,4 @@
-import Table, {
-  BankNameCell,
-  CreateButtonTable,
-  DateCell,
-  TextCell,
-} from "app/core/components/Table"
+import Table, { CreateButtonTable, DateCell, TextCell } from "app/core/components/Table"
 
 import React from "react"
 import {
@@ -14,9 +9,8 @@ import {
   useParam,
   useQuery,
   useRouter,
-  useSession,
 } from "blitz"
-import { HStack, Text, useDisclosure } from "@chakra-ui/react"
+import { useDisclosure } from "@chakra-ui/react"
 import { FORM_ERROR } from "final-form"
 import getLogs from "app/logs/queries/getLogs"
 import createBankQuery from "../mutations/createBankQuery"
@@ -28,6 +22,7 @@ import DrawerForm from "app/core/components/DrawerForm"
 import { ActionComponent } from "app/core/components/ActionComponent"
 import { toast } from "app/pages/_app"
 import BankNameDetails from "./BankNameDetails"
+import { ColumnDef } from "@tanstack/react-table"
 
 const BankQuery = () => {
   const enquiryId = useParam("enquiryId", "number")
@@ -116,30 +111,30 @@ const BankQuery = () => {
     await refetch()
   }
 
-  const columns = [
+  const columns: ColumnDef<any, any>[] = [
     {
-      Header: "Bank Query",
-      accessor: "bank_query",
-      Cell: TextCell,
+      header: "Bank Query",
+      accessorKey: "bank_query",
+      cell: TextCell,
     },
     {
-      Header: "Our Response",
-      accessor: "our_response",
-      Cell: TextCell,
+      header: "Our Response",
+      accessorKey: "our_response",
+      cell: TextCell,
     },
     {
-      Header: "remark",
-      accessor: "remark",
-      Cell: TextCell,
+      header: "remark",
+      accessorKey: "remark",
+      cell: TextCell,
     },
     {
-      Header: "Upload on",
-      accessor: "updatedAt",
-      Cell: DateCell,
+      header: "Upload on",
+      accessorKey: "updatedAt",
+      cell: DateCell,
     },
     {
-      Header: "Action",
-      Cell: ({ row }) => (
+      header: "Action",
+      cell: ({ row }) => (
         <ActionComponent
           session={session}
           isDeleting={isLoading}

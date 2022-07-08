@@ -1,5 +1,5 @@
 import { Suspense } from "react"
-import { Head, Link, useRouter, useQuery, useMutation, useParam, BlitzPage, Routes } from "blitz"
+import { Head, useRouter, useQuery, useMutation, useParam, BlitzPage, Routes } from "blitz"
 import Layout from "app/core/layouts/Layout"
 import getUser from "app/users/queries/getUser"
 import updateUser from "app/users/mutations/updateUser"
@@ -12,25 +12,11 @@ import Loading from "app/core/components/Loading"
 import { UpdateUser } from "app/auth/validations"
 import { toast } from "app/pages/_app"
 
-const options = {
-  USER: "Customer",
-  PARTNER: "Partner",
-  STAFF: "Staff",
-  ADMIN: "Admin",
-}
-
 export const EditUser = () => {
   const userId = useParam("userId", "number")
-  const [user, { setQueryData }] = useQuery(
-    getUser,
-    { id: userId },
-    {
-      // This ensures the query never refreshes and overwrites the form data while the user is editing.
-      staleTime: Infinity,
-    }
-  )
+  const [user, { setQueryData }] = useQuery(getUser, { id: userId })
   const [updateUserMutation] = useMutation(updateUser)
-  const [deleteUserMutation] = useMutation(deleteUser)
+  const [deleteUserMutation, { isLoading }] = useMutation(deleteUser)
   const router = useRouter()
 
   return (
@@ -42,9 +28,6 @@ export const EditUser = () => {
       <div>
         <UserForm
           submitText="Update User"
-          // TODO use a zod schema for form validation
-          //  - Tip: extract mutation's schema into a shared `validations.ts` file and
-          //         then import and use it here
           schema={UpdateUser}
           initialValues={{ ...user } as any}
           onSubmit={async (values) => {
@@ -72,6 +55,7 @@ export const EditUser = () => {
         />
 
         <Button
+          isLoading={isLoading}
           onClick={async () => {
             if (window.confirm("This will be deleted")) {
               await deleteUserMutation({ id: user.id })

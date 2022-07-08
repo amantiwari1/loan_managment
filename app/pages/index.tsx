@@ -22,6 +22,7 @@ import {
 } from "app/common"
 import { list_of_bank } from "app/core/data/bank"
 import { toast } from "./_app"
+import { ColumnDef } from "@tanstack/react-table"
 
 const TableColumn = {
   id: "ID",
@@ -40,62 +41,60 @@ const TableColumn = {
   case_status: "APPLIED BANK NAME",
 }
 
-const ITEMS_PER_PAGE = 100
-
 const columns = [
   {
-    Header: "Client Name",
-    accessor: "client_name",
-    Cell: ({ value, row }) => (
+    header: "Client Name",
+    accessorKey: "client_name",
+    cell: ({ getValue, row }) => (
       <div>
         <Link href={Routes.ShowEnquiryPage({ enquiryId: row.original.id })}>
-          <a className="text-sm font-bold underline hover:text-blue-500">{value}</a>
+          <a className="text-sm font-bold underline hover:text-blue-500">{getValue()}</a>
         </Link>
       </div>
     ),
   },
   {
-    Header: "Client Name",
-    accessor: "client_service",
-    Cell: ({ value }) => <Text fontSize="sm">{client_service_options[value]}</Text>,
+    header: "Client Name",
+    accessorKey: "client_service",
+    cell: ({ getValue }) => <Text fontSize="sm">{client_service_options[getValue()]}</Text>,
   },
   {
-    Header: "Amount",
-    accessor: "loan_amount",
-    Cell: NumberCell,
+    header: "Amount",
+    accessorKey: "loan_amount",
+    cell: NumberCell,
   },
   {
-    Header: "Location",
-    accessor: "client_address",
-    Cell: TextCell,
+    header: "Location",
+    accessorKey: "client_address",
+    cell: TextCell,
   },
   {
-    Header: "Applied Bank Name",
-    accessor: "case_status[0].bank_name",
-    Cell: BankNameCell,
+    header: "Applied Bank Name",
+    accessorKey: "case_status[0].bank_name",
+    cell: BankNameCell,
   },
   {
-    Header: "Case Status",
-    accessor: "case_status[0].case_status",
+    header: "Case Status",
+    accessorKey: "case_status[0].case_status",
     id: "case_status",
-    Cell: StatusCaseDashboardCell,
+    cell: StatusCaseDashboardCell,
   },
   {
-    Header: "Channel Partner",
+    header: "Channel Partner",
     id: "id",
-    accessor: "users",
-    Cell: ({ value }) => (
+    accessorKey: "users",
+    cell: ({ getValue }) => (
       <Text fontWeight="medium" textTransform="capitalize">
         <div className="space-y-2 font-medium items-center">
-          {!value.filter((arr) => arr.user.role === "PARTNER").length && (
+          {!getValue().filter((arr: any) => arr.user.role === "PARTNER").length && (
             <Text fontWeight="medium" fontSize="sm">
               No Partner Selected
             </Text>
           )}
           <AvatarGroup size="xs" max={3}>
-            {value
-              .filter((arr) => arr.user.role === "PARTNER")
-              .map((arr, i) => (
+            {getValue()
+              .filter((arr: any) => arr.user.role === "PARTNER")
+              .map((arr: any, i: number) => (
                 <Tooltip key={i} label={arr.user.name}>
                   <div>
                     <Avatar size="xs" name={arr.user.name} />
@@ -108,20 +107,20 @@ const columns = [
     ),
   },
   {
-    Header: "Team Members",
-    accessor: "users",
-    Cell: ({ value }) => (
+    header: "Team Members",
+    accessorKey: "users",
+    cell: ({ getValue }) => (
       <Text fontWeight="medium" textTransform="capitalize">
         <div className="space-y-2 font-medium items-center">
-          {!value.filter((arr) => arr.user.role === "STAFF").length && (
+          {!getValue().filter((arr: any) => arr.user.role === "STAFF").length && (
             <Text fontWeight="medium" fontSize="sm">
               No Staff Selected
             </Text>
           )}
           <AvatarGroup size="xs" max={3}>
-            {value
-              .filter((arr) => arr.user.role === "STAFF")
-              .map((arr, i) => (
+            {getValue()
+              .filter((arr: any) => arr.user.role === "STAFF")
+              .map((arr: any, i: number) => (
                 <Tooltip key={i} label={arr.user.name}>
                   <div>
                     <Avatar size="xs" name={arr.user.name} />
@@ -134,9 +133,9 @@ const columns = [
     ),
   },
   {
-    Header: "Last Updated on",
-    accessor: "updatedAt",
-    Cell: DateCell,
+    header: "Last Updated on",
+    accessorKey: "updatedAt",
+    cell: DateCell,
   },
 ]
 
@@ -227,7 +226,7 @@ export const EnquiriesList = () => {
                 variant="outline"
                 w={100}
                 onClick={() => {
-                  const ClearEnquires = enquiries.map((arr) => {
+                  const ClearEnquires = enquiries.map((arr: any) => {
                     return {
                       ...arr,
                       users: "",

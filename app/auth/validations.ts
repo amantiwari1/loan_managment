@@ -67,24 +67,42 @@ export const ProfileUser = z.object({
 
 // Project Report
 export const CreateProjectReport = z.object({
-  label: z.string(),
-  remark: z.string().optional().default(""),
+  label: z.string({
+    required_error: "Label is required",
+    invalid_type_error: "Label is required",
+  }),
+  remark: z.string().default("no remark").optional(),
+})
+
+export const CreateCaseStatus = z.object({
+  id,
+  bank_code: z.string({
+    required_error: "Label is required",
+    invalid_type_error: "Label is required",
+  }),
+  final_login: z.boolean(),
+  remark: z.string().default("no remark").optional(),
+  enquiryId: z.number(),
 })
 
 // Document
 export const CreateDocument = z.object({
   id,
-  document_name: z.string().min(3).max(50),
-  remark: z.string().nullable().optional().default(" "),
-  description: z.string().nullable().optional().default(" "),
-  status,
+  document_name: z
+    .string({
+      required_error: "Document name is required",
+    })
+    .min(3)
+    .max(50),
+  remark: z.string().default("no remark").optional(),
+  description: z.string().default("no description").optional(),
 })
 
-const isValidPhoneNumber = (phonenumber: number) => `${phonenumber}`.length > 9
+const isValidPhoneNumber = (phonenumber: unknown) => `${phonenumber}`.length > 9
 
 const client_name = z.string()
 const client_mobile = z
-  .custom(isValidPhoneNumber, { message: "Not a valid phone number" })
+  .custom<string>(isValidPhoneNumber, { message: "Not a valid phone number" })
   .transform(parseInt)
 
 const client_email = z

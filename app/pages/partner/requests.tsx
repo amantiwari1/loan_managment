@@ -22,8 +22,7 @@ import { CheckIcon, CloseIcon } from "@chakra-ui/icons"
 import updateChannelPartnerRequest from "app/channel-partners/mutations/updateChannelPartnerRequest"
 import { toast } from "../_app"
 import Table from "app/core/components/Table"
-
-const ITEMS_PER_PAGE = 100
+import { ColumnDef } from "@tanstack/react-table"
 
 export const ChannelPartnersList = () => {
   const [updatePartnerMutation, { isLoading }] = useMutation(updateChannelPartnerRequest)
@@ -46,30 +45,30 @@ export const ChannelPartnersList = () => {
 
   const columns = [
     {
-      Header: "Name",
-      accessor: "name",
+      header: "Name",
+      accessorKey: "name",
     },
     {
-      Header: "Email",
-      accessor: "email",
+      header: "Email",
+      accessorKey: "email",
     },
     {
-      Header: "Company",
-      accessor: "company",
+      header: "Company",
+      accessorKey: "company",
     },
     {
-      Header: "Phone",
-      accessor: "phone",
-      render: ({ value }) => <p>{value.toString()}</p>,
+      header: "Phone",
+      accessorKey: "phone",
+      cell: ({ getValue }) => <p>{getValue().toString()}</p>,
     },
     {
-      Header: "City",
-      accessor: "city",
+      header: "City",
+      accessorKey: "city",
     },
     {
-      Header: "Actions",
-      accessor: "id",
-      render: ({ value }) => (
+      header: "Actions",
+      accessorKey: "id",
+      cell: ({ getValue }) => (
         <div className="space-x-5">
           <Popover>
             <PopoverTrigger>
@@ -93,7 +92,7 @@ export const ChannelPartnersList = () => {
                       isLoading={isLoading}
                       onClick={async () => {
                         const token: any = await updatePartnerMutation({
-                          id: value,
+                          id: getValue(),
                           request: "APPROVED",
                         })
 
@@ -130,7 +129,7 @@ export const ChannelPartnersList = () => {
                       isLoading={isLoading}
                       onClick={async () => {
                         await updatePartnerMutation({
-                          id: value,
+                          id: getValue(),
                           request: "REJECTED",
                         })
 

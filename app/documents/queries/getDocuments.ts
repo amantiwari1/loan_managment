@@ -1,13 +1,13 @@
-import { paginate, resolver } from "blitz"
+import { AuthenticatedMiddlewareCtx, paginate, resolver } from "blitz"
 import db, { Prisma } from "db"
+import { z } from "zod"
 
 interface GetDocumentsInput
   extends Pick<Prisma.DocumentFindManyArgs, "where" | "orderBy" | "skip" | "take"> {}
 
 export default resolver.pipe(
   resolver.authorize(),
-  async ({ where, orderBy, skip = 0, take = 100 }, ctx) => {
-    // TODO: in multi-tenant app, you must add validation to ensure correct tenant
+  async ({ where, orderBy, skip = 0, take = 100 }: GetDocumentsInput) => {
     const {
       items: documents,
       hasMore,

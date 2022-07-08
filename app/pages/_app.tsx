@@ -23,7 +23,7 @@ const { ToastContainer, toast } = createStandaloneToast()
 
 export { toast }
 
-import { ChakraProvider, withDefaultColorScheme, withDefaultVariant } from "@chakra-ui/react"
+import { ChakraProvider, withDefaultColorScheme } from "@chakra-ui/react"
 
 import { extendTheme } from "@chakra-ui/react"
 

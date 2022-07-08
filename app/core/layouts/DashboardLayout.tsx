@@ -120,7 +120,7 @@ const sidebar_data_2 = [
   },
 ]
 
-const Sidebar = ({ children }) => {
+const Sidebar = ({ children }: { children: React.ReactNode }) => {
   const [logoutMutation] = useMutation(logout)
   const session = useSession()
   const router = useRouter()
@@ -133,12 +133,15 @@ const Sidebar = ({ children }) => {
       <div className="md:col-span-3 lg:col-span-2">
         <div>
           <ProSidebar breakPoint="md" toggled={toggled} className="!min-w-full !w-full">
-            {/* LOGO */}
             <div className="md:hidden text-2xl p-2 ml-auto" onClick={() => setToggled(false)}>
               <AiOutlineClose />
             </div>
             <div className="hidden md:block px-5 bg-white py-2 mt-4">
-              <Image src={logo} alt="logo" />
+              <Link href={Routes.Home()} passHref>
+                <a>
+                  <Image src={logo} alt="logo" />
+                </a>
+              </Link>
             </div>
 
             <Menu>

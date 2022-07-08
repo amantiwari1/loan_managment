@@ -1,4 +1,4 @@
-import { paginate, resolver } from "blitz"
+import { AuthenticatedMiddlewareCtx, paginate, resolver } from "blitz"
 import db, { Prisma } from "db"
 
 export interface GetEnquiriesInput
@@ -6,7 +6,10 @@ export interface GetEnquiriesInput
 
 export default resolver.pipe(
   resolver.authorize(),
-  async ({ where, orderBy, skip = 0, take = 100 }: GetEnquiriesInput, ctx) => {
+  async (
+    { where, orderBy, skip = 0, take = 100 }: GetEnquiriesInput,
+    ctx: AuthenticatedMiddlewareCtx
+  ) => {
     if (["USER", "PARTNER", "STAFF"].includes(ctx.session.role)) {
       const {
         items: enquiries,

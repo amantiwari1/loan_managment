@@ -1,8 +1,7 @@
-import React, { useState } from "react"
+import React from "react"
 import {
   getQueryKey,
   queryClient,
-  Routes,
   useAuthenticatedSession,
   useMutation,
   useParam,
@@ -12,8 +11,8 @@ import {
 } from "blitz"
 import getDocuments from "../queries/getDocuments"
 import { Button } from "app/core/components/Button"
-import { AddIcon, DownloadIcon } from "@chakra-ui/icons"
-import { useDisclosure, Tag, Switch } from "@chakra-ui/react"
+import { AddIcon } from "@chakra-ui/icons"
+import { useDisclosure, Switch } from "@chakra-ui/react"
 import { DocumentForm } from "./DocumentForm"
 import createDocument from "../mutations/createDocument"
 import { FORM_ERROR } from "final-form"
@@ -21,7 +20,6 @@ import getLogs from "../../logs/queries/getLogs"
 import updateDocument from "../mutations/updateDocument"
 import deleteDocument from "../mutations/deleteDocument"
 import { CreateDocument } from "app/auth/validations"
-import getEnquiry from "app/enquiries/queries/getEnquiry"
 import Table, {
   DateCell,
   DownloadMultiCell,
@@ -32,7 +30,7 @@ import SwitchDocument from "../mutations/SwitchDocument"
 import { ActionComponent } from "app/core/components/ActionComponent"
 import DrawerForm from "app/core/components/DrawerForm"
 import sendIntimation from "../mutations/sendIntimation"
-import { client_service_options } from "app/common"
+import { ColumnDef } from "@tanstack/react-table"
 import { toast } from "app/pages/_app"
 
 const AddNewButton = ({ onClick }: { onClick: () => void }) => {
@@ -84,15 +82,34 @@ const AddNewButton = ({ onClick }: { onClick: () => void }) => {
   )
 }
 
-const ITEMS_PER_PAGE = 10
-
 const Document = () => {
-  const enquiryId = useParam("enquiryId", "number")
+  const enquiryId = Number(useParam("enquiryId", "number"))
   const router = useRouter()
 
   const page = Number(router.query.page) || 0
   const search = (router.query.search as string) || ""
   const take = Number(router.query.take) || 10
+
+  const SwitchDocumentComponent = ({ getValue, row }) => {
+    const [SwitchDocumentMutation, { isLoading: isLoadingSwitch }] = useMutation(SwitchDocument)
+
+    return (
+      <Switch
+        size="sm"
+        defaultChecked={getValue()}
+        isDisabled={isLoadingSwitch}
+        onChange={async (e) => {
+          await SwitchDocumentMutation({
+            id: row.original.id,
+            enquiryId,
+            is_public_user: e.target.checked,
+          }).finally(async () => {
+            await refetch()
+          })
+        }}
+      />
+    )
+  }
 
   const [createDocumentMutation] = useMutation(createDocument, {
     onSuccess() {
@@ -195,32 +212,32 @@ const Document = () => {
 
   const columns = [
     {
-      Header: "Document",
-      accessor: "document_name",
-      Cell: TextCell,
+      header: "Document",
+      accessorKey: "document_name",
+      cell: TextCell,
     },
     {
-      Header: "Description",
-      accessor: "description",
-      Cell: TextCell,
+      header: "Description",
+      accessorKey: "description",
+      cell: TextCell,
     },
     {
-      Header: "Status",
-      accessor: "file",
-      Cell: StatusPillCell,
+      header: "Status",
+      accessorKey: "file",
+      cell: StatusPillCell,
     },
     {
-      Header: "Upload on",
-      accessor: "updatedAt",
-      Cell: DateCell,
+      header: "Upload on",
+      accessorKey: "updatedAt",
+      cell: DateCell,
     },
     {
-      Header: "Download",
-      accessor: "file",
+      header: "Download",
+      accessorKey: "file",
       id: "id",
-      Cell: ({ value, row }) => (
+      cell: ({ getValue, row }) => (
         <DownloadMultiCell
-          value={value}
+          value={getValue()}
           id={row.original.id}
           name="Document"
           relationName="documentId"
@@ -228,37 +245,18 @@ const Document = () => {
       ),
     },
     {
-      Header: "Remark",
-      accessor: "remark",
-      Cell: TextCell,
+      header: "Remark",
+      accessorKey: "remark",
+      cell: TextCell,
     },
     {
-      Header: "Show User",
-      accessor: "is_public_user",
-      Cell: ({ value, row }) => {
-        const [SwitchDocumentMutation, { isLoading: isLoadingSwitch }] = useMutation(SwitchDocument)
-
-        return (
-          <Switch
-            size="sm"
-            defaultChecked={value}
-            isDisabled={isLoadingSwitch}
-            onChange={async (e) => {
-              await SwitchDocumentMutation({
-                id: row.original.id,
-                enquiryId,
-                is_public_user: e.target.checked,
-              }).finally(async () => {
-                await refetch()
-              })
-            }}
-          />
-        )
-      },
+      header: "Show User",
+      accessorKey: "is_public_user",
+      cell: SwitchDocumentComponent,
     },
     {
-      Header: "Action",
-      Cell: ({ row }) => (
+      header: "Action",
+      cell: ({ row }) => (
         <ActionComponent
           isDeleting={isLoading}
           session={session}

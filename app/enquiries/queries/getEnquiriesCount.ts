@@ -1,7 +1,7 @@
-import { paginate, resolver } from "blitz"
-import db, { Prisma } from "db"
+import { resolver } from "blitz"
+import db from "db"
 
-export default resolver.pipe(resolver.authorize(), async ({}, ctx) => {
+export default resolver.pipe(resolver.authorize(), async () => {
   const active = await db.enquiry.count({
     where: {
       enquiry_request: "APPROVED",

@@ -7,10 +7,7 @@ import {
   useParam,
   useQuery,
   useRouter,
-  useSession,
 } from "blitz"
-import { Button } from "app/core/components/Button"
-import { AddIcon } from "@chakra-ui/icons"
 import Table, {
   CreateButtonTable,
   DateCell,
@@ -26,10 +23,10 @@ import deleteSearchValuationReport from "../mutations/deleteSearchValuationRepor
 import updateSearchValuationReport from "../mutations/updateSearchValuationReport"
 import { SearchValuationReportForm } from "./SearchValuationReportForm"
 import getSearchValuationReports from "../queries/getSearchValuationReports"
-import getEnquiry from "app/enquiries/queries/getEnquiry"
 import DrawerForm from "app/core/components/DrawerForm"
 import { ActionComponent } from "app/core/components/ActionComponent"
 import { toast } from "app/pages/_app"
+import { ColumnDef } from "@tanstack/react-table"
 
 const SearchValuationReport = () => {
   const enquiryId = useParam("enquiryId", "number")
@@ -125,28 +122,28 @@ const SearchValuationReport = () => {
 
   const columns = [
     {
-      Header: "Document",
-      accessor: "document",
+      header: "Document",
+      accessorKey: "document",
     },
     {
-      Header: "Status",
-      accessor: "file",
-      Cell: StatusPillCell,
+      header: "Status",
+      accessorKey: "file",
+      cell: StatusPillCell,
     },
     {
-      Header: "Download",
-      accessor: "file",
+      header: "Download",
+      accessorKey: "file",
       id: "id",
-      Cell: DownloadCell,
+      cell: DownloadCell,
     },
     {
-      Header: "Upload on",
-      accessor: "updatedAt",
-      Cell: DateCell,
+      header: "Upload on",
+      accessorKey: "updatedAt",
+      cell: DateCell,
     },
     {
-      Header: "Action",
-      Cell: ({ row }) => (
+      header: "Action",
+      cell: ({ row }) => (
         <ActionComponent
           session={session}
           isDeleting={isLoading}
@@ -189,9 +186,6 @@ const SearchValuationReport = () => {
       >
         <SearchValuationReportForm
           submitText="Add New"
-          // TODO use a zod schema for form validation
-          //  - Tip: extract mutation's schema into a shared `validations.ts` file and
-          //         then import and use it here
           // schema={CreateSearchValuationReport}
           initialValues={Edit}
           onSubmit={async (values) => {
