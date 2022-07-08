@@ -79,10 +79,10 @@ const Teasers = () => {
 
       if (["HOME_LOAN", "MORTGAGE_LOAN"].includes(enquiry.client_service)) {
         const data = RetailsJsonTable(enquiry?.Teaser?.data)
-        pdfMake.createPdf(data).download(`Retail Teaser ${enquiryId}`)
+        pdfMake.createPdf(data as any).download(`Retail Teaser ${enquiryId}`)
       } else {
         const data = MSMEJsonTable(enquiry?.Teaser?.data)
-        pdfMake.createPdf(data).download(`MSME Teaser ${enquiryId}`)
+        pdfMake.createPdf(data as any).download(`MSME Teaser ${enquiryId}`)
       }
     } catch (err) {
       toast({

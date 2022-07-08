@@ -1,7 +1,6 @@
-import { useRouter, BlitzPage, Routes, useQuery } from "blitz"
+import { useRouter, BlitzPage, Routes } from "blitz"
 import Layout from "app/core/layouts/Layout"
 import { SignupForm } from "app/auth/components/SignupForm"
-import isSignup from "../queries/isSignup"
 import { Suspense } from "react"
 import Loading from "app/core/components/Loading"
 

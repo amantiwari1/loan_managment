@@ -12,9 +12,9 @@ import {
 
 interface CellProps {
   table: any
-  column: Column<any>
+  column: Column<any, any>
   row: Row<any>
-  cell: Cell<any>
+  cell: Cell<any, any>
   getValue: () => any
   renderValue: () => any
 }

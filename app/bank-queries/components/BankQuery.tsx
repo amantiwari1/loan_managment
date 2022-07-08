@@ -1,9 +1,4 @@
-import Table, {
-  BankNameCell,
-  CreateButtonTable,
-  DateCell,
-  TextCell,
-} from "app/core/components/Table"
+import Table, { CreateButtonTable, DateCell, TextCell } from "app/core/components/Table"
 
 import React from "react"
 import {
@@ -27,6 +22,7 @@ import DrawerForm from "app/core/components/DrawerForm"
 import { ActionComponent } from "app/core/components/ActionComponent"
 import { toast } from "app/pages/_app"
 import BankNameDetails from "./BankNameDetails"
+import { ColumnDef } from "@tanstack/react-table"
 
 const BankQuery = () => {
   const enquiryId = useParam("enquiryId", "number")
@@ -115,7 +111,7 @@ const BankQuery = () => {
     await refetch()
   }
 
-  const columns = [
+  const columns: ColumnDef<any, any>[] = [
     {
       header: "Bank Query",
       accessorKey: "bank_query",

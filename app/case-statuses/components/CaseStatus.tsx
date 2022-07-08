@@ -21,7 +21,6 @@ import getLogs from "../../logs/queries/getLogs"
 import DrawerForm from "app/core/components/DrawerForm"
 import { ActionComponent } from "app/core/components/ActionComponent"
 import { toast } from "app/pages/_app"
-import { ColumnDef } from "@tanstack/react-table"
 import { CreateCaseStatus } from "app/auth/validations"
 
 const CaseStatus = () => {

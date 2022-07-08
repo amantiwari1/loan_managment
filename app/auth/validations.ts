@@ -102,7 +102,7 @@ const isValidPhoneNumber = (phonenumber: unknown) => `${phonenumber}`.length > 9
 
 const client_name = z.string()
 const client_mobile = z
-  .custom(isValidPhoneNumber, { message: "Not a valid phone number" })
+  .custom<string>(isValidPhoneNumber, { message: "Not a valid phone number" })
   .transform(parseInt)
 
 const client_email = z

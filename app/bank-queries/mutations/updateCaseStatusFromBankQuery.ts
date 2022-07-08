@@ -1,4 +1,3 @@
-import { list_of_bank } from "app/core/data/bank"
 import { resolver } from "blitz"
 import db from "db"
 import { z } from "zod"

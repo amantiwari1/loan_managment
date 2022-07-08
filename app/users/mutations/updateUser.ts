@@ -1,4 +1,4 @@
-import { resolver, SecurePassword, hash256 } from "blitz"
+import { resolver, SecurePassword } from "blitz"
 import db from "db"
 import { z } from "zod"
 

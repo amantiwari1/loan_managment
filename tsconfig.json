@@ -7,6 +7,7 @@
     "skipLibCheck": true,
     "strict": false,
     "strictNullChecks": false,
+    "noUnusedLocals": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "noUncheckedIndexedAccess": true,
@@ -17,8 +18,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "tsBuildInfoFile": ".tsbuildinfo",
-    "listFiles": true
+    "tsBuildInfoFile": ".tsbuildinfo"
   },
   "exclude": ["node_modules", "**/*.e2e.ts", "cypress"],
   "include": ["blitz-env.d.ts", "**/*.ts", "**/*.tsx"]
