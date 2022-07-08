@@ -183,7 +183,6 @@ const ProjectReport = () => {
           schema={CreateProjectReport}
           initialValues={Edit}
           onSubmit={async (values: any) => {
-            console.log(values)
             try {
               if (values?.id) {
                 await updateProjectReportMutation({

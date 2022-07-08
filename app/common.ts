@@ -9,7 +9,10 @@ export const getFileName = (enquiryId: number, folder: string, fileName: string)
   return `${enquiryId}/${folder}/${uuidv4()}_${new Date().getTime()}.${getExtension(fileName)}`
 }
 
-export const TransformationData = (staff: getUsersType, StaffEnquiry: EnquireUserInterface[]) => {
+export const TransformationData = (
+  staff: { users: { id: number; name: string }[] },
+  StaffEnquiry: EnquireUserInterface[]
+) => {
   const selected = StaffEnquiry.map((arr) => arr.value) ?? []
   const users = staff?.users.filter((arr) => !selected.includes(arr.id)) ?? []
 

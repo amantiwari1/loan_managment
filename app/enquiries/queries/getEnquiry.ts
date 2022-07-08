@@ -27,12 +27,19 @@ export default resolver.pipe(
   resolver.zod(GetEnquiry),
   resolver.authorize(),
   async ({ id }, ctx) => {
-    let options: Options = {
+    let options: any = {
       where: { id },
       include: {
         users: {
           include: {
-            user: true,
+            user: {
+              select: {
+                name: true,
+                role: true,
+                id: true,
+                email: true,
+              },
+            },
           },
         },
       },
@@ -49,14 +56,21 @@ export default resolver.pipe(
               userId: ctx.session.userId,
             },
             include: {
-              user: true,
+              user: {
+                select: {
+                  name: true,
+                  role: true,
+                  id: true,
+                  email: true,
+                },
+              },
             },
           },
         },
       }
     }
 
-    const enquiry = await db.enquiry.findFirst(options)
+    const enquiry: any = await db.enquiry.findFirst(options)
 
     if (!enquiry) throw new NotFoundError()
 

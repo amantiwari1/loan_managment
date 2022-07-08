@@ -36,9 +36,7 @@ export default resolver.pipe(async ({ id }) => {
   if (!enquiry) throw new NotFoundError()
 
   const partner = enquiry.users.filter((arr) => arr.user.role === "PARTNER")
-  console.log("🚀 ~ file: sendIntimation.ts ~ line 39 ~ resolver.pipe ~ partner", partner)
   const customer = enquiry.users.filter((arr) => arr.user.role === "USER")[0]
-  console.log("🚀 ~ file: sendIntimation.ts ~ line 41 ~ resolver.pipe ~ customer", customer)
 
   if (!customer.user.email || (partner.length !== 0 && !partner[0].user.email)) {
     throw new NotFoundError()
