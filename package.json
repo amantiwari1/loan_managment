@@ -31,7 +31,7 @@
     "@chakra-ui/react": "2.0.0",
     "@emotion/styled": "11.x",
     "@heroicons/react": "1.0.5",
-    "@prisma/client": "3.7.0",
+    "@prisma/client": "4.0.0",
     "@react-pdf/renderer": "2.1.1",
     "@react-query-firebase/auth": "0.3.4",
     "@tanstack/react-table": "8.2.1",
