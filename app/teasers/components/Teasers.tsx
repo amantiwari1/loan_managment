@@ -72,13 +72,19 @@ const Teasers = () => {
     }
   )
 
+  const refreshTeasers = async () => {
+    await createTeaserMutation({
+      enquiryId: enquiryId,
+      data: {},
+    })
+
+    await refetch()
+  }
+
   useEffect(() => {
     if (enquiry) {
       if (!enquiry.Teaser) {
-        createTeaserMutation({
-          enquiryId: enquiryId,
-          data: {},
-        })
+        refreshTeasers()
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
