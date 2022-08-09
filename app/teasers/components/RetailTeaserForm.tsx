@@ -10,6 +10,7 @@ import { MSMETeaseData } from "../data"
 export { FORM_ERROR } from "app/core/components/Form"
 import SelectField from "app/core/components/SelectField"
 import { FieldArray } from "react-final-form-arrays"
+import MultiUploadFile from "app/core/components/MultiUploadFile"
 
 export function RetailTeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S>) {
   const [readOnly, setReadOnly] = useState(true)
@@ -20,7 +21,8 @@ export function RetailTeaserForm<S extends z.ZodType<any, any>>(props: FormProps
         <Switch checked={readOnly} onChange={() => setReadOnly(!readOnly)} />
       </div>
       <Form<S> {...props}>
-        <FieldArray name={`teasers`}>
+        <MultiUploadFile name="teasers" relationName="teaserId" />
+        <FieldArray name={`data.teasers`}>
           {({ fields }) => (
             <div>
               {fields.map((name, index) => (

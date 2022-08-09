@@ -38,6 +38,7 @@ import deleteFile from "app/file/mutations/deleteFile"
 import DeleteKeyFromSpace from "app/documents/mutations/DeleteKeyFromSpace"
 import createMultiFileWithEnquiryId from "app/file/mutations/createMultiFileWithEnquiryId"
 import { toast } from "app/pages/_app"
+import getRelationshipEnquiry from "app/enquiries/queries/getRelationshipEnquiry"
 
 export const TextCell = ({ getValue }: CellProps) => <Text fontSize="sm">{getValue()}</Text>
 
@@ -145,16 +146,18 @@ function download(url: string, filename: string) {
     })
     .catch(console.error)
 }
-const DownloadButton = ({
+export const DownloadButton = ({
   name,
   keys,
   id,
   fileType,
+  refresh,
 }: {
   name: string
   keys: string
   id: number
   fileType: string
+  refresh: () => void
 }) => {
   const enquiryId = useParam("enquiryId", "number")
 
@@ -166,7 +169,7 @@ const DownloadButton = ({
   const removeFile = async (id: number, key: string) => {
     await DeleteKeyFromSpaceMutation({ key: key })
     await DeleteFileMutation({ id: id })
-    await onRefreshDocumentData(enquiryId)
+    await refresh()
   }
   return (
     <ButtonGroup size="xs" isAttached variant="outline">
@@ -185,7 +188,7 @@ const DownloadButton = ({
         colorScheme="Customblue"
         aria-label="Delete File"
         size="xs"
-        onClick={() => removeFile(id, keys)}
+        onClick={async () => await removeFile(id, keys)}
         isLoading={isLoadingDownload || isLoadingDelete || isLoadingDelete}
         icon={<DeleteIcon />}
       />
@@ -209,7 +212,27 @@ export const onRefreshDocumentData = async (enquiryId: number | undefined) => {
   await queryClient.invalidateQueries(queryKey)
   await queryClient.invalidateQueries(queryKeySecond)
 }
-interface fileProps {
+
+export const onRefreshTeaserData = async (enquiryId: number | undefined) => {
+  const queryKey = getQueryKey(getRelationshipEnquiry, {
+    id: enquiryId,
+    select: {
+      id: true,
+      Teaser: {
+        select: {
+          id: true,
+          data: true,
+          file: true,
+        },
+      },
+      client_service: true,
+    },
+  })
+
+  await queryClient.invalidateQueries(queryKey)
+}
+
+export interface fileProps {
   name: string
   id: number
   fileType: string
@@ -302,6 +325,7 @@ export const DownloadMultiCell = ({
               <div key={key}>
                 <DownloadButton
                   fileType={arr.fileType}
+                  refresh={async () => await onRefreshDocumentData(enquiryId)}
                   id={arr.id}
                   name={arr.name}
                   keys={arr.key}

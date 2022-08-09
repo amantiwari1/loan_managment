@@ -1,6 +1,5 @@
 import { Divider, Switch } from "@chakra-ui/react"
 import { convertStringToKey } from "app/common"
-import { Button } from "app/core/components/Button"
 import { Form, FormProps } from "app/core/components/Form"
 import LabeledTextAreaField from "app/core/components/LabeledTextAreaField"
 import { LabeledTextField } from "app/core/components/LabeledTextField"
@@ -10,6 +9,7 @@ import { MSMETeaseData } from "../data"
 export { FORM_ERROR } from "app/core/components/Form"
 import SelectField from "app/core/components/SelectField"
 import SwitchField from "app/core/components/SwitchField"
+import MultiUploadFile from "app/core/components/MultiUploadFile"
 
 export function MSMETeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S>) {
   const [readOnly, setReadOnly] = useState(true)
@@ -20,11 +20,12 @@ export function MSMETeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S
         <Switch checked={readOnly} onChange={() => setReadOnly(!readOnly)} />
       </div>
       <Form<S> {...props}>
+        <MultiUploadFile name="data.teasers" relationName="teaserId" />
         <div className="grid md:grid-cols-2">
-          <LabeledTextField readOnly={readOnly} name="name" label="Name" placeholder="Name" />
+          <LabeledTextField readOnly={readOnly} name="data.name" label="Name" placeholder="Name" />
           <LabeledTextField
             readOnly={readOnly}
-            name="constitution"
+            name="data.constitution"
             label="Constitution"
             placeholder="Constitution"
           />
@@ -33,69 +34,74 @@ export function MSMETeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S
           {/* <div className="col-span-3"> */}
           <LabeledTextField
             readOnly={readOnly}
-            name="house_no"
+            name="data.house_no"
             label="House No."
             placeholder="House No."
           />
           {/* </div> */}
           {/* <div className="col-span-3"> */}
-          <LabeledTextField readOnly={readOnly} name="street" label="Street" placeholder="Street" />
+          <LabeledTextField
+            readOnly={readOnly}
+            name="data.street"
+            label="Street"
+            placeholder="Street"
+          />
           {/* </div> */}
           <LabeledTextField
             readOnly={readOnly}
             className="col-span-1"
-            name="city"
+            name="data.city"
             label="City"
             placeholder="City"
           />
           <LabeledTextField
             readOnly={readOnly}
             className="col-span-1"
-            name="state"
+            name="data.state"
             label="State"
             placeholder="State"
           />
           <LabeledTextField
             readOnly={readOnly}
             className="col-span-1"
-            name="pincode"
+            name="data.pincode"
             label="Pincode"
             placeholder="Pincode"
           />
           {/* </div> */}
           <LabeledTextField
             readOnly={readOnly}
-            name="Proprietorship"
+            name="data.Proprietorship"
             label="Proprietorship"
             placeholder="Proprietorship"
           />
           <LabeledTextField
             readOnly={readOnly}
-            name="nature_of_business"
+            name="data.nature_of_business"
             label="Nature of Business"
             placeholder="Nature of Business"
           />
 
           <LabeledTextAreaField
-            name="Introduction"
+            name="data.Introduction"
             label="Introduction"
             placeholder="Introduction"
           />
           <LabeledTextAreaField
-            name="about_the_key_persons"
+            name="data.about_the_key_persons"
             label="About the Key Persons"
             placeholder="About the Key Persons"
           />
           <LabeledTextField
             readOnly={readOnly}
-            name="Incorporation"
+            name="data.Incorporation"
             label="Incorporation"
             placeholder="Incorporation"
           />
         </div>
         <LabeledTextField
           readOnly={readOnly}
-          name="financial_summary"
+          name="data.financial_summary"
           label="Financial Summary"
           placeholder="Financial Summary"
         />
@@ -108,7 +114,7 @@ export function MSMETeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S
                 <LabeledTextField
                   readOnly={readOnly}
                   key={convertStringToKey(item?.name + "." + arr?.name)}
-                  name={convertStringToKey(item?.name + "." + arr?.name)}
+                  name={"data." + convertStringToKey(item?.name + "." + arr?.name)}
                   placeholder={arr.name}
                 />
               ))}
@@ -118,7 +124,7 @@ export function MSMETeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S
 
         <LabeledTextField
           readOnly={readOnly}
-          name="financial_summary1"
+          name="data.financial_summary1"
           label="Financial Summary"
           placeholder="Mr./Mrs."
         />
@@ -131,7 +137,7 @@ export function MSMETeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S
                 <LabeledTextField
                   readOnly={readOnly}
                   key={convertStringToKey(item?.name + "." + arr?.name)}
-                  name={convertStringToKey(item?.name + "." + arr?.name)}
+                  name={"data." + convertStringToKey(item?.name + "." + arr?.name)}
                   // label={arr.name}
                   placeholder={arr.name}
                 />
@@ -142,14 +148,14 @@ export function MSMETeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S
         <Divider my={4} />
 
         <h3 className="text-xl font-bold text-center mt-2">Existing Facilities</h3>
-        <SwitchField name="is_existing_facilities" label="is Existing Facilities?" />
+        <SwitchField name="data.is_existing_facilities" label="is Existing Facilities?" />
 
         <div className="grid md:grid-cols-2">
           {MSMETeaseData.ExistingFacilities.map((arr) => (
             <div key={convertStringToKey("Existing Facilities." + arr.name)}>
               {arr.options ? (
                 <SelectField
-                  name={convertStringToKey("Existing Facilities." + arr.name)}
+                  name={"data." + convertStringToKey("Existing Facilities." + arr.name)}
                   label={arr.name}
                   placeholder={arr.name}
                   options={arr.options}
@@ -157,7 +163,7 @@ export function MSMETeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S
               ) : (
                 <LabeledTextField
                   readOnly={readOnly}
-                  name={convertStringToKey("Existing Facilities." + arr.name)}
+                  name={"data." + convertStringToKey("Existing Facilities." + arr.name)}
                   label={arr.name}
                   placeholder={arr.name}
                 />
@@ -173,7 +179,7 @@ export function MSMETeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S
             <LabeledTextField
               readOnly={readOnly}
               key={convertStringToKey("Proposed Facilities." + arr.name)}
-              name={convertStringToKey("Proposed Facilities." + arr.name)}
+              name={"data." + convertStringToKey("Proposed Facilities." + arr.name)}
               label={arr.name}
               placeholder={arr.name}
             />
@@ -190,7 +196,7 @@ export function MSMETeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S
             <LabeledTextField
               readOnly={readOnly}
               key={convertStringToKey("Security Offered." + arr.name)}
-              name={convertStringToKey("Security Offered." + arr.name)}
+              name={"data." + convertStringToKey("Security Offered." + arr.name)}
               label={arr.name}
               placeholder={arr.name}
             />
@@ -206,7 +212,7 @@ export function MSMETeaserForm<S extends z.ZodType<any, any>>(props: FormProps<S
             <LabeledTextField
               readOnly={readOnly}
               key={convertStringToKey("Guarantee." + arr.name)}
-              name={convertStringToKey("Guarantee." + arr.name)}
+              name={"data." + convertStringToKey("Guarantee." + arr.name)}
               label={arr.name}
               placeholder={arr.name}
             />

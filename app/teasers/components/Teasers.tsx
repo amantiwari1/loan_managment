@@ -57,7 +57,13 @@ const Teasers = () => {
       id: enquiryId,
       select: {
         id: true,
-        Teaser: true,
+        Teaser: {
+          select: {
+            id: true,
+            data: true,
+            file: true,
+          },
+        },
         client_service: true,
       },
     },
@@ -200,18 +206,18 @@ const Teasers = () => {
           <RetailTeaserForm
             submitText="Save Teaser"
             // schema={CreateTeaser}
-            initialValues={(enquiry.Teaser?.data as any) ?? {}}
+            initialValues={enquiry.Teaser}
             onSubmit={async (values) => {
               try {
                 if (!enquiry?.Teaser?.id) {
                   await createTeaserMutation({
-                    data: values,
+                    ...values,
                     enquiryId: enquiryId,
                   })
                 } else {
                   await updateTeaserMutation({
+                    ...values,
                     id: enquiry.Teaser.id,
-                    data: values,
                   })
                 }
                 refetch()
@@ -237,18 +243,18 @@ const Teasers = () => {
             submitText="Save Teaser"
             // TODO use a zod schema for form validation
             // schema={CreateTeaser}
-            initialValues={(enquiry.Teaser?.data as any) ?? {}}
+            initialValues={enquiry.Teaser}
             onSubmit={async (values) => {
               try {
                 if (!enquiry?.Teaser?.id) {
-                  const teaser = await createTeaserMutation({
-                    data: values,
+                  await createTeaserMutation({
+                    ...values,
                     enquiryId: enquiryId,
                   })
                 } else {
                   await updateTeaserMutation({
+                    ...values,
                     id: enquiry.Teaser.id,
-                    data: values,
                   })
                 }
                 refetch()

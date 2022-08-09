@@ -94,6 +94,8 @@ model File {
   SearchValuationReport SearchValuationReport[]
   Document              Document?               @relation(fields: [documentId], references: [id])
   documentId            Int?
+  Teaser                Teaser?                 @relation(fields: [teaserId], references: [id])
+  teaserId              Int?
 }
 
 model Log {
@@ -215,6 +217,7 @@ model Teaser {
   data      Json     @default(dbgenerated("'{}'"))
   Enquiry   Enquiry? @relation(fields: [enquiryId], references: [id])
   enquiryId Int?     @unique
+  file      File[]
 }
 
 enum TokenType {
