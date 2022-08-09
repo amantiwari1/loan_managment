@@ -2,7 +2,7 @@ import { Button } from "app/core/components/Button"
 import getRelationshipEnquiry from "app/enquiries/queries/getRelationshipEnquiry"
 import { Ctx, useMutation, useParam, useQuery } from "blitz"
 import { FORM_ERROR } from "final-form"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { BiExport } from "react-icons/bi"
 import createTeaser from "../mutations/createTeaser"
 import updateTeaser from "../mutations/updateTeaser"
@@ -71,6 +71,19 @@ const Teasers = () => {
       refetchOnWindowFocus: false,
     }
   )
+
+  useEffect(() => {
+    if (enquiry) {
+      if (!enquiry.Teaser) {
+        createTeaserMutation({
+          enquiryId: enquiryId,
+          data: {},
+        })
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const GeneratePDF = async (name: string) => {
     setIsLoadingExport(true)
     try {
