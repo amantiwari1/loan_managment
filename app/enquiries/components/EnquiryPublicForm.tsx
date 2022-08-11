@@ -72,14 +72,16 @@ export function EnquiryPublicForm<S extends z.ZodType<any, any>>(props: FormProp
         </div>
       </div>
 
-      <LabeledPhoneField
-        buttonColor="green"
-        color="text-white"
-        type="number"
-        name="client_mobile"
-        label="Client Mobile"
-        placeholder="Enter a Client Mobile"
-      />
+      <div className="my-1">
+        <LabeledPhoneField
+          buttonColor="green"
+          color="text-white"
+          type="number"
+          name="client_mobile"
+          label="Client Mobile"
+          placeholder="Enter a Client Mobile"
+        />
+      </div>
 
       <LabeledTextAreaField
         color="text-white"

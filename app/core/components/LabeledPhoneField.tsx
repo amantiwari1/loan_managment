@@ -152,7 +152,7 @@ export const LabeledPhoneField = forwardRef<HTMLInputElement, LabeledPhoneFieldP
 
     return (
       <div {...outerProps}>
-        <div className="flex space-x-2 items-center">
+        <div className="md:flex nd:space-x-2 space-y-2 md:space-y-0 items-center">
           <FormLabel {...labelProps}>
             <span className={`${color ? color : "text-gray-700"}`}>{label}</span>
             <Input
@@ -198,7 +198,7 @@ export const LabeledPhoneField = forwardRef<HTMLInputElement, LabeledPhoneFieldP
         </div>
 
         {otp.model && (
-          <div className="flex space-x-2 items-center">
+          <div className="md:flex md:space-x-2 space-y-2 md:space-y-0 items-center">
             <span className={`${color ? color : "text-gray-700"}`}>OTP</span>
             <Input
               bg="white"
