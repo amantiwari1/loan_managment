@@ -9,6 +9,8 @@ export interface LabeledTextFieldProps extends ComponentPropsWithoutRef<typeof I
   name: string
   /** Field label. */
   label: string
+
+  color?: string
   /** Field type. Doesn't include radio buttons and checkboxes */
   type?: "text" | "password" | "email" | "number"
   outerProps?: PropsWithoutRef<JSX.IntrinsicElements["div"]>
@@ -17,7 +19,7 @@ export interface LabeledTextFieldProps extends ComponentPropsWithoutRef<typeof I
 }
 
 export const LabeledTextField = forwardRef<HTMLInputElement, LabeledTextFieldProps>(
-  ({ name, label, outerProps, fieldProps, labelProps, ...props }, ref) => {
+  ({ name, label, color, outerProps, fieldProps, labelProps, ...props }, ref) => {
     const {
       input,
       meta: { touched, error, submitError, submitting },
@@ -35,7 +37,7 @@ export const LabeledTextField = forwardRef<HTMLInputElement, LabeledTextFieldPro
     return (
       <div {...outerProps}>
         <FormLabel {...labelProps}>
-          <span className=" text-gray-700">{label}</span>
+          <span className={`${color ? color : "text-gray-700"}`}>{label}</span>
           <Input
             bg="white"
             {...input}

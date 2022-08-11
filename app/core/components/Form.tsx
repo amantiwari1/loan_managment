@@ -15,6 +15,7 @@ export interface FormProps<S extends z.ZodType<any, any>>
   schema?: S
   onSubmit: FinalFormProps<z.infer<S>>["onSubmit"]
   initialValues?: FinalFormProps<z.infer<S>>["initialValues"]
+  buttonColor?: "green" | "blue"
 }
 
 export function Form<S extends z.ZodType<any, any>>({
@@ -23,6 +24,7 @@ export function Form<S extends z.ZodType<any, any>>({
   schema,
   initialValues,
   onSubmit,
+  buttonColor,
   ...props
 }: FormProps<S>) {
   return (
@@ -33,7 +35,7 @@ export function Form<S extends z.ZodType<any, any>>({
       initialValues={initialValues}
       validate={validateZodSchema(schema)}
       onSubmit={onSubmit}
-      render={({ handleSubmit, submitting, submitError }) => (
+      render={({ handleSubmit, submitting, submitError, errors }) => (
         <form onSubmit={handleSubmit} className="form" {...props}>
           {/* Form fields supplied as children are rendered here */}
           {children}
@@ -47,6 +49,7 @@ export function Form<S extends z.ZodType<any, any>>({
           <div className="my-2">
             {submitText && (
               <Button
+                colorScheme={buttonColor === "green" ? "Customgreen" : "Customblue"}
                 className="w-full"
                 isLoading={submitting}
                 type="submit"

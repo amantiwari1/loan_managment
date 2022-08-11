@@ -127,7 +127,7 @@ const client_qccupation_type = z.enum([
 ])
 const loan_amount = z.number()
 const client_address = z.string()
-const private_enquiry = z.boolean()
+const private_enquiry = z.boolean().default(false)
 
 export const CreateEnquiry = z.object({
   client_name,
@@ -138,6 +138,24 @@ export const CreateEnquiry = z.object({
   loan_amount,
   client_address,
   private_enquiry,
+})
+
+export const CreatePublicEnquiry = z.object({
+  client_name,
+  client_mobile,
+  client_email,
+  client_service,
+  client_qccupation_type,
+  loan_amount,
+  client_address,
+  private_enquiry,
+  is_agree: z
+    .boolean({
+      required_error: "You must agree to the terms and conditions",
+    })
+    .refine((val) => val, {
+      message: "You must agree to the terms and conditions",
+    }),
 })
 
 export const CreateChannelPartner = z.object({

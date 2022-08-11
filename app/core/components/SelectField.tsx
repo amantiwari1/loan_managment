@@ -14,6 +14,7 @@ export interface SelectFieldProps {
   isDefault?: boolean
   /** Field type. Doesn't include radio buttons and checkboxes */
   options: OptionsOrGroups<any, GroupBase<any>>
+  color?: string
 }
 
 export const SelectField = ({
@@ -21,6 +22,7 @@ export const SelectField = ({
   isDefault,
   placeholder,
   label,
+  color,
   ...rest
 }: SelectFieldProps) => {
   const isDefaultData = {}
@@ -30,7 +32,7 @@ export const SelectField = ({
   }
   return (
     <div className="mb-5">
-      <label className="font-medium">{label}</label>
+      <label className={`font-medium  ${color ? color : "text-gray-700"}`}>{label}</label>
       <div className="mt-1">
         <Field {...rest}>
           {(props) => (

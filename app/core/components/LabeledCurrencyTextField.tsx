@@ -15,10 +15,11 @@ export interface LabeledCurrencyTextFieldProps extends ComponentPropsWithoutRef<
   outerProps?: PropsWithoutRef<JSX.IntrinsicElements["div"]>
   labelProps?: ComponentPropsWithoutRef<"label">
   fieldProps?: UseFieldConfig<string>
+  color?: string
 }
 
 export const LabeledCurrencyTextField = forwardRef<HTMLInputElement, LabeledCurrencyTextFieldProps>(
-  ({ name, label, outerProps, fieldProps, labelProps, ...props }, ref) => {
+  ({ name, label, color, outerProps, fieldProps, labelProps, ...props }, ref) => {
     const {
       input,
       meta: { touched, error, submitError, submitting },
@@ -36,12 +37,12 @@ export const LabeledCurrencyTextField = forwardRef<HTMLInputElement, LabeledCurr
     return (
       <div {...outerProps}>
         <FormLabel {...labelProps}>
-          <span className=" text-gray-700">{label}</span>
+          <span className={`${color ? color : "text-gray-700"}`}>{label}</span>
 
           <NumberFormat
             thousandsGroupStyle="lakh"
             prefix="₹"
-            inputmode="numeric"
+            inputMode="numeric"
             customInput={Input}
             onValueChange={(values) => {
               input.onChange(values.value)

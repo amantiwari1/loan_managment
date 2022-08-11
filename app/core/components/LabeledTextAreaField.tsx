@@ -15,10 +15,11 @@ export interface LabeledTextFieldProps extends ComponentPropsWithoutRef<typeof I
   outerProps?: PropsWithoutRef<JSX.IntrinsicElements["div"]>
   labelProps?: ComponentPropsWithoutRef<"label">
   fieldProps?: UseFieldConfig<string>
+  color?: string
 }
 
 export const LabeledTextAreaField = forwardRef<HTMLTextAreaElement, LabeledTextFieldProps>(
-  ({ name, label, outerProps, fieldProps, labelProps, ...props }, ref) => {
+  ({ name, label, color, outerProps, fieldProps, labelProps, ...props }, ref) => {
     const {
       input,
       meta: { touched, error, submitError, submitting },
@@ -36,7 +37,7 @@ export const LabeledTextAreaField = forwardRef<HTMLTextAreaElement, LabeledTextF
     return (
       <div {...outerProps}>
         <FormLabel {...labelProps}>
-          <span className=" text-gray-700">{label}</span>
+          <span className={`${color ? color : "text-gray-700"}`}>{label}</span>
           <Textarea
             bg="white"
             {...input}

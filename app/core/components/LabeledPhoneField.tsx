@@ -26,6 +26,10 @@ export interface LabeledPhoneFieldProps extends ComponentPropsWithoutRef<typeof 
   /** Field label. */
   label: string
   /** Field type. Doesn't include radio buttons and checkboxes */
+  color?: string
+
+  buttonColor?: "green" | "blue"
+
   type?: "number"
   outerProps?: PropsWithoutRef<JSX.IntrinsicElements["div"]>
   labelProps?: ComponentPropsWithoutRef<"label">
@@ -33,7 +37,7 @@ export interface LabeledPhoneFieldProps extends ComponentPropsWithoutRef<typeof 
 }
 
 export const LabeledPhoneField = forwardRef<HTMLInputElement, LabeledPhoneFieldProps>(
-  ({ name, label, outerProps, fieldProps, labelProps, ...props }, ref) => {
+  ({ name, label, color, outerProps, buttonColor, fieldProps, labelProps, ...props }, ref) => {
     const {
       input,
       meta: { touched, error, submitError, submitting },
@@ -150,7 +154,7 @@ export const LabeledPhoneField = forwardRef<HTMLInputElement, LabeledPhoneFieldP
       <div {...outerProps}>
         <div className="flex space-x-2 items-center">
           <FormLabel {...labelProps}>
-            <span className=" text-gray-700">{label}</span>
+            <span className={`${color ? color : "text-gray-700"}`}>{label}</span>
             <Input
               bg="white"
               {...input}
@@ -165,6 +169,7 @@ export const LabeledPhoneField = forwardRef<HTMLInputElement, LabeledPhoneFieldP
           </FormLabel>
 
           <Button
+            colorScheme={buttonColor === "green" ? "Customgreen" : "Customblue"}
             disabled={isVerifiedPhone.value || otp.isVerifyLoading || otp.model}
             w={200}
             isLoading={otp.isVerifyLoading}
@@ -181,6 +186,7 @@ export const LabeledPhoneField = forwardRef<HTMLInputElement, LabeledPhoneFieldP
 
           {otp.model && (
             <Button
+              colorScheme={buttonColor === "green" ? "Customgreen" : "Customblue"}
               w={200}
               onClick={() => {
                 setOtp({ ...otp, model: false })
@@ -193,7 +199,7 @@ export const LabeledPhoneField = forwardRef<HTMLInputElement, LabeledPhoneFieldP
 
         {otp.model && (
           <div className="flex space-x-2 items-center">
-            <span className=" text-gray-700">OTP</span>
+            <span className={`${color ? color : "text-gray-700"}`}>OTP</span>
             <Input
               bg="white"
               {...OTPCode}
@@ -204,6 +210,7 @@ export const LabeledPhoneField = forwardRef<HTMLInputElement, LabeledPhoneFieldP
             />
 
             <Button
+              colorScheme={buttonColor === "green" ? "Customgreen" : "Customblue"}
               disabled={isVerifiedPhone.value || otp.isOtpLoading}
               isLoading={otp.isOtpLoading}
               onClick={() => {
